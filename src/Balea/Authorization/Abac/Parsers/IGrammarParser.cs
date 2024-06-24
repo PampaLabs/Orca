@@ -1,7 +1,5 @@
 ﻿using Balea.Authorization.Abac.Context;
 using Balea.Authorization.Abac.Grammars;
-using System;
-using System.Collections.Generic;
 
 namespace Balea.Authorization.Abac.Parsers
 {

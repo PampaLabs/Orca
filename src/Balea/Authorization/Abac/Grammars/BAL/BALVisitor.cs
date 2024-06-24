@@ -1,9 +1,9 @@
 ﻿using Antlr4.Runtime.Misc;
 using Balea.Authorization.Abac.Context;
 using Balea.Authorization.Abac.Grammars.BAL;
-using System;
 using System.Globalization;
 using System.Linq.Expressions;
+
 using static Balea.Authorization.Abac.Grammars.BAL.BalParser;
 
 namespace Balea.DSL.Grammar.Bal
@@ -125,7 +125,7 @@ namespace Balea.DSL.Grammar.Bal
         private static Expression ParseStringComparasionExpression(ParameterExpression parameterExpression, ConditionContext stringComparerOperation)
         {
             var comparison = stringComparerOperation.str_comp().GetText();
-            
+        
             if (comparison.Equals("CONTAINS",StringComparison.InvariantCultureIgnoreCase))
             {
                 return CreatePropertyBagContains(parameterExpression, 
@@ -136,7 +136,7 @@ namespace Balea.DSL.Grammar.Bal
             {
                 // --- LEFT
                 var left = CreatePropertyBagExpression(parameterExpression, stringComparerOperation.str_val()[LEFT].GetText(), typeof(String));
-                
+            
                 // --- right 
                 var right = Expression.Constant(stringComparerOperation.str_val()[RIGHT].GetText().Replace("\"", ""));
 

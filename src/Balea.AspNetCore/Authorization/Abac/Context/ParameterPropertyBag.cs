@@ -5,12 +5,8 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization.Abac.Context
 {
@@ -19,7 +15,7 @@ namespace Balea.Authorization.Abac.Context
     /// </summary>
     public class ParameterPropertyBag
         : IAspNetPropertyBag
-	{
+    	{
         private readonly Dictionary<string, (Type parameterType, StringValues parameterValues)> _entries
             = new Dictionary<string, (Type parameterType, StringValues parameterValues)>(StringComparer.InvariantCultureIgnoreCase);
 

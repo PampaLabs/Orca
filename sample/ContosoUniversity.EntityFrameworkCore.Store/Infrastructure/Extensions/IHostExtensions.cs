@@ -1,24 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using Balea;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.Hosting
 {
     public static class IHostExtensions
     {
-        public static IHost MigrateDbContext<TContext>(this IHost host, Action<TContext> seed = null) where TContext : DbContext
+        public static IHost MigrateDbContext<TContext>(this IHost host, Action<TContext, IAccessControlContext> seed = null) where TContext : DbContext
         {
             using (var scope = host.Services.CreateScope())
             {
                 try
                 {
                     var context = scope.ServiceProvider.GetService<TContext>();
+                    var acc = scope.ServiceProvider.GetService<AccessControlContext>();
 
                     if (context != null)
                     {
                         context.Database.Migrate();
-                        seed?.Invoke(context);
+                        seed?.Invoke(context, acc);
                     }
                 }
                 catch (Exception exception)

@@ -2,6 +2,6 @@
 {
     public class BaleaOptions
     {
-		public ClaimTypeMap ClaimTypeMap { get; set; } = new ClaimTypeMap();
+        public ClaimTypeMap ClaimTypeMap { get; set; } = new ClaimTypeMap();
     }
 }

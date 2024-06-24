@@ -4,8 +4,6 @@ using Balea.Authorization.Abac.Grammars;
 using Balea.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization.Abac
 {
@@ -36,14 +34,14 @@ namespace Balea.Authorization.Abac
                 {
                     var policy = await _runtimeAuthorizationServerStore
                         .GetPolicyAsync(requirement.Name);
-                    
+                
                     if (policy is object)
                     {
                         Log.AbacAuthorizationHandlerIsEvaluatingPolicy(_logger, policy.Name, policy.Content);
 
                         var abacContext = await _abacAuthorizationContextFactory.Create(context);
                         var abacPolicy = AbacAuthorizationPolicy.CreateFromGrammar(policy.Content, WellKnownGrammars.Bal);
-                        
+                    
                         if (abacPolicy.IsSatisfied(abacContext))
                         {
                             Log.AbacAuthorizationHandlerEvaluationSuccesss(_logger,policy.Name);

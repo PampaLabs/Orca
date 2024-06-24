@@ -4,11 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization.Abac.Context
 {
@@ -19,7 +15,7 @@ namespace Balea.Authorization.Abac.Context
     /// </summary>
     public class ResourcePropertyBag
         : IAspNetPropertyBag
-	{
+    	{
         const string DisplayName = nameof(DisplayName);
         const string Template = nameof(Template);
 

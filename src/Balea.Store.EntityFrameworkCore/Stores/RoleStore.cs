@@ -1,343 +1,180 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 
-using Balea.Abstractions;
-using Balea.Provider.EntityFrameworkCore.DbContexts;
-using Balea.Provider.EntityFrameworkCore.Entities;
-
-using Microsoft.EntityFrameworkCore;
+using Balea.Store.EntityFrameworkCore.Entities;
 
 namespace Balea.Store.EntityFrameworkCore;
 
-public class RoleStore : IRoleStore<RoleEntity>
+public class RoleStore : IRoleStore
 {
-    private readonly BaleaDbContext _context;
-    private readonly IAppContextAccessor _contextAccessor;
+    private readonly RoleMapper _mapper = new();
 
-    public RoleStore(
-        BaleaDbContext context,
-        IAppContextAccessor contextAccessor)
+    private readonly BaleaDbContext _context;
+
+    public RoleStore(BaleaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
     }
 
-    public async Task<RoleEntity> FindByNameAsync(string roleName, CancellationToken cancellationToken)
+    public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
-        return await _context.Roles
-            .Where(x => x.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => x.Name == roleName)
-            .FirstOrDefaultAsync(cancellationToken);
+        var entity = await _context.Roles.FindAsync(roleId, cancellationToken);
+        return _mapper.FromEntity(entity);
     }
 
-    public async Task<AccessResult> CreateAsync(RoleEntity role, CancellationToken cancellationToken)
+    public async Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
     {
-        await _context.Roles.AddAsync(role);
+        var entity = await _context.Roles.FindByNameAsync(roleName, cancellationToken);
+        return _mapper.FromEntity(entity);
+    }
+
+    public async Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
+    {
+        var entity = _mapper.ToEntity(role);
+        entity.Id = Guid.NewGuid().ToString();
+
+        await _context.Roles.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessResult.Success;
+        _mapper.FromEntity(entity, role);
+
+        return AccessControlResult.Success;
     }
 
-    public async Task<AccessResult> UpdateAsync(RoleEntity role, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
-        _context.Roles.Update(role);
-        await _context.SaveChangesAsync(cancellationToken);
+        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
 
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> DeleteAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        _context.Roles.Remove(role);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public Task<string> GetNameAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(role.Name);
-    }
-
-    public Task<string> GetDescriptionAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(role.Description);
-    }
-
-    public Task<bool> IsEnabledAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(role.Enabled);
-    }
-
-    public async Task<AccessResult> AddMappingAsync(RoleEntity role, string mapping, CancellationToken cancellationToken)
-    {
-        var entity = new RoleMappingEntity
+        if (entity is null)
         {
-            Role = role,
-            Mapping = new MappingEntity(mapping)
+            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+        }
+
+        _mapper.ToEntity(role, entity);
+
+        _context.Roles.Update(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _mapper.FromEntity(entity, role);
+
+        return AccessControlResult.Success;
+    }
+
+    public async Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+
+        if (entity is null)
+        {
+            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+        }
+
+        _context.Roles.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return AccessControlResult.Success;
+    }
+
+    public Task<IList<Role>> ListAsync(CancellationToken cancellationToken)
+    {
+        var entities = _context.Roles;
+
+        var result = entities.Select(delegation => _mapper.FromEntity(delegation)).ToList();
+
+        return Task.FromResult<IList<Role>>(result);
+    }
+
+    public Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default)
+    {
+        var source = _context.Roles.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            var words = filter.Name.Split().Where(word => word != string.Empty);
+            source = source.Where(role => words.All(word => role.Name.Contains(word)));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Description))
+        {
+            var words = filter.Description.Split().Where(word => word != string.Empty);
+            source = source.Where(role => words.All(word => role.Description.Contains(word)));
+        }
+
+        if (filter.Enabled.HasValue)
+        {
+            source = source.Where(role => role.Enabled == filter.Enabled.Value);
+        }
+
+        if (filter.Mappings is not null)
+        {
+            var bindings = _context.RoleMappings.Where(x => filter.Mappings.Contains(x.Mapping));
+
+            source = source.Join(
+                bindings,
+                role => role.Id,
+                binding => binding.RoleId,
+                (role, binding) => role
+            );
+        }
+
+        if (filter.Subjects is not null)
+        {
+            var bindings = _context.RoleSubjects.Where(x => filter.Subjects.Contains(x.Sub));
+
+            source = source.Join(
+                bindings,
+                role => role.Id,
+                binding => binding.RoleId,
+                (role, binding) => role
+            );
+        }
+
+        var roles = source.Select(role => _mapper.FromEntity(role)).ToList();
+
+        return Task.FromResult<IList<Role>>(roles);
+    }
+
+    public async Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+
+        var targets = _context.RoleSubjects.Where(x => x.RoleId == entity.Id);
+        var mappings = targets.Select(x => x.Sub).ToList();
+
+        return mappings;
+    }
+
+    public async Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+
+        var binding = new RoleSubjectEntity
+        {
+            RoleId = entity.Id,
+            Sub = subject
         };
 
-        await _context.RoleMappings.AddAsync(entity, cancellationToken);
+        await _context.RoleSubjects.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessResult.Success;
+        return AccessControlResult.Success;
     }
 
-    public async Task<AccessResult> AddMappingsAsync(RoleEntity role, IList<string> mappings, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
     {
-        foreach (var mapping in mappings)
-        {
-            var entity = new RoleMappingEntity
-            {
-                Role = role,
-                Mapping = new MappingEntity(mapping)
-            };
-
-            await _context.RoleMappings.AddAsync(entity, cancellationToken);
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> RemoveMappingAsync(RoleEntity role, string mapping, CancellationToken cancellationToken)
-    {
-        var binding = await _context.RoleMappings
-            .Where(x => x.RoleId == role.Id)
-            .Where(x => x.Mapping.Name == mapping)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        _context.RoleMappings.Remove(binding);
-        _context.Mappings.Remove(binding.Mapping);
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> RemoveMappingsAsync(RoleEntity role, IList<string> mappings, CancellationToken cancellationToken)
-    {
-        foreach (var mapping in mappings)
-        {
-            var binding = await _context.RoleMappings
-                .Where(x => x.RoleId == role.Id)
-                .Where(x => x.Mapping.Name == mapping)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            _context.RoleMappings.Remove(binding);
-            _context.Mappings.Remove(binding.Mapping);
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<IList<string>> GetMappingsAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        return await _context.RoleMappings
-            .Where(x => x.RoleId == role.Id)
-            .Select(x => x.Mapping.Name)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IList<RoleEntity>> FindByMappingAsync(string mapping, CancellationToken cancellationToken)
-    {
-        return await _context.RoleMappings
-            .Where(x => x.Role.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => x.Mapping.Name == mapping)
-            .Select(x => x.Role)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IList<RoleEntity>> FindByMappingsAsync(IList<string> mappings, CancellationToken cancellationToken)
-    {
-        return await _context.RoleMappings
-            .Where(x => x.Role.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => mappings.Contains(x.Mapping.Name))
-            .Select(x => x.Role)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<AccessResult> AddPermissionAsync(RoleEntity role, string permission, CancellationToken cancellationToken)
-    {
-        var target = await _context.Permissions
-            .Where(x => x.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => x.Name == permission)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        var entity = new RolePermissionEntity
-        {
-            Role = role,
-            Permission = target
-        };
-
-        await _context.RolePermissions.AddAsync(entity, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> AddPermissionsAsync(RoleEntity role, IList<string> permissions, CancellationToken cancellationToken)
-    {
-        foreach (var permission in permissions)
-        {
-            var target = await _context.Permissions
-                .Where(x => x.Application.Name == _contextAccessor.AppContext.Name)
-                .Where(x => x.Name == permission)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var entity = new RolePermissionEntity
-            {
-                Role = role,
-                Permission = target
-            };
-
-            await _context.RolePermissions.AddAsync(entity, cancellationToken);
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> RemovePermissionAsync(RoleEntity role, string permission, CancellationToken cancellationToken)
-    {
-        var binding = await _context.RolePermissions
-            .Where(x => x.RoleId == role.Id)
-            .Where(x => x.Permission.Name == permission)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        _context.RolePermissions.Remove(binding);
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> RemovePermissionsAsync(RoleEntity role, IList<string> permissions, CancellationToken cancellationToken)
-    {
-        foreach (var permission in permissions)
-        {
-            var binding = await _context.RolePermissions
-                .Where(x => x.RoleId == role.Id)
-                .Where(x => x.Permission.Name == permission)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            _context.RolePermissions.Remove(binding);
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<IList<string>> GetPermissionsAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        return await _context.RolePermissions
-            .Where(x => x.RoleId == role.Id)
-            .Select(x => x.Permission.Name)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IList<RoleEntity>> FindByPermissionAsync(string permission, CancellationToken cancellationToken)
-    {
-        return await _context.RolePermissions
-            .Where(x => x.Role.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => x.Permission.Name == permission)
-            .Select(x => x.Role)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<AccessResult> AddMemberAsync(RoleEntity role, string subject, CancellationToken cancellationToken)
-    {
-        var target = await _context.Subjects
+        var binding = await _context.RoleSubjects
+            .Where(x => x.Role.Id == role.Id)
             .Where(x => x.Sub == subject)
             .FirstOrDefaultAsync(cancellationToken);
 
-        var entity = new RoleSubjectEntity
+        if (binding is null)
         {
-            Role = role,
-            Subject = target
-        };
-
-        await _context.RoleSubjects.AddAsync(entity, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> AddMembersAsync(RoleEntity role, IList<string> subjects, CancellationToken cancellationToken)
-    {
-        foreach (var subject in subjects)
-        {
-            var target = await _context.Subjects
-                .Where(x => x.Sub == subject)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var entity = new RoleSubjectEntity
-            {
-                Role = role,
-                Subject = target
-            };
-
-            await _context.RoleSubjects.AddAsync(entity, cancellationToken);
+            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> RemoveMemberAsync(RoleEntity role, string subject, CancellationToken cancellationToken)
-    {
-        var binding = await _context.RoleSubjects
-            .Where(x => x.RoleId == role.Id)
-            .Where(x => x.Subject.Sub == subject)
-            .FirstOrDefaultAsync(cancellationToken);
 
         _context.RoleSubjects.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessResult.Success;
-    }
-
-    public async Task<AccessResult> RemoveMembersAsync(RoleEntity role, IList<string> subjects, CancellationToken cancellationToken)
-    {
-        foreach (var subject in subjects)
-        {
-            var binding = await _context.RoleSubjects
-                .Where(x => x.RoleId == role.Id)
-                .Where(x => x.Subject.Sub == subject)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            _context.RoleSubjects.Remove(binding);
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return AccessResult.Success;
-    }
-
-    public async Task<IList<string>> GetMembersAsync(RoleEntity role, CancellationToken cancellationToken)
-    {
-        return await _context.RoleSubjects
-            .Where(x => x.RoleId == role.Id)
-            .Select(x => x.Subject.Sub)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IList<RoleEntity>> FindByMemberAsync(string subject, CancellationToken cancellationToken)
-    {
-        return await _context.RoleSubjects
-            .Where(x => x.Role.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => x.Subject.Sub == subject)
-            .Select(x => x.Role)
-            .ToListAsync(cancellationToken);
+        return AccessControlResult.Success;
     }
 }

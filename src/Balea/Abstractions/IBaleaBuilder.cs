@@ -1,7 +1,7 @@
 ﻿using Balea.Authorization.Abac.Context;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Balea.Abstractions
+namespace Balea
 {
     /// <summary>
     /// The builder used to register Balea and dependant services.

@@ -9,10 +9,6 @@
             "name": "Teacher",
             "enabled": true,
             "description": "Teacher role",
-            "permissions": [
-              "grades.read",
-              "grades.edit"
-            ],
             "subjects": [
               "1"
             ]
@@ -21,10 +17,6 @@
             "name": "Substitute",
             "enabled": true,
             "description": "Substitute role",
-            "permissions": [
-              "grades.read",
-              "grades.edit"
-            ],
             "subjects": [
               "2"
             ]
@@ -33,9 +25,6 @@
             "name": "Student",
             "description": "Student role",
             "enabled": true,
-            "permissions": [
-              "grades.read"
-            ],
             "mappings": [
               "customer"
             ]
@@ -44,12 +33,37 @@
             "name": "Custodian",
             "description": "Custodian role",
             "enabled": true,
-            "permissions": [
-              "doors.open",
-              "doors.close"
-            ],
             "subjects": [
               "3"
+            ]
+          }
+        ],
+        "permissions": [
+          {
+            "name": "grades.read",
+            "roles": [
+              "Teacher",
+              "Substitute",
+              "Student"
+            ]
+          },
+          {
+            "name": "grades.edit",
+            "roles": [
+              "Teacher",
+              "Substitute"
+            ]
+          },
+          {
+            "name": "doors.open",
+            "roles": [
+              "Custodian"
+            ]
+          },
+          {
+            "name": "doors.close",
+            "roles": [
+              "Custodian"
             ]
           }
         ],

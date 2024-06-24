@@ -1,6 +1,4 @@
 ﻿using Balea;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace System.Security.Claims
 {
@@ -21,7 +19,7 @@ namespace System.Security.Claims
             }
 
             _ = sid ?? throw new InvalidOperationException($"'Balea allowed subject claim type is missing.");
-            
+        
             return sid;
         }
 

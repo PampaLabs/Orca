@@ -2,10 +2,6 @@
 using Balea.Authorization.Abac.Grammars;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FunctionalTests.Scenarios
@@ -569,4 +565,5 @@ namespace FunctionalTests.Scenarios
     }
 #pragma warning restore IDE1006
 #pragma warning restore IDE0044
+
 }

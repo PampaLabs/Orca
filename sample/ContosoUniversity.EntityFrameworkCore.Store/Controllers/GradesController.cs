@@ -1,7 +1,9 @@
-﻿using Balea.Authorization.Abac;
-using ContosoUniversity.EntityFrameworkCore.Store.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using Balea.Authorization.Abac;
+
+using ContosoUniversity.EntityFrameworkCore.Store.Models;
 
 namespace ContosoUniversity.Configuration.Store.Controllers
 {

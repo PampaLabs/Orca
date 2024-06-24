@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Balea.Abstractions;
 using Balea.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
@@ -17,20 +14,20 @@ namespace Balea.Authorization
         private readonly IAuthorizationService _authorization;
         private readonly IAuthorizationGrantor _store;
         private readonly BaleaOptions _options;
-		private readonly BaleaWebHost _webHost;
-		private readonly ILogger<BaleaPolicyEvaluator> _logger;
+    		private readonly BaleaWebHost _webHost;
+    		private readonly ILogger<BaleaPolicyEvaluator> _logger;
 
         public BaleaPolicyEvaluator(
             IAuthorizationService authorization,
             IAuthorizationGrantor store,
-			BaleaOptions options,
-			BaleaWebHost webHost,
+    			BaleaOptions options,
+    			BaleaWebHost webHost,
             ILogger<BaleaPolicyEvaluator> logger)
         {
             _authorization = authorization;
             _store = store;
             _options = options;
-			_webHost = webHost;
+    			_webHost = webHost;
             _logger = logger;
         }
 
@@ -156,10 +153,8 @@ namespace Balea.Authorization
                 .Where(role => role.Enabled)
                 .Select(role => new Claim(_options.ClaimTypeMap.RoleClaimType, role.Name));
 
-            var permissionClaims = authorization.Roles
-                .SelectMany(role => role.Permissions)
-                .Distinct()
-                .Select(permission => new Claim(_options.ClaimTypeMap.PermissionClaimType, permission));
+            var permissionClaims = authorization.Permissions
+                .Select(permission => new Claim(_options.ClaimTypeMap.PermissionClaimType, permission.Name));
 
             var identity = new ClaimsIdentity(
                 authenticationType: "Balea",

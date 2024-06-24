@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
-using ContosoUniversity.Configuration.Store.Infrastructure;
-using ContosoUniversity.Configuration.Store.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using ContosoUniversity.Configuration.Store.Infrastructure;
+using ContosoUniversity.Configuration.Store.Models;
 
 namespace ContosoUniversity.Configuration.Store.Controllers
 {

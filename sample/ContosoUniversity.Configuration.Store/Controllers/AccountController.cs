@@ -1,10 +1,10 @@
-﻿using ContosoUniversity.Configuration.Store.Models;
+﻿using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
+
+using ContosoUniversity.Configuration.Store.Models;
 
 namespace ContosoUniversity.Configuration.Store.Controllers
 {

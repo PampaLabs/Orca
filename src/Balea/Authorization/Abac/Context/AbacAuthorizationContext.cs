@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Balea.Authorization.Abac.Context
+﻿namespace Balea.Authorization.Abac.Context
 {
     /// <summary>
     /// Represent the collection of property bag's to use on DSL evaluation process. Balea

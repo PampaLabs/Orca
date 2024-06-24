@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Balea.Store.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using Balea.Provider.EntityFrameworkCore.DbContexts;
 
 namespace FunctionalTests.Seedwork.Data
 {

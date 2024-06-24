@@ -7,9 +7,4 @@
         public const string DelegatedFrom = "delegatedfrom";
         public const string DelegatedTo = "delegatedto";
     }
-
-    public class BaleaConstants
-    {
-        public const string DefaultApplicationName = "default";
-    }
 }

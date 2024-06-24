@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Primitives;
-using System;
-using System.Threading.Tasks;
 
 namespace Balea.Mvc
 {

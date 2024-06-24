@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization.Abac.Context
 {
     public interface IAspNetPropertyBag : IPropertyBag
-	{
+    	{
         /// <summary>
         /// Initialize the property bag.
         /// </summary>

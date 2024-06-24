@@ -1,56 +1,60 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Balea;
-using Balea.Provider.EntityFrameworkCore.DbContexts;
-using Balea.Provider.EntityFrameworkCore.Entities;
+﻿using Balea;
+using Balea.Store.EntityFrameworkCore;
+using Balea.Store.EntityFrameworkCore.Entities;
+
 using ContosoUniversity.EntityFrameworkCore.Store.Models;
 
 namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeders
 {
     public static class BaleaSeeder
     {
-        public static async Task Seed(BaleaDbContext db)
+        public static async Task Seed(BaleaDbContext db, IAccessControlContext context)
         {
-            if (!db.Roles.Any())
+            if (!db.Applications.Any())
             {
-                var alice = new SubjectEntity("Alice", "818727");
-                var bob = new SubjectEntity("Bob", "88421113");
+                var application = new ApplicationEntity
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = BaleaConstants.DefaultApplicationName,
+                    Description = "Default Application",
+                };
 
-                db.Add(alice);
-                db.Add(bob);
-
+                await db.Applications.AddAsync(application);
                 await db.SaveChangesAsync();
 
-                var application = new ApplicationEntity(BaleaConstants.DefaultApplicationName, "Default application");
-                var viewGradesPermission = new PermissionEntity(Permissions.GradesRead);
-                var editGradesPermission = new PermissionEntity(Permissions.GradesEdit);
-                application.Permissions.Add(viewGradesPermission);
-                application.Permissions.Add(editGradesPermission);
-                var teacherRole = new RoleEntity(nameof(Roles.Teacher), "Teacher role");
-                teacherRole.Subjects.Add(new RoleSubjectEntity { SubjectId = alice.Id });
-                teacherRole.Permissions.Add(new RolePermissionEntity { Permission = viewGradesPermission });
-                teacherRole.Permissions.Add(new RolePermissionEntity { Permission = editGradesPermission });
-                application.Roles.Add(teacherRole);
-                var substituteRole = new RoleEntity(nameof(Roles.Substitute), "Substitute role");
-                substituteRole.Permissions.Add(new RolePermissionEntity { Permission = viewGradesPermission });
-                substituteRole.Permissions.Add(new RolePermissionEntity { Permission = editGradesPermission });
-                substituteRole.Subjects.Add(new RoleSubjectEntity { SubjectId = bob.Id });
-                application.Roles.Add(substituteRole);
-                application.Delegations.Add(new DelegationEntity(alice.Id, bob.Id, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddYears(1), false));
-                var studentRole = new RoleEntity(nameof(Roles.Student), "Student role");
-                var mapping = new MappingEntity("customer");
-                studentRole.Mappings.Add(new RoleMappingEntity { Mapping = mapping });
-                application.Roles.Add(studentRole);
-                var policy = new PolicyEntity("ValidateGrades",
-@"policy substitute begin
+                // -----------------------------------------
+
+                var viewGradesPermission = new Permission { Name = Permissions.GradesRead };
+                var editGradesPermission = new Permission { Name = Permissions.GradesEdit };
+                await context.PermissionStore.CreateAsync(viewGradesPermission);
+                await context.PermissionStore.CreateAsync(editGradesPermission);
+
+                var teacherRole = new Role { Name = nameof(Roles.Teacher), Description = "Teacher role" };
+                await context.RoleStore.CreateAsync(teacherRole);
+                await context.RoleStore.AddSubjectAsync(teacherRole, "818727");
+                await context.PermissionStore.AddRoleAsync(viewGradesPermission, nameof(Roles.Teacher));
+                await context.PermissionStore.AddRoleAsync(editGradesPermission, nameof(Roles.Teacher));
+
+                var substituteRole = new Role { Name = nameof(Roles.Substitute), Description = "Substitute role" };
+                await context.RoleStore.CreateAsync(substituteRole);
+                await context.RoleStore.AddSubjectAsync(substituteRole, "88421113");
+                await context.PermissionStore.AddRoleAsync(viewGradesPermission, nameof(Roles.Substitute));
+                await context.PermissionStore.AddRoleAsync(editGradesPermission, nameof(Roles.Substitute));
+
+                var delegation = new Delegation { Who = "818727", Whom = "88421113", From = DateTime.UtcNow.AddDays(-1), To = DateTime.UtcNow.AddYears(1), Enabled = false };
+                await context.DelegationStore.CreateAsync(delegation);
+
+                var studentRole = new Role { Name = nameof(Roles.Student), Description = "Student role", Mappings = ["customer"] };
+                await context.RoleStore.CreateAsync(studentRole);
+
+                var policyContent =
+    @"policy substitute begin
     rule A (DENY) begin
         Subject.Role CONTAINS ""Substitute"" AND Resource.Controller = ""Grades"" AND Parameters.Value > 6
     end
-end");
-                application.Policies.Add(policy);
-                db.Applications.Add(application);
-                await db.SaveChangesAsync();
+end";
+                var policy = new Policy { Name = "ValidateGrades", Content = policyContent };
+                await context.PolicyStore.CreateAsync(policy);
             }
         }
     }

@@ -3,22 +3,15 @@ using Acheve.TestHost;
 using Balea;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using Testcontainers.MsSql;
 
 namespace FunctionalTests.Seedwork
 {
     public class TestEntityFrameworkCoreStartup
     {
-        private readonly IConfiguration configuration;
-
-        public TestEntityFrameworkCoreStartup(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -27,20 +20,18 @@ namespace FunctionalTests.Seedwork
                     options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
                 })
-                .AddEntityFrameworkCoreGrantor(options =>
+                .AddEntityFrameworkCoreStore((sp, options) =>
                 {
-                    options.ConfigureDbContext = builder =>
-                    {
-                        builder.UseSqlServer(configuration.GetConnectionString(ConnectionStrings.Default), sqlServerOptions =>
-                        {
-                            sqlServerOptions.MigrationsAssembly(typeof(TestEntityFrameworkCoreStartup).Assembly.FullName);
-                        })
-                        .UseLoggerFactory(LoggerFactory.Create(builder =>
-                        {
-                            builder.SetMinimumLevel(LogLevel.Information).AddConsole();
-                        }));
-                    };
+                    var container = sp.GetRequiredService<MsSqlContainer>();
 
+                    options.UseSqlServer(container.GetConnectionString(), sqlServerOptions =>
+                    {
+                        sqlServerOptions.MigrationsAssembly(typeof(TestEntityFrameworkCoreStartup).Assembly.FullName);
+                    })
+                    .UseLoggerFactory(LoggerFactory.Create(builder =>
+                    {
+                        builder.SetMinimumLevel(LogLevel.Information).AddConsole();
+                    }));
                 })
                 .Services
                 .AddAuthentication(setup =>

@@ -1,6 +1,5 @@
 ﻿using Balea.Abstractions;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization.Rbac
 {

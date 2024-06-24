@@ -1,63 +1,104 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Balea.Abstractions;
-using Balea.Provider.EntityFrameworkCore.DbContexts;
-using Balea.Provider.EntityFrameworkCore.Entities;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Balea.Store.EntityFrameworkCore.Entities;
 
 namespace Balea.Store.EntityFrameworkCore;
 
-public class PolicyStore : IPolicyStore<PolicyEntity>
+public class PolicyStore : IPolicyStore
 {
-    private readonly BaleaDbContext _context;
-    private readonly IAppContextAccessor _contextAccessor;
+    private readonly PolicyMapper _mapper = new();
 
-    public PolicyStore(
-        BaleaDbContext context,
-        IAppContextAccessor contextAccessor)
+    private readonly BaleaDbContext _context;
+
+    public PolicyStore(BaleaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
     }
 
-    public async Task<PolicyEntity> FindByNameAsync(string policyName, CancellationToken cancellationToken)
+    public async Task<Policy> FindByIdAsync(string policyId, CancellationToken cancellationToken)
     {
-        return await _context.Policies
-            .Where(x => x.Application.Name == _contextAccessor.AppContext.Name)
-            .Where(x => x.Name == policyName)
-            .FirstOrDefaultAsync(cancellationToken);
+        var entity = await _context.Policies.FindAsync(policyId, cancellationToken);
+        return _mapper.FromEntity(entity);
     }
 
-    public async Task<AccessResult> CreateAsync(PolicyEntity policy, CancellationToken cancellationToken)
+    public async Task<Policy> FindByNameAsync(string policyName, CancellationToken cancellationToken)
     {
-        await _context.Policies.AddAsync(policy);
+        var entity = await _context.Policies.FindByNameAsync(policyName, cancellationToken);
+        return _mapper.FromEntity(entity);
+    }
+
+    public async Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
+    {
+        var entity = _mapper.ToEntity(policy);
+        entity.Id = Guid.NewGuid().ToString();
+
+        await _context.Policies.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessResult.Success;
+        _mapper.FromEntity(entity, policy);
+
+        return AccessControlResult.Success;
     }
 
-    public async Task<AccessResult> UpdateAsync(PolicyEntity policy, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
-        _context.Policies.Update(policy);
+        var entity = await _context.Policies.FindAsync(policy.Id, cancellationToken);
+
+        if (entity is null)
+        {
+            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+        }
+
+        _mapper.ToEntity(policy, entity);
+
+        _context.Policies.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessResult.Success;
+        _mapper.FromEntity(entity, policy);
+
+        return AccessControlResult.Success;
     }
 
-    public async Task<AccessResult> DeleteAsync(PolicyEntity policy, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
     {
-        _context.Policies.Remove(policy);
+        var entity = await _context.Policies.FindAsync(policy.Id, cancellationToken);
+
+        if (entity is null)
+        {
+            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+        }
+
+        _context.Policies.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessResult.Success;
+        return AccessControlResult.Success;
     }
 
-    public Task<string> GetContentAsync(PolicyEntity policy, CancellationToken cancellationToken)
+    public Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(policy.Content);
+        var entities = _context.Policies;
+
+        var result = entities.Select(policy => _mapper.FromEntity(policy)).ToList();
+
+        return Task.FromResult<IList<Policy>>(result);
+    }
+
+    public Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
+    {
+        var source = _context.Policies.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            var words = filter.Name.Split().Where(word => word != string.Empty);
+            source = source.Where(policy => words.All(word => policy.Name.Contains(word)));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Description))
+        {
+            var words = filter.Description.Split().Where(word => word != string.Empty);
+            source = source.Where(policy => words.All(word => policy.Description.Contains(word)));
+        }
+
+        var result = source.Select(_mapper.FromEntity).ToList();
+
+        return Task.FromResult<IList<Policy>>(result);
     }
 }

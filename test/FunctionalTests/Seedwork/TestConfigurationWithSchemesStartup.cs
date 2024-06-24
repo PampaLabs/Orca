@@ -1,7 +1,6 @@
 ﻿using Acheve.AspNetCore.TestHost.Security;
 using Balea;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
@@ -9,13 +8,6 @@ namespace FunctionalTests.Seedwork
 {
     public class TestConfigurationWithSchemesStartup
     {
-        private readonly IConfiguration configuration;
-
-        public TestConfigurationWithSchemesStartup(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -26,7 +18,7 @@ namespace FunctionalTests.Seedwork
 
                     options.WebHost.Schemes.Add("scheme2");
                 })
-                .AddConfigurationGrantor(configuration)
+                .AddConfigurationStore()
                 .Services
                 .AddAuthentication(setup =>
                 {

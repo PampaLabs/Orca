@@ -1,14 +1,11 @@
-using Balea;
+using System.IdentityModel.Tokens.Jwt;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+
+using Balea;
 
 namespace ContosoUniversity.EntityFrameworkCore.Store
 {
@@ -25,7 +22,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services                     
+            services
                 .AddBalea(options =>
                 {
                     options.Common.ClaimTypeMap = new ClaimTypeMap
@@ -37,17 +34,17 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
                     options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Clear();
                     options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                 })
-                .AddEntityFrameworkCoreGrantor(options =>
+                .AddEntityFrameworkCoreStore((sp, options) =>
                 {
-                    options.ConfigureDbContext = builder =>
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+
+                    options.UseSqlServer(configuration.GetConnectionString("Default"), sqlServerOptions =>
                     {
-                        builder.UseSqlServer(Configuration.GetConnectionString("Default"), sqlServerOptions =>
-                        {
-                            sqlServerOptions.MigrationsAssembly(typeof(Startup).Assembly.FullName);
-                        });
-                    };
-                })
-                .Services
+                        sqlServerOptions.MigrationsAssembly(typeof(Startup).Assembly.FullName);
+                    });
+                });
+
+            services
                 .AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -76,9 +73,11 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
                         RoleClaimType = JwtClaimTypes.Role,
                         NameClaimType = JwtClaimTypes.Name
                     };
-                })
-                .Services
-                .AddControllersWithViews();
+
+                    options.MapInboundClaims = false;
+                });
+        
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,6 +93,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app
                 .UseHttpsRedirection()
                 .UseStaticFiles()

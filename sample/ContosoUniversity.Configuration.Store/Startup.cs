@@ -1,10 +1,6 @@
-using Balea;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+
+using Balea;
 
 namespace ContosoUniversity.Configuration.Store
 {
@@ -19,7 +15,7 @@ namespace ContosoUniversity.Configuration.Store
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services  
+            services
                 .AddBalea(options =>
                 {
                     options.WebHost.Events.UnauthorizedFallback = AuthorizationFallbackAction.RedirectToAction("Account", "AccessDenied");
@@ -28,8 +24,9 @@ namespace ContosoUniversity.Configuration.Store
                         PermissionClaimType = "permissions"
                     };
                 })
-                .AddConfigurationGrantor(Configuration)
-                .Services
+                .AddConfigurationStore();
+
+            services
                 .AddAuthentication(configureOptions =>
                 {
                     configureOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -39,9 +36,9 @@ namespace ContosoUniversity.Configuration.Store
                 {
                     setup.LoginPath = "/Account/Login";
                     setup.AccessDeniedPath = "/Account/AccessDenied";
-                })
-                .Services
-                .AddControllersWithViews();
+                });
+        
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

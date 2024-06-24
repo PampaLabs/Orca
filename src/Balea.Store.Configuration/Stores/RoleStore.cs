@@ -1,220 +1,147 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿namespace Balea.Store.Configuration;
 
-using Balea.Abstractions;
-using Balea.Model;
-using Balea.Provider.Configuration.Model;
-using Balea.Store.Configuration.Options;
-
-namespace Balea.Store.Configuration
+public class RoleStore : IRoleStore
 {
-	public class RoleStore : IRoleStore<Role>
+    private readonly RoleMapper _mapper = new();
+
+    private readonly ConfigurationStoreOptions _options;
+	private readonly IAppContextAccessor _contextAccessor;
+
+	public RoleStore(
+		ConfigurationStoreOptions options,
+		IAppContextAccessor contextAccessor)
 	{
-		private readonly StoreOptions _options;
-		private readonly IAppContextAccessor _contextAccessor;
+		_options = options ?? throw new ArgumentNullException(nameof(options));
+		_contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+	}
 
-		public RoleStore(
-			StoreOptions options,
-			IAppContextAccessor contextAccessor)
-		{
-			_options = options ?? throw new ArgumentNullException(nameof(options));
-			_contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-		}
+    public Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+    {
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == roleId);
 
-		public Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			var policy = application.Roles.FirstOrDefault(x => x.Name == roleName);
+        var role = _mapper.FromEntity(model);
 
-			return Task.FromResult(policy);
-		}
+        return Task.FromResult(role);
+    }
 
-		public Task<AccessResult> CreateAsync(Role role, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			application.Roles.Add(role);
+    public Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
+	{
+		var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+		var model = application.Roles.FirstOrDefault(x => x.Name == roleName);
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        var role = _mapper.FromEntity(model);
 
-		public Task<AccessResult> UpdateAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(AccessResult.Success);
-		}
+        return Task.FromResult(role);
+    }
 
-		public Task<AccessResult> DeleteAsync(Role role, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			application.Roles.Remove(role);
+	public Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
+	{
+        var model = _mapper.ToEntity(role);
+        model.Id = Guid.NewGuid().ToString();
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        application.Roles.Add(model);
 
-		public Task<string> GetNameAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(role.Name);
-		}
+        _mapper.FromEntity(model, role);
 
-		public Task<string> GetDescriptionAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(role.Description);
-		}
+        return Task.FromResult(AccessControlResult.Success);
+	}
 
-		public Task<bool> IsEnabledAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(role.Enabled);
-		}
+	public Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+	{
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == role.Id);
 
-		public Task<AccessResult> AddMappingAsync(Role role, string mapping, CancellationToken cancellationToken)
-		{
-			role.Mappings.Add(mapping);
+        _mapper.ToEntity(role, model);
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        return Task.FromResult(AccessControlResult.Success);
+	}
 
-		public Task<AccessResult> AddMappingsAsync(Role role, IList<string> mappings, CancellationToken cancellationToken)
-		{
-			foreach (var mapping in mappings)
-			{
-				role.Mappings.Add(mapping);
-			}
+	public Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+	{
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == role.Id);
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        application.Roles.Remove(model);
 
-		public Task<AccessResult> RemoveMappingAsync(Role role, string mapping, CancellationToken cancellationToken)
-		{
-			role.Mappings.Remove(mapping);
+        return Task.FromResult(AccessControlResult.Success);
+	}
 
-			return Task.FromResult(AccessResult.Success);
-		}
+    public Task<IList<Role>> ListAsync(CancellationToken cancellationToken)
+    {
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var models = application.Roles;
 
-		public Task<AccessResult> RemoveMappingsAsync(Role role, IList<string> mappings, CancellationToken cancellationToken)
-		{
-			foreach (var mapping in mappings)
-			{
-				role.Mappings.Remove(mapping);
-			}
+        var roles = models.Select(role => _mapper.FromEntity(role)).ToList();
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        return Task.FromResult<IList<Role>>(roles);
+    }
 
-		public Task<IList<string>> GetMappingsAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(role.Mappings);
-		}
+    public Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default)
+    {
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var source = application.Roles.AsQueryable();
 
-		public Task<IList<Role>> FindByMappingAsync(string mapping, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			var roles = application.Roles.Where(x => x.Mappings.Contains(mapping)).ToList();
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            var words = filter.Name.Split().Where(word => word != string.Empty);
+            source = source.Where(role => words.All(word => role.Name.Contains(word)));
+        }
 
-			return Task.FromResult<IList<Role>>(roles);
-		}
+        if (!string.IsNullOrEmpty(filter.Description))
+        {
+            var words = filter.Description.Split().Where(word => word != string.Empty);
+            source = source.Where(role => words.All(word => role.Description.Contains(word)));
+        }
 
-		public Task<IList<Role>> FindByMappingsAsync(IList<string> mappings, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			var roles = application.Roles.Where(x => mappings.Any(mapping => x.Mappings.Contains(mapping))).ToList();
+        if (filter.Enabled.HasValue)
+        {
+            source = source.Where(role => role.Enabled == filter.Enabled.Value);
+        }
 
-			return Task.FromResult<IList<Role>>(roles);
-		}
+        if (filter.Mappings is not null)
+        {
+            source = source.Where(role => filter.Mappings.Any(mapping => role.Mappings.Contains(mapping)));
+        }
 
-		public Task<AccessResult> AddPermissionAsync(Role role, string permission, CancellationToken cancellationToken)
-		{
-			role.Permissions.Add(permission);
+        if (filter.Subjects is not null)
+        {
+            source = source.Where(role => filter.Subjects.Any(subject => role.Subjects.Contains(subject)));
+        }
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        var roles = source.Select(role => _mapper.FromEntity(role)).ToList();
 
-		public Task<AccessResult> AddPermissionsAsync(Role role, IList<string> permissions, CancellationToken cancellationToken)
-		{
-			foreach (var permission in permissions)
-			{
-				role.Permissions.Add(permission);
-			}
+        return Task.FromResult<IList<Role>>(roles);
+    }
 
-			return Task.FromResult(AccessResult.Success);
-		}
+    public Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
+    {
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == role.Id);
 
-		public Task<AccessResult> RemovePermissionAsync(Role role, string permission, CancellationToken cancellationToken)
-		{
-			role.Permissions.Remove(permission);
+        var mappings = model.Subjects.ToList();
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        return Task.FromResult<IList<string>>(mappings);
+    }
 
-		public Task<AccessResult> RemovePermissionsAsync(Role role, IList<string> permissions, CancellationToken cancellationToken)
-		{
-			foreach (var permission in permissions)
-			{
-				role.Permissions.Remove(permission);
-			}
+    public Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+	{
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == role.Id);
 
-			return Task.FromResult(AccessResult.Success);
-		}
+        model.Subjects.Add(subject);
 
-		public Task<IList<string>> GetPermissionsAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(role.Mappings);
-		}
+		return Task.FromResult(AccessControlResult.Success);
+	}
 
-		public Task<IList<Role>> FindByPermissionAsync(string permission, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			var roles = application.Roles.Where(x => x.Permissions.Contains(permission)).ToList();
+	public Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+	{
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == role.Id);
 
-			return Task.FromResult<IList<Role>>(roles);
-		}
+        model.Subjects.Remove(subject);
 
-		public Task<AccessResult> AddMemberAsync(Role role, string subject, CancellationToken cancellationToken)
-		{
-			role.Subjects.Add(subject);
-
-			return Task.FromResult(AccessResult.Success);
-		}
-
-		public Task<AccessResult> AddMembersAsync(Role role, IList<string> subjects, CancellationToken cancellationToken)
-		{
-			foreach (var subject in subjects)
-			{
-				role.Subjects.Add(subject);
-			}
-
-			return Task.FromResult(AccessResult.Success);
-		}
-
-		public Task<AccessResult> RemoveMemberAsync(Role role, string subject, CancellationToken cancellationToken)
-		{
-			role.Subjects.Remove(subject);
-
-			return Task.FromResult(AccessResult.Success);
-		}
-
-		public Task<AccessResult> RemoveMembersAsync(Role role, IList<string> subjects, CancellationToken cancellationToken)
-		{
-			foreach (var subject in subjects)
-			{
-				role.Subjects.Remove(subject);
-			}
-
-			return Task.FromResult(AccessResult.Success);
-		}
-
-		public Task<IList<string>> GetMembersAsync(Role role, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(role.Subjects);
-		}
-
-		public Task<IList<Role>> FindByMemberAsync(string subject, CancellationToken cancellationToken)
-		{
-			var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-			var roles = application.Roles.Where(x => x.Subjects.Contains(subject)).ToList();
-
-			return Task.FromResult<IList<Role>>(roles);
-		}
+		return Task.FromResult(AccessControlResult.Success);
 	}
 }

@@ -4,27 +4,25 @@ using Balea.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization
 {
     public class AuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
     {
         private readonly AuthorizationOptions _options;
-		private readonly BaleaWebHost _webHost;
+    		private readonly BaleaWebHost _webHost;
         private readonly ILogger<AuthorizationPolicyProvider> _logger;
 
         private object sync_root = new object();
 
         public AuthorizationPolicyProvider(
             IOptions<AuthorizationOptions> options,
-			BaleaWebHost webHost,
+    			BaleaWebHost webHost,
             ILogger<AuthorizationPolicyProvider> logger)
             : base(options)
         {
             _options = options.Value;
-			_webHost = webHost;
+    			_webHost = webHost;
             _logger = logger;
         }
 

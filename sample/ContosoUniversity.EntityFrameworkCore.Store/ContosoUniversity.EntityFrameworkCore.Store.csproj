@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>$(NetCoreTargetVersion)</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateProgramFile>false</GenerateProgramFile>
     <UserSecretsId>ContosoUniversity.EntityFrameworkCore.Store</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,22 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Balea.AspNetCore\Balea.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Grantor.EntityFrameworkCore\Balea.Grantor.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Views\Home\Contact.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\Shared\_Layout.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="wwwroot\js\main.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <ProjectReference Include="..\..\src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

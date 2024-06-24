@@ -1,30 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Balea;
+using Balea.Store.EntityFrameworkCore;
+using Balea.Store.EntityFrameworkCore.Entities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace Microsoft.Extensions.Hosting
 {
     public static class IHostExtensions
     {
-        public static IHost MigrateDbContext<TContext>(this IHost host, Action<TContext, IServiceProvider> seeder)
+        public static async Task MigrateDbContextAsync<TContext>(this IWebHost host)
             where TContext : DbContext
         {
             using (var scope = host.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<TContext>();
 
-                if (context is null)
-                {
-                    return host;
-                }
+                if (context is null) return;
 
                 try
                 {
-                    context.Database.EnsureDeleted();
-                    context.Database.Migrate();
-
-                    seeder(context, scope.ServiceProvider);
+                    // await context.Database.EnsureDeletedAsync();
+                    await context.Database.MigrateAsync();
                 }
                 catch (Exception ex)
                 {
@@ -33,8 +31,27 @@ namespace Microsoft.Extensions.Hosting
                     logger.LogError(ex, $"An error occurred while migrating the database for context {nameof(TContext)}.");
                 }
             }
+        }
 
-            return host;
+        public static async Task SeedDbContextAsync<TContext>(this IWebHost host)
+            where TContext : DbContext
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<BaleaDbContext>();
+
+                if (context is null) return;
+
+                var application = new ApplicationEntity
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = BaleaConstants.DefaultApplicationName,
+                    Description = "Default Application",
+                };
+
+                await context.Applications.AddAsync(application);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

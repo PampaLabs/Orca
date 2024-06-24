@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace Balea.Store.Configuration;
 
-using Balea.Model;
-using Balea.Store.Configuration;
-
-namespace Balea.Provider.Configuration.Model
+public static class ModelExtensions
 {
-	public static class ModelExtensions
+	public static DelegationConfiguration GetCurrentDelegation(this IEnumerable<DelegationConfiguration> delegations, string subjectId)
 	{
-		public static Delegation GetCurrentDelegation(this IEnumerable<Delegation> delegations, string subjectId)
-		{
-			return delegations.FirstOrDefault(d => d.Active && d.Whom == subjectId);
-		}
+		return delegations.FirstOrDefault(d => d.Active && d.Whom == subjectId);
+	}
 
-		public static Application GetByName(this IEnumerable<Application> applications, string name)
-		{
-			return applications.First(a => a.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-		}
+    public static ApplicationConfiguration GetByName(this IEnumerable<ApplicationConfiguration> applications, string name)
+	{
+		return applications.First(a => a.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 	}
 }

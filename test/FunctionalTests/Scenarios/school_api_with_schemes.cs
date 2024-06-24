@@ -1,31 +1,24 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace FunctionalTests.Scenarios
 {
-    [Collection(nameof(TestServerCollectionFixture))]
-    public class school_api_with_schemes
+    public class school_api_with_schemes : ApiServerTest
     {
         private const string InvalidSub = "0";
         private const string DefaultScheme = "scheme1";
         private const string BaleaScheme = "scheme2";
         private const string NotBaleaScheme = "scheme3";
 
-        private readonly TestServerFixture fixture;
         private readonly IEnumerable<TestServer> servers;
 
-        public school_api_with_schemes(TestServerFixture fixture)
+        public school_api_with_schemes(TestServerFixture fixture) : base(fixture)
         {
-            this.fixture = fixture;
             this.servers = fixture.Servers
                 .Where(x => x.SupportSchemes)
                 .Select(x => x.TestServer);
@@ -87,18 +80,17 @@ namespace FunctionalTests.Scenarios
         }
 
         [Fact]
-        [ResetDatabase]
         public async Task allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_belongs_to_the_teacher_role()
         {
-            var application = await fixture.GivenAnApplication();
-            var subject = await fixture.GivenAnSubject(Subs.Teacher);
-            await fixture.GivenARole(Roles.Teacher, application, subject);
+            await Fixture.GivenAnApplication();
+            // await Fixture.GivenAnSubject(Subs.Teacher);
+            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
 
             foreach (var server in servers)
             {
                 var response = await server
                     .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(subject.Sub), BaleaScheme)
+                    .WithIdentity(new Fixture().Sub(Subs.Teacher), BaleaScheme)
                     .GetAsync();
 
                 await response.IsSuccessStatusCodeOrThrow();

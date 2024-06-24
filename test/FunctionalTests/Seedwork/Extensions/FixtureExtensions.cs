@@ -1,103 +1,86 @@
-﻿using Balea.Provider.EntityFrameworkCore.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
+﻿using Balea;
 
 namespace FunctionalTests.Seedwork
 {
     public static class FixtureExtensions
     {
-        public static async Task<ApplicationEntity> GivenAnApplication(
-            this TestServerFixture fixture,
-            string applicationName = global::Balea.BaleaConstants.DefaultApplicationName)
+        public static async Task GivenAnApplication(
+            this TestServerFixture fixture)
         {
-            var application = new ApplicationEntity(applicationName, applicationName);
-            await fixture.ExecuteDbContextAsync(async db =>
+            await fixture.ExecuteDbContextAsync(async context =>
             {
-                var viewGradesPermission = new PermissionEntity(Policies.ViewGrades);
-                var editGradesPermission = new PermissionEntity(Policies.EditGrades);
-                application.Permissions.Add(viewGradesPermission);
-                application.Permissions.Add(editGradesPermission);
-                db.Applications.Add(application);
-                await db.SaveChangesAsync();
+                var viewGradesPermission = new Permission { Name = Policies.ViewGrades };
+                var editGradesPermission = new Permission { Name = Policies.EditGrades };
+
+                await context.PermissionStore.CreateAsync(viewGradesPermission);
+                await context.PermissionStore.CreateAsync(editGradesPermission);
             });
-            return application;
         }
 
-        public static async Task<SubjectEntity> GivenAnSubject(this TestServerFixture fixture, string sub)
-        {
-            var subject = new SubjectEntity(sub, sub);
-
-            await fixture.ExecuteDbContextAsync(async db =>
-            {
-                db.Add(subject);
-
-                await db.SaveChangesAsync();
-            });
-
-            return subject;
-        }
-
-        public static async Task<RoleEntity> GivenARole(
+        public static async Task GivenARole(
             this TestServerFixture fixture,
             string name,
-            ApplicationEntity application,
-            SubjectEntity subject,
+            string subject,
             bool withPermissions = true)
         {
-            var role = new RoleEntity(name, application.Id, $"{name} role");
-
-            await fixture.ExecuteDbContextAsync(async db =>
+            var role = new Role
             {
-                role.Subjects.Add(new RoleSubjectEntity { SubjectId = subject.Id });
+                Name = name,
+                Description = $"{name} role"
+            };
+
+            await fixture.ExecuteDbContextAsync(async context =>
+            {
+                await context.RoleStore.CreateAsync(role);
+                await context.RoleStore.AddSubjectAsync(role, subject);
 
                 if (withPermissions)
                 {
-                    foreach (var permission in application.Permissions)
+                    var permissions = await context.PermissionStore.ListAsync();
+                
+                    foreach (var permission in permissions)
                     {
-                        role.Permissions.Add(new RolePermissionEntity { PermissionId = permission.Id });
+                        await context.PermissionStore.AddRoleAsync(permission, role.Name);
                     }
                 }
-
-                db.Add(role);
-
-                await db.SaveChangesAsync();
             });
-
-            return role;
         }
 
         public static async Task GivenAPolicy(
             this TestServerFixture fixture,
-            ApplicationEntity application,
             string policyName,
             string policyContent)
         {
-            var policy = new PolicyEntity(policyName, policyContent);
-            policy.ApplicationId = application.Id;
-
-            await fixture.ExecuteDbContextAsync(async db =>
+            var policy = new Policy
             {
-                db.Add(policy);
+                Name = policyName,
+                Content = policyContent,
+            };
 
-                await db.SaveChangesAsync();
+            await fixture.ExecuteDbContextAsync(async context =>
+            {
+                await context.PolicyStore.CreateAsync(policy);
             });
         }
 
         public static async Task GivenAnUserWithADelegation(
             this TestServerFixture fixture,
-            ApplicationEntity application,
-            SubjectEntity who,
-            SubjectEntity whom,
-            bool selected = true)
+            string who,
+            string whom,
+            bool enabled = true)
         {
-            await fixture.ExecuteDbContextAsync(async db =>
+            await fixture.ExecuteDbContextAsync(async context =>
             {
-                var app = await db.Applications.SingleAsync(a => a.Id == application.Id);
+                var delegation = new Delegation
+                {
+                    Who = who,
+                    Whom = whom,
+                    From = DateTime.UtcNow.AddDays(-1),
+                    To = DateTime.UtcNow.AddDays(1),
+                    Enabled = enabled,
+                };
 
-                app.Delegations.Add(new DelegationEntity(who.Id, whom.Id, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1), selected));
-
-                await db.SaveChangesAsync();
+                await context.DelegationStore.CreateAsync(delegation);
             });
         }
     }

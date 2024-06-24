@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Balea.Authorization.Abac;
+﻿using Balea.Authorization.Abac;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Balea.Authorization.Abac.Context
 {

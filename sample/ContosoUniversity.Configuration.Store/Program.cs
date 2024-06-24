@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-
 namespace ContosoUniversity.Configuration.Store
 {
     public class Program

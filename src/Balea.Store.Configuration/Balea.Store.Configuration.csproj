@@ -1,21 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>$(NetCoreTargetVersion)</TargetFrameworks>
-        <PackageLicenseUrl>$(PackageLicenseUrl)</PackageLicenseUrl>
-        <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
-        <Description>Configuration store support for Balea. For more information see http://github.com/Xabaril/Balea </Description>
-        <PackageTags>Authorization;Roles;Permissions;Delegations;AspNetCore</PackageTags>
-        <Version>$(Balea)</Version>
-        <PackageId>Balea.Store.Configuration</PackageId>
-        <PackageVersion>$(Balea)</PackageVersion>
-        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>$(NetCoreTargetVersion)</TargetFrameworks>
+    <PackageLicenseUrl>$(PackageLicenseUrl)</PackageLicenseUrl>
+    <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+    <Description>Configuration store support for Balea. For more information see http://github.com/Xabaril/Balea </Description>
+    <PackageTags>Authorization;Roles;Permissions;Delegations;AspNetCore</PackageTags>
+    <Version>$(Balea)</Version>
+    <PackageId>Balea.Store.Configuration</PackageId>
+    <PackageVersion>$(Balea)</PackageVersion>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Balea\Balea.csproj" />
-        <ProjectReference Include="..\Balea.Store.Abstractions\Balea.Store.Abstractions.csproj" />
-    </ItemGroup>
-    
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Balea\Balea.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>$(NetCoreTargetVersion)</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateProgramFile>false</GenerateProgramFile>
     <UserSecretsId>ContosoUniversity.Configuration.Store</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Balea.AspNetCore\Balea.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Grantor.Api\Balea.Grantor.Api.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Grantor.Configuration\Balea.Grantor.Configuration.csproj" />
+    <ProjectReference Include="..\..\src\Balea.Store.Configuration\Balea.Store.Configuration.csproj" />
   </ItemGroup>
 
 </Project>

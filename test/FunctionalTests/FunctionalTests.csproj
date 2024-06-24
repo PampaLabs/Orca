@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(NetCoreTargetVersion)</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,8 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Respawn" />
+    <PackageReference Include="TestContainers" Version="3.8.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="3.8.0" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
@@ -43,8 +46,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Balea\Balea.csproj" />
     <ProjectReference Include="..\..\src\Balea.AspNetCore\Balea.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Grantor.Configuration\Balea.Grantor.Configuration.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Grantor.EntityFrameworkCore\Balea.Grantor.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Balea.Store.Configuration\Balea.Store.Configuration.csproj" />
+    <ProjectReference Include="..\..\src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>

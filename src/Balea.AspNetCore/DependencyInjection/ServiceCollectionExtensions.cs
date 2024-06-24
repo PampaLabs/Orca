@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -31,12 +30,15 @@ namespace Microsoft.Extensions.DependencyInjection
             //add balea required services
             services.AddAuthorization();
             services.AddHttpContextAccessor();
-			services.AddAppContextAccessor();
-			services.AddSingleton(sp => sp.GetRequiredService<IOptions<BaleaAspNetOptions>>().Value.Common);
-			services.AddSingleton(sp => sp.GetRequiredService<IOptions<BaleaAspNetOptions>>().Value.WebHost);
+    		services.AddAppContextAccessor();
+
+    		services.AddSingleton(sp => sp.GetRequiredService<IOptions<BaleaAspNetOptions>>().Value.Common);
+    		services.AddSingleton(sp => sp.GetRequiredService<IOptions<BaleaAspNetOptions>>().Value.WebHost);
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
+            services.AddScoped<IAuthorizationGrantor, DefaultAuthorizationGrantor>();
             services.AddScoped<IPermissionEvaluator, DefaultPermissionEvaluator>();
+
             services.AddScoped<IAspNetPropertyBag, UserPropertyBag>();
             services.AddScoped<IAspNetPropertyBag, ResourcePropertyBag>();
             services.AddScoped<IAspNetPropertyBag, ParameterPropertyBag>();
@@ -46,13 +48,15 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IAuthorizationHandler, AbacAuthorizationHandler>();
             services.AddTransient<IPolicyEvaluator, BaleaPolicyEvaluator>();
 
+            services.AddScoped<IAccessControlContext, AccessControlContext>();
+
             return new BaleaBuilder(services);
         }
 
-		public static IServiceCollection AddAppContextAccessor(this IServiceCollection services)
-		{
-			services.TryAddSingleton<IAppContextAccessor, AppContextAccessor>();
-			return services;
-		}
-	}
+    	public static IServiceCollection AddAppContextAccessor(this IServiceCollection services)
+    	{
+    		services.TryAddSingleton<IAppContextAccessor, AppContextAccessor>();
+    		return services;
+    	}
+    }
 }

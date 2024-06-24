@@ -1,54 +1,60 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
+﻿using Balea;
+using Balea.Store.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
-using Balea.Provider.EntityFrameworkCore.DbContexts;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Respawn;
+using Testcontainers.MsSql;
+using Xunit;
 
 namespace FunctionalTests.Seedwork
 {
-    public class TestServerFixture
+    public class TestServerFixture : IAsyncLifetime
     {
-        private static Checkpoint _checkpoint = new Checkpoint
+        private static readonly Checkpoint _checkpoint = new()
         {
-            TablesToIgnore = new[] { "__EFMigrationsHistory" },
+            TablesToIgnore = ["__EFMigrationsHistory"],
             WithReseed = true
         };
-        private readonly Dictionary<Type, IHost> _hosts = new Dictionary<Type, IHost>();
-        private readonly Dictionary<Type, TestServerInfo> _servers = new Dictionary<Type, TestServerInfo>();
+
+        private readonly MsSqlContainer _container = new MsSqlBuilder().Build();
+
+        private readonly Dictionary<Type, IWebHost> _hosts = [];
+        private readonly Dictionary<Type, TestServerInfo> _servers = [];
+
         public IReadOnlyCollection<TestServerInfo> Servers => _servers.Values;
 
-        public TestServerFixture()
+        public async Task InitializeAsync()
         {
-            InitializeTestServer();
+            await _container.StartAsync();
+            await InitializeTestServer();
         }
 
-        private void InitializeTestServer()
+        public async Task DisposeAsync()
         {
-            var startups = new Tuple<Type, bool>[]
+            await _container.StopAsync();
+        }
+
+        private async Task InitializeTestServer()
+        {
+            var startups = new (Type TestServerType, bool SupportSchemas)[]
             {
-                new Tuple<Type, bool>(typeof(TestConfigurationStartup), false),// Not support schemes
-                new Tuple<Type, bool>(typeof(TestEntityFrameworkCoreStartup), false), // Not support schemes
-                new Tuple<Type, bool>(typeof(TestConfigurationWithSchemesStartup), true) // Support schemes
+                (typeof(TestConfigurationStartup), false), // Not support schemes
+                (typeof(TestEntityFrameworkCoreStartup), false), // Not support schemes
+                (typeof(TestConfigurationWithSchemesStartup), true) // Support schemes
             };
 
             foreach (var startup in startups)
             {
-                var host = new HostBuilder()
-                    .ConfigureWebHost(configure =>
+                var host = new WebHostBuilder()
+                    .UseStartup(startup.TestServerType)
+                    .ConfigureServices(services =>
                     {
-                        configure
-                            .ConfigureServices(services =>
-                                services.AddSingleton<IServer>(serviceProvider =>
-                                    new TestServer(serviceProvider)
-                                )
-                            )
-                            .UseStartup(startup.Item1);
+                        services.AddSingleton<IServer>(serviceProvider => new TestServer(serviceProvider));
+                        services.AddSingleton(_container);
                     })
                     .ConfigureAppConfiguration(configure =>
                     {
@@ -56,10 +62,11 @@ namespace FunctionalTests.Seedwork
                     })
                     .Build();
 
-                host.StartAsync().Wait();
-                host.MigrateDbContext<BaleaDbContext>((_, __) => { });
-                _hosts.Add(startup.Item1, host);
-                _servers.Add(startup.Item1, new TestServerInfo(host.GetTestServer(), startup.Item2));
+                await host.StartAsync();
+                await host.MigrateDbContextAsync<BaleaDbContext>();
+
+                _hosts.Add(startup.TestServerType, host);
+                _servers.Add(startup.TestServerType, new TestServerInfo(host.GetTestServer(), startup.SupportSchemas));
             }
         }
 
@@ -74,18 +81,15 @@ namespace FunctionalTests.Seedwork
             }
         }
 
-        public async Task ExecuteDbContextAsync(Func<BaleaDbContext, Task> func)
+        public async Task ExecuteDbContextAsync(Func<IAccessControlContext, Task> func)
         {
-            await ExecuteScopeAsync(sp => func(sp.GetRequiredService<BaleaDbContext>()));
+            await ExecuteScopeAsync(sp => func(sp.GetRequiredService<IAccessControlContext>()));
         }
 
-        public static void ResetDatabase()
+        public async Task ResetDatabase()
         {
-            _checkpoint.Reset(
-                CreateTestConfiguration(new ConfigurationBuilder())
-                    .Build()
-                    .GetConnectionString(ConnectionStrings.Default)
-            ).Wait();
+            await _checkpoint.Reset(_container.GetConnectionString());
+            await _hosts[typeof(TestEntityFrameworkCoreStartup)].SeedDbContextAsync<BaleaDbContext>();
         }
 
         private static IConfigurationBuilder CreateTestConfiguration(IConfigurationBuilder builder)

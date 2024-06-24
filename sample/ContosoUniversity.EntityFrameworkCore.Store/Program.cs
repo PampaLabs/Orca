@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Balea.Provider.EntityFrameworkCore.DbContexts;
 using ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeders;
+using Balea.Store.EntityFrameworkCore;
 
 namespace ContosoUniversity.EntityFrameworkCore.Store
 {
@@ -11,7 +9,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
         {
             CreateHostBuilder(args)
                 .Build()
-                .MigrateDbContext<BaleaDbContext>(db => BaleaSeeder.Seed(db).Wait())
+                .MigrateDbContext<BaleaDbContext>((db, acc) => BaleaSeeder.Seed(db, acc).Wait())
                 .Run();
         }
 

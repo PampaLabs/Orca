@@ -2,7 +2,6 @@
 using Acheve.TestHost;
 using Balea;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
@@ -10,13 +9,6 @@ namespace FunctionalTests.Seedwork
 {
     public class TestConfigurationStartup
     {
-        private readonly IConfiguration configuration;
-
-        public TestConfigurationStartup(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services
@@ -25,7 +17,7 @@ namespace FunctionalTests.Seedwork
                     options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
                 })
-                .AddConfigurationGrantor(configuration)
+                .AddConfigurationStore()
                 .Services
                 .AddAuthentication(setup =>
                 {

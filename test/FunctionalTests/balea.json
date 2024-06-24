@@ -6,12 +6,7 @@
         "roles": [
           {
             "name": "teacher",
-            "enabled": true,
             "description": "Teacher role",
-            "permissions": [
-              "edit.grades",
-              "view.grades"
-            ],
             "subjects": [
               "1",
               "m2m"
@@ -20,11 +15,23 @@
           {
             "name": "student",
             "description": "Student role",
-            "permissions": [
-              "view.grades"
-            ],
             "mappings": [
               "customer"
+            ]
+          }
+        ],
+        "permissions": [
+          {
+            "name": "edit.grades",
+            "roles": [
+              "teacher",
+              "student"
+            ]
+          },
+          {
+            "name": "view.grades",
+            "roles": [
+              "teacher"
             ]
           }
         ],
@@ -34,14 +41,14 @@
             "whom": "2",
             "from": "1900-01-01 00:00:00",
             "to": "9999-12-31 23:59:59",
-            "selected": true
+            "enabled": true
           },
           {
             "who": "1",
             "whom": "3",
             "from": "1900-01-01 00:00:00",
             "to": "9999-12-31 23:59:59",
-            "selected": false
+            "enabled": false
           }
         ],
         "policies": [
@@ -58,10 +65,6 @@
             "name": "teacher",
             "enabled": true,
             "description": "Teacher role",
-            "permissions": [
-              "edit.grades",
-              "view.grades"
-            ],
             "subjects": [
               "1",
               "m2m"
@@ -70,11 +73,23 @@
           {
             "name": "student",
             "description": "Student role",
-            "permissions": [
-              "view.grades"
-            ],
             "mappings": [
               "customer"
+            ]
+          }
+        ],
+        "permissions": [
+          {
+            "name": "edit.grades",
+            "roles": [
+              "teacher",
+              "student"
+            ]
+          },
+          {
+            "name": "view.grades",
+            "roles": [
+              "teacher"
             ]
           }
         ],
@@ -84,7 +99,7 @@
             "whom": "3",
             "from": "1900-01-01 00:00:00",
             "to": "9999-12-31 23:59:59",
-            "selected": true
+            "enabled": false
           }
         ]
       }

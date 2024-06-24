@@ -24,8 +24,13 @@
 
     public static class AbacPolicies
     {
-        public const string Substitute = "policy substitute begin\r\n    rule A (PERMIT) begin\r\n  Subject.Role CONTAINS \"Teacher\" AND Subject.Sub = \"1\" AND Resource.Controller = \"School\" \r\n  end\r\nend";
-        
+        public const string Substitute =
+    @"policy substitute begin
+    rule A (PERMIT) begin
+        Subject.Role CONTAINS ""Teacher"" AND Subject.Sub = ""1"" AND Resource.Controller = ""School""
+    end
+end";
+    
     }
     public static class ConnectionStrings
     {
