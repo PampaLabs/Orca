@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <PackageLicenseUrl>$(PackageLicenseUrl)</PackageLicenseUrl>
+    <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+    <Description>Minimal API for Balea. For more information see http://github.com/Xabaril/Balea </Description>
+    <PackageTags>Authorization;Roles;Permissions;Delegations;AspNetCore</PackageTags>
+    <Version>$(Balea)</Version>
+    <PackageId>Balea.AspNetCore.Endpoints.Abstractions</PackageId>
+    <PackageVersion>$(Balea)</PackageVersion>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Balea\Balea.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Balea.AspNetCore.Endpoints" />
+    <InternalsVisibleTo Include="Balea.Store.Http" />
+  </ItemGroup>
+
+</Project>
