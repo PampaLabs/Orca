@@ -50,7 +50,7 @@ namespace Balea
 
             var roleNames = roles.Select(x => x.Name).ToList();
 
-            var permissions = await _permissionStore.SearchAsync(new() { Roles = roleNames }, cancellationToken);
+            var permissions = await _permissionStore.SearchAsync(new() { Roles = [..roleNames] }, cancellationToken);
 
             return new AuthorizationContext
             {
