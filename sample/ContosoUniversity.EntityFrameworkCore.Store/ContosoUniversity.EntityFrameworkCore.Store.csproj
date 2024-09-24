@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Balea.AspNetCore\Balea.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj" />
     <ProjectReference Include="..\..\src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj" />
   </ItemGroup>
 

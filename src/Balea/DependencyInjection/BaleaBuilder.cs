@@ -1,7 +1,7 @@
 ﻿using Balea.Authorization.Abac.Context;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Balea.Abstractions
+namespace Balea
 {
     internal sealed class BaleaBuilder : IBaleaBuilder
     {

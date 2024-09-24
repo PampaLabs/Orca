@@ -25,14 +25,14 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
             services
                 .AddBalea(options =>
                 {
-                    options.Common.ClaimTypeMap = new ClaimTypeMap
+                    options.ClaimTypeMap = new ClaimTypeMap
                     {
                         RoleClaimType = JwtClaimTypes.Role,
                         NameClaimType = JwtClaimTypes.Name,
                     };
 
-                    options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Clear();
-                    options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
+                    options.ClaimTypeMap.AllowedSubjectClaimTypes.Clear();
+                    options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                 })
                 .AddEntityFrameworkCoreStore((sp, options) =>
                 {
@@ -42,7 +42,8 @@ namespace ContosoUniversity.EntityFrameworkCore.Store
                     {
                         sqlServerOptions.MigrationsAssembly(typeof(Startup).Assembly.FullName);
                     });
-                });
+                })
+                .AddAuthorization();
 
             services
                 .AddAuthentication(options =>

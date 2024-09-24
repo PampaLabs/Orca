@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 namespace Balea
 {
@@ -12,14 +13,14 @@ namespace Balea
         private readonly IPolicyStore _policyStore;
 
         public DefaultAuthorizationGrantor(
-            BaleaOptions options,
+            IOptions<BaleaOptions> options,
             IRoleStore roleStore,
             IPermissionStore permissionStore,
             IDelegationStore delegationStore,
             IPolicyStore policyStore
             )
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
 
             _roleStore = roleStore ?? throw new ArgumentNullException(nameof(roleStore));
             _permissionStore = permissionStore ?? throw new ArgumentNullException(nameof(permissionStore));

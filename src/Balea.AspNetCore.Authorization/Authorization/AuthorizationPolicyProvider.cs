@@ -17,12 +17,12 @@ namespace Balea.Authorization
 
         public AuthorizationPolicyProvider(
             IOptions<AuthorizationOptions> options,
-    			BaleaWebHost webHost,
+            IOptions<BaleaWebHost> webHost,
             ILogger<AuthorizationPolicyProvider> logger)
             : base(options)
         {
             _options = options.Value;
-    			_webHost = webHost;
+            _webHost = webHost.Value;
             _logger = logger;
         }
 

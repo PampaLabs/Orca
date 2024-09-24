@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Balea.AspNetCore\Balea.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj" />
     <ProjectReference Include="..\..\src\Balea.Store.Configuration\Balea.Store.Configuration.csproj" />
   </ItemGroup>
 

@@ -1,11 +1,11 @@
 ﻿using System.Security.Claims;
-using Balea.Abstractions;
 using Balea.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Balea.Authorization
 {
@@ -14,20 +14,20 @@ namespace Balea.Authorization
         private readonly IAuthorizationService _authorization;
         private readonly IAuthorizationGrantor _store;
         private readonly BaleaOptions _options;
-    		private readonly BaleaWebHost _webHost;
-    		private readonly ILogger<BaleaPolicyEvaluator> _logger;
+        private readonly BaleaWebHost _webHost;
+        private readonly ILogger<BaleaPolicyEvaluator> _logger;
 
         public BaleaPolicyEvaluator(
             IAuthorizationService authorization,
             IAuthorizationGrantor store,
-    			BaleaOptions options,
-    			BaleaWebHost webHost,
+            IOptions<BaleaOptions> options,
+            IOptions<BaleaWebHost> webHost,
             ILogger<BaleaPolicyEvaluator> logger)
         {
             _authorization = authorization;
             _store = store;
-            _options = options;
-    			_webHost = webHost;
+            _options = options.Value;
+            _webHost = webHost.Value;
             _logger = logger;
         }
 

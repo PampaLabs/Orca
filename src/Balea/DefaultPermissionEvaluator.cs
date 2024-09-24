@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 namespace Balea
 {
@@ -9,9 +10,9 @@ namespace Balea
     {
         private readonly BaleaOptions _options;
 
-        public DefaultPermissionEvaluator(BaleaOptions options)
+        public DefaultPermissionEvaluator(IOptions<BaleaOptions> options)
         {
-            _options = options;
+            _options = options.Value;
         }
 
         public Task<bool> HasPermissionAsync(ClaimsPrincipal user, string permission)

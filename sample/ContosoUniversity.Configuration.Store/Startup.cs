@@ -18,13 +18,16 @@ namespace ContosoUniversity.Configuration.Store
             services
                 .AddBalea(options =>
                 {
-                    options.WebHost.Events.UnauthorizedFallback = AuthorizationFallbackAction.RedirectToAction("Account", "AccessDenied");
-                    options.Common.ClaimTypeMap = new ClaimTypeMap
+                    options.ClaimTypeMap = new ClaimTypeMap
                     {
                         PermissionClaimType = "permissions"
                     };
                 })
-                .AddConfigurationStore();
+                .AddConfigurationStore()
+                .AddAuthorization(options =>
+                {
+                    options.Events.UnauthorizedFallback = AuthorizationFallbackAction.RedirectToAction("Account", "AccessDenied");
+                });
 
             services
                 .AddAuthentication(configureOptions =>

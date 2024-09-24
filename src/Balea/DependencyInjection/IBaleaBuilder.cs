@@ -21,20 +21,4 @@ namespace Balea
         IBaleaBuilder AddPropertyBag<TPropertyBag>() 
             where TPropertyBag : class, IPropertyBag;
     }
-
-    internal sealed class BaleaBuilder : IBaleaBuilder
-    {
-        public BaleaBuilder(IServiceCollection services)
-        {
-            Services = services;
-        }
-
-        public IServiceCollection Services { get; }
-
-        public IBaleaBuilder AddPropertyBag<TPropertyBag>() where TPropertyBag: class, IPropertyBag
-        {
-            Services.AddScoped<IPropertyBag, TPropertyBag>();
-            return this;
-        }
-    }
 }

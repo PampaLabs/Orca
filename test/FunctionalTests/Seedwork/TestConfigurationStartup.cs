@@ -14,11 +14,13 @@ namespace FunctionalTests.Seedwork
             services
                 .AddBalea(options =>
                 {
-                    options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
-                    options.Common.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
+                    options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
+                    options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
                 })
                 .AddConfigurationStore()
-                .Services
+                .AddAuthorization();
+
+            services
                 .AddAuthentication(setup =>
                 {
                     setup.DefaultAuthenticateScheme = TestServerDefaults.AuthenticationScheme;
@@ -27,8 +29,9 @@ namespace FunctionalTests.Seedwork
                 .AddTestServer(options =>
                 {
                     options.RoleClaimType = "sourceRole";
-                })
-                .Services
+                });
+
+            services
                 .AddAuthorization(options =>
                 {
                     options.AddPolicy(Policies.Custom, builder =>
