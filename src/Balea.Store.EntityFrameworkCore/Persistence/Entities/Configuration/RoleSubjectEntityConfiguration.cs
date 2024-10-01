@@ -9,13 +9,17 @@ internal class RoleSubjectEntityConfiguration : IEntityTypeConfiguration<RoleSub
     {
         builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => new { x.Sub, x.RoleId })
-            .IsUnique();
+        builder.Property(x => x.Sub)
+            .IsRequired();
 
         builder
             .HasOne(x => x.Role)
             .WithMany()
             .HasForeignKey(x => x.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder.HasIndex(x => new { x.Sub, x.RoleId })
+            .IsUnique();
     }
 }

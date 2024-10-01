@@ -17,13 +17,19 @@ public class RoleStore : IRoleStore
 
     public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles.FindAsync(roleId, cancellationToken);
+        var entity = await _context.Roles
+            .Include(role => role.Mappings)
+            .FirstOrDefaultAsync(role => role.Id == roleId, cancellationToken);
+
         return _mapper.FromEntity(entity);
     }
 
     public async Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles.FindByNameAsync(roleName, cancellationToken);
+        var entity = await _context.Roles
+            .Include(role => role.Mappings)
+            .FirstOrDefaultAsync(role => role.Name == roleName, cancellationToken);
+
         return _mapper.FromEntity(entity);
     }
 
@@ -42,7 +48,9 @@ public class RoleStore : IRoleStore
 
     public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+        var entity = await _context.Roles
+            .Include(role => role.Mappings)
+            .FirstOrDefaultAsync(role => role.Id == role.Id, cancellationToken);
 
         if (entity is null)
         {
@@ -78,7 +86,9 @@ public class RoleStore : IRoleStore
     {
         var entities = _context.Roles;
 
-        var result = entities.Select(delegation => _mapper.FromEntity(delegation)).ToList();
+        var result = entities
+            .Include(role => role.Mappings)
+            .Select(role => _mapper.FromEntity(role)).ToList();
 
         return Task.FromResult<IList<Role>>(result);
     }
@@ -128,7 +138,9 @@ public class RoleStore : IRoleStore
             );
         }
 
-        var roles = source.Select(role => _mapper.FromEntity(role)).ToList();
+        var roles = source
+            .Include(role => role.Mappings)
+            .Select(role => _mapper.FromEntity(role)).ToList();
 
         return Task.FromResult<IList<Role>>(roles);
     }
@@ -138,9 +150,9 @@ public class RoleStore : IRoleStore
         var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
 
         var targets = _context.RoleSubjects.Where(x => x.RoleId == entity.Id);
-        var mappings = targets.Select(x => x.Sub).ToList();
+        var subjects = targets.Select(x => x.Sub).ToList();
 
-        return mappings;
+        return subjects;
     }
 
     public async Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)

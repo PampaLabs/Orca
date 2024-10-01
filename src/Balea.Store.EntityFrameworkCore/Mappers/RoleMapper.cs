@@ -10,6 +10,7 @@ internal class RoleMapper : IEntityMapper<RoleEntity, Role>
         destination.Name = source.Name;
         destination.Description = source.Description;
         destination.Enabled = source.Enabled;
+        destination.Mappings = source.Mappings.Select(mapping => mapping.Mapping).ToList();
     }
 
     public void ToEntity(Role source, RoleEntity destination)
@@ -18,5 +19,6 @@ internal class RoleMapper : IEntityMapper<RoleEntity, Role>
         destination.Name = source.Name;
         destination.Description = source.Description;
         destination.Enabled = source.Enabled;
+        destination.Mappings = source.Mappings.Select(mapping => new RoleMappingEntity() { Mapping = mapping }).ToList();
     }
 }

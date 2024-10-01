@@ -179,9 +179,11 @@ namespace FunctionalTests.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Mapping")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
@@ -189,8 +191,7 @@ namespace FunctionalTests.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("Mapping", "RoleId")
-                        .IsUnique()
-                        .HasFilter("[Mapping] IS NOT NULL AND [RoleId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("RoleMappings");
                 });
@@ -219,9 +220,11 @@ namespace FunctionalTests.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("RoleId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Sub")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -229,8 +232,7 @@ namespace FunctionalTests.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("Sub", "RoleId")
-                        .IsUnique()
-                        .HasFilter("[Sub] IS NOT NULL AND [RoleId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("RoleSubjects");
                 });
@@ -278,9 +280,10 @@ namespace FunctionalTests.Migrations
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleMappingEntity", b =>
                 {
                     b.HasOne("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", "Role")
-                        .WithMany()
+                        .WithMany("Mappings")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Role");
                 });
@@ -309,9 +312,15 @@ namespace FunctionalTests.Migrations
                     b.HasOne("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", b =>
+                {
+                    b.Navigation("Mappings");
                 });
 #pragma warning restore 612, 618
         }

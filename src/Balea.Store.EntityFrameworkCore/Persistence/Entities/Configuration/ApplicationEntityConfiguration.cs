@@ -5,13 +5,6 @@ namespace Balea.Store.EntityFrameworkCore.Entities.Configuration;
 
 internal class ApplicationEntityConfiguration : IEntityTypeConfiguration<ApplicationEntity>
 {
-    private readonly IAppContextAccessor _appContextAccessor;
-
-    public ApplicationEntityConfiguration(IAppContextAccessor appContextAccessor)
-    {
-        _appContextAccessor = appContextAccessor;
-    }
-
     public void Configure(EntityTypeBuilder<ApplicationEntity> builder)
     {
         builder.HasKey(x => x.Id);
@@ -33,7 +26,5 @@ internal class ApplicationEntityConfiguration : IEntityTypeConfiguration<Applica
 
         builder.HasIndex(x => x.Name)
             .IsUnique();
-
-        builder.HasQueryFilter(x => x.Name == _appContextAccessor.AppContext.Name);
     }
 }

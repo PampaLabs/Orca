@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Hosting
                 try
                 {
                     var context = scope.ServiceProvider.GetService<TContext>();
-                    var acc = scope.ServiceProvider.GetService<AccessControlContext>();
+                    var acc = scope.ServiceProvider.GetService<IAccessControlContext>();
 
                     if (context != null)
                     {

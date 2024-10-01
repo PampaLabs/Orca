@@ -15,8 +15,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 name: "Applications",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -30,15 +29,13 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 name: "Delegations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Reference = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Who = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Whom = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     From = table.Column<DateTime>(type: "datetime2", nullable: false),
                     To = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Enabled = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: false)
+                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -54,11 +51,10 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 name: "Permissions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ApplicationId = table.Column<int>(type: "int", nullable: false)
+                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -74,12 +70,11 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 name: "Policies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Content = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: false)
+                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -95,12 +90,11 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Enabled = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: false)
+                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,7 +113,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Mapping = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -136,8 +130,8 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 name: "RolePermissions",
                 columns: table => new
                 {
-                    PermissionId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    PermissionId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,7 +157,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Sub = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -193,12 +187,6 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 columns: new[] { "From", "To" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Delegations_Reference_ApplicationId",
-                table: "Delegations",
-                columns: new[] { "Reference", "ApplicationId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Delegations_Whom",
                 table: "Delegations",
                 column: "Whom");
@@ -209,28 +197,16 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permissions_Name_ApplicationId",
-                table: "Permissions",
-                columns: new[] { "Name", "ApplicationId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Policies_ApplicationId",
                 table: "Policies",
                 column: "ApplicationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Policies_Name_ApplicationId",
-                table: "Policies",
-                columns: new[] { "Name", "ApplicationId" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleMappings_Mapping_RoleId",
                 table: "RoleMappings",
                 columns: new[] { "Mapping", "RoleId" },
                 unique: true,
-                filter: "[Mapping] IS NOT NULL");
+                filter: "[Mapping] IS NOT NULL AND [RoleId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleMappings_RoleId",
@@ -248,12 +224,6 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Roles_Name_ApplicationId",
-                table: "Roles",
-                columns: new[] { "Name", "ApplicationId" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RoleSubjects_RoleId",
                 table: "RoleSubjects",
                 column: "RoleId");
@@ -263,7 +233,7 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                 table: "RoleSubjects",
                 columns: new[] { "Sub", "RoleId" },
                 unique: true,
-                filter: "[Sub] IS NOT NULL");
+                filter: "[Sub] IS NOT NULL AND [RoleId] IS NOT NULL");
         }
 
         /// <inheritdoc />

@@ -112,8 +112,8 @@ namespace FunctionalTests.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Mapping = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: true)
+                    Mapping = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,8 +156,8 @@ namespace FunctionalTests.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Sub = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: true)
+                    Sub = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -205,8 +205,7 @@ namespace FunctionalTests.Migrations
                 name: "IX_RoleMappings_Mapping_RoleId",
                 table: "RoleMappings",
                 columns: new[] { "Mapping", "RoleId" },
-                unique: true,
-                filter: "[Mapping] IS NOT NULL AND [RoleId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleMappings_RoleId",
@@ -232,8 +231,7 @@ namespace FunctionalTests.Migrations
                 name: "IX_RoleSubjects_Sub_RoleId",
                 table: "RoleSubjects",
                 columns: new[] { "Sub", "RoleId" },
-                unique: true,
-                filter: "[Sub] IS NOT NULL AND [RoleId] IS NOT NULL");
+                unique: true);
         }
 
         /// <inheritdoc />

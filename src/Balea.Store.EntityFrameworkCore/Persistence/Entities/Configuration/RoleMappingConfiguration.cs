@@ -9,13 +9,17 @@ internal class RoleMappingEntityConfiguration : IEntityTypeConfiguration<RoleMap
     {
         builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => new { x.Mapping, x.RoleId })
-            .IsUnique();
+        builder.Property(x => x.Mapping)
+            .IsRequired();
 
         builder
             .HasOne(x => x.Role)
-            .WithMany()
+            .WithMany(x => x.Mappings)
             .HasForeignKey(x => x.RoleId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder.HasIndex(x => new { x.Mapping, x.RoleId })
+            .IsUnique();
     }
 }
