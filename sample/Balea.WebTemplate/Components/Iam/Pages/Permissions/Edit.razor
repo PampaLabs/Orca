@@ -1,0 +1,105 @@
+﻿@page "/Iam/Permissions/{id}/Edit"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IPermissionStore PermissionStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Permission</h4>
+<hr />
+@if (Input is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm method="post" Model="Input" OnValidSubmit="UpdatePermission" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <input type="hidden" name="Input.ConcurrencyStamp" value="@Input.ConcurrencyStamp" />
+
+                <div class="form-floating mb-3">
+                    <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Please enter the name." />
+                    <label for="name" class="form-label">Name</label>
+                    <ValidationMessage For="() => Input.Name" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText id="description" @bind-Value="Input.Description" class="form-control" placeholder="Please enter the description." />
+                    <label for="description" class="form-label">Description</label>
+                    <ValidationMessage For="() => Input.Description" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/Iam/Permissions">Back to List</a>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private InputModel? Input { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var permission = await PermissionStore.FindByIdAsync(Id);
+
+        if (permission is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        Input = new InputModel
+        {
+            Name = permission.Name,
+            Description = permission.Description,
+            // ConcurrencyStamp = permission.ConcurrencyStamp,
+        };
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdatePermission()
+    {
+        var permission = await PermissionStore.FindByIdAsync(Id);
+
+        permission.Name = Input.Name;
+        permission.Description = Input.Description;
+        // permission.ConcurrencyStamp = Input.ConcurrencyStamp;
+
+        var result = await PermissionStore.UpdateAsync(permission);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Iam/Permissions");
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Name")]
+        public string? Name { get; set; }
+
+        [Required]
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
+
+        // [Required]
+        [Display(Name = "Concurrency stamp")]
+        public string? ConcurrencyStamp { get; set; }
+    }
+}

@@ -1,0 +1,64 @@
+﻿@page "/Iam/Delegations/{id}"
+
+@using Microsoft.AspNetCore.Identity
+
+@inject IDelegationStore DelegationStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Delegation</h4>
+    <hr />
+    @if (delegation is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Who</dt>
+            <dd class="col-sm-10">@delegation.Who</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Whom</dt>
+            <dd class="col-sm-10">@delegation.Whom</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">From</dt>
+            <dd class="col-sm-10">@(delegation.From.ToShortDateString())</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">To</dt>
+            <dd class="col-sm-10">@(delegation.To.ToShortDateString())</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Enabled</dt>
+            <dd class="col-sm-10 form-check form-switch">
+                <InputCheckbox @bind-Value="delegation.Enabled" class="form-check-input" role="switch" disabled />
+            </dd>
+        </dl>
+        <div>
+            <a href="@($"/Iam/Delegations/{Id}/Edit")">Edit</a> |
+            <a href="@($"/Iam/Delegations")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Delegation? delegation;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        delegation = await DelegationStore.FindByIdAsync(Id);
+
+        if (delegation is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

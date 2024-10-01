@@ -1,0 +1,91 @@
+﻿@page "/Iam/Roles/Create"
+@rendermode InteractiveServer
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IRoleStore RoleStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Role</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm method="post" Model="Input" OnValidSubmit="AddRole" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="form-floating mb-3">
+                <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Please enter the name." />
+                <label for="name" class="form-label">Name</label>
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText id="description" @bind-Value="Input.Description" class="form-control" placeholder="Please enter the description." />
+                <label for="description" class="form-label">Description</label>
+                <ValidationMessage For="() => Input.Description" class="text-danger" />
+            </div>
+            <div class="form-check form-switch mb-3">
+                <InputCheckbox id="enabled" @bind-Value="Input.Enabled" class="form-check-input" role="switch" />
+                <label for="enabled" class="form-label">Enabled</label>
+                <ValidationMessage For="() => Input.Enabled" class="text-danger" />
+            </div>
+            <div class="mb-3">
+
+                <label for="mappings" class="form-label">Mappings</label>
+                <DynamicList Items="@Input.Mappings" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/Iam/Roles">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddRole()
+    {
+        var role = new Role
+        {
+            Name = Input.Name,
+            Description = Input.Description,
+            Enabled = Input.Enabled,
+            Mappings = Input.Mappings,
+        };
+
+        var result = await RoleStore.CreateAsync(role);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Iam/Roles");
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Name")]
+        public string? Name { get; set; }
+
+        [Required]
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
+
+        [Required]
+        [Display(Name = "Enabled")]
+        public bool Enabled { get; set; } = true;
+
+        [Display(Name = "Mappings")]
+        public IList<string> Mappings { get; set; } = [];
+    }
+}

@@ -1,0 +1,70 @@
+﻿@page "/Iam/Roles/{id}"
+
+@using Microsoft.AspNetCore.Identity
+
+@inject IRoleStore RoleStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Role</h4>
+    <hr />
+    @if (role is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@role.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@role.Description</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Enabled</dt>
+            <dd class="col-sm-10 form-check form-switch">
+                <InputCheckbox @bind-Value="role.Enabled" class="form-check-input" role="switch" disabled />
+            </dd>
+        </dl>
+        @if (role.Mappings.Any())
+        {
+            <dl class="row">
+                <dt class="col-sm-2">Mappings</dt>
+                <dd class="col-sm-4">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in role.Mappings)
+                        {
+                            <li class="list-group-item">@item</li>
+                        }
+                    </ul>
+                </dd>
+            </dl>
+        }
+        <div>
+            <a href="@($"/Iam/Roles/{Id}/Edit")">Edit</a> |
+            <a href="@($"/Iam/Roles")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Role? role;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        role = await RoleStore.FindByIdAsync(Id);
+
+        if (role is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

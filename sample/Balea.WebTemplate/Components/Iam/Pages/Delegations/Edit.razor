@@ -1,0 +1,138 @@
+﻿@page "/Iam/Delegations/{id}/Edit"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IDelegationStore DelegationStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Delegation</h4>
+<hr />
+@if (Input is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm method="post" Model="Input" OnValidSubmit="UpdateDelegation" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <input type="hidden" name="Input.ConcurrencyStamp" value="@Input.ConcurrencyStamp" />
+
+                <div class="form-floating mb-3">
+                    <InputText id="who" @bind-Value="Input.Who" class="form-control" placeholder="Please enter the who." />
+                    <label for="who" class="form-label">Who</label>
+                    <ValidationMessage For="() => Input.Who" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText id="whom" @bind-Value="Input.Whom" class="form-control" placeholder="Please enter the whom." />
+                    <label for="whom" class="form-label">Whom</label>
+                    <ValidationMessage For="() => Input.Whom" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputDate id="from" @bind-Value="Input.From" class="form-control" placeholder="Please enter the starting date." />
+                    <label for="from" class="form-label">From</label>
+                    <ValidationMessage For="() => Input.From" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputDate id="to" @bind-Value="Input.To" class="form-control" placeholder="Please enter the ending date." />
+                    <label for="to" class="form-label">To</label>
+                    <ValidationMessage For="() => Input.To" class="text-danger" />
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <InputCheckbox id="enabled" @bind-Value="Input.Enabled" class="form-check-input" role="switch" />
+                    <label for="enabled" class="form-label">Enabled</label>
+                    <ValidationMessage For="() => Input.Enabled" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/Iam/Delegations">Back to List</a>
+</div>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private InputModel? Input { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var delegation = await DelegationStore.FindByIdAsync(Id);
+
+        if (delegation is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        Input = new InputModel
+        {
+            Who = delegation.Who,
+            Whom = delegation.Whom,
+            From = delegation.From,
+            To = delegation.To,
+            Enabled = delegation.Enabled,
+            // ConcurrencyStamp = delegation.ConcurrencyStamp,
+        };
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateDelegation()
+    {
+        var delegation = await DelegationStore.FindByIdAsync(Id);
+
+        delegation.Who = Input.Who;
+        delegation.Whom = Input.Whom;
+        delegation.From = Input.From.Value;
+        delegation.To = Input.To.Value;
+        delegation.Enabled = Input.Enabled;
+        // delegation.ConcurrencyStamp = Input.ConcurrencyStamp;
+
+        var result = await DelegationStore.UpdateAsync(delegation);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Iam/Delegations");
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Who")]
+        public string? Who { get; set; }
+
+        [Required]
+        [Display(Name = "Whom")]
+        public string? Whom { get; set; }
+
+        [Required]
+        [Display(Name = "From")]
+        public DateTime? From { get; set; }
+
+        [Required]
+        [Display(Name = "To")]
+        public DateTime? To { get; set; }
+
+        [Required]
+        [Display(Name = "Enabled")]
+        public bool Enabled { get; set; } = true;
+
+        // [Required]
+        [Display(Name = "Concurrency stamp")]
+        public string? ConcurrencyStamp { get; set; }
+    }
+}

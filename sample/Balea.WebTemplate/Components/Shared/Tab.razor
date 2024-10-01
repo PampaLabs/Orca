@@ -1,0 +1,28 @@
+﻿@using Balea.WebTemplate.Shared
+@implements ITab
+
+<button class="tablinks @TitleCssClass" @onclick="ActivateTab">@Title</button>
+
+@code {
+    [CascadingParameter]
+    public TabSet? ContainerTabSet { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string? TitleCssClass =>
+        ContainerTabSet?.ActiveTab == this ? "active" : null;
+
+    protected override void OnInitialized()
+    {
+        ContainerTabSet?.AddTab(this);
+    }
+
+    private void ActivateTab()
+    {
+        ContainerTabSet?.SetActiveTab(this);
+    }
+}

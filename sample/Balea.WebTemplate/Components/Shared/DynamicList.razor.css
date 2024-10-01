@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.column {
+    display: inline-block;
+    width: 40%;
+}
+
+.controls {
+    display: inline-block;
+    align-self: center;
+    text-align: center;
+    width: 20%;
+}
+
+.controls button {
+    max-width: 8rem;
+    padding: 0.5rem;
+    width: 100%
+}
+
+ol, ul, menu {
+    list-style: none;
+    padding: 0.5rem;
+}
+
+li {
+    padding: 0.5rem;
+}

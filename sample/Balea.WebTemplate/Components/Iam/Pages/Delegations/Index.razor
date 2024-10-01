@@ -1,0 +1,56 @@
+﻿@page "/Iam/Delegations"
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Identity
+
+@inject IDelegationStore DelegationStore
+
+<PageTitle>Delegations</PageTitle>
+
+<h1>Delegations</h1>
+
+<a href="/Iam/Delegations/Create" class="btn btn-primary">
+    <i class="fa fa-solid fa-plus"></i> Create New
+</a>
+
+@if (delegations is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<QuickGrid Class="table" Items="@delegations" Pagination="@pagination">
+    <PropertyColumn Property="delegation => delegation.Who" Title="Who" />
+    <PropertyColumn Property="delegation => delegation.Whom" Title="Whom" />
+    <PropertyColumn Property="delegation => delegation.From" Title="From" Format="d" />
+    <PropertyColumn Property="delegation => delegation.To" Title="To" Format="d" />
+    <PropertyColumn Property="delegation => delegation.Enabled" Title="Enabled" />
+
+    <TemplateColumn Context="delegation">
+        <div class="actions">
+            <a href="@($"/Iam/Delegations/{delegation.Id}")">
+                <i class="fa fa-solid fa-eye"></i>
+            </a>
+            <a href="@($"/Iam/Delegations/{delegation.Id}/Edit")">
+                <i class="fa fa-solid fa-pencil"></i>
+            </a>
+            <a href="@($"/Iam/Delegations/{delegation.Id}/Delete")">
+                <i class="fa fa-solid fa-trash-can"></i>
+            </a>
+        </div>
+    </TemplateColumn>
+</QuickGrid>
+<Paginator State="@pagination"></Paginator>
+}
+
+@code {
+    IQueryable<Delegation>? delegations;
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 20 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var list = await DelegationStore.ListAsync();
+        delegations = list.AsQueryable();
+    }
+}

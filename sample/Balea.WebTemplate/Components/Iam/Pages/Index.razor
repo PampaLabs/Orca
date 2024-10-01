@@ -1,0 +1,10 @@
+﻿@page "/Iam"
+
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationManager.NavigateTo("/Iam/Roles", true);
+    }
+}

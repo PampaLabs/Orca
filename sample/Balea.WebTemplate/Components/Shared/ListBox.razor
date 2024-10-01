@@ -1,0 +1,23 @@
+﻿@using Balea.WebTemplate.Shared
+@using System.Linq.Expressions
+
+@typeparam TItem
+@implements IListBox
+
+<select multiple>
+    @foreach (var item in Items)
+    {
+        <option value="@Value(item)">@Name(item)</option>
+    }
+</select>
+
+@code {
+    [Parameter]
+    public IList<TItem> Items { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> Name { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> Value { get; set; }
+}

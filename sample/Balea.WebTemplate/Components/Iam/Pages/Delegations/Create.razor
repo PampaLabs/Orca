@@ -1,0 +1,101 @@
+﻿@page "/Iam/Delegations/Create"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IDelegationStore DelegationStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Delegation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm method="post" Model="Input" OnValidSubmit="AddDelegation" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="form-floating mb-3">
+                <InputText id="who" @bind-Value="Input.Who" class="form-control" placeholder="Please enter the who." />
+                <label for="who" class="form-label">Who</label>
+                <ValidationMessage For="() => Input.Who" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText id="whom" @bind-Value="Input.Whom" class="form-control" placeholder="Please enter the whom." />
+                <label for="whom" class="form-label">Whom</label>
+                <ValidationMessage For="() => Input.Whom" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputDate id="from" @bind-Value="Input.From" class="form-control" placeholder="Please enter the starting date." />
+                <label for="from" class="form-label">From</label>
+                <ValidationMessage For="() => Input.From" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputDate id="to" @bind-Value="Input.To" class="form-control" placeholder="Please enter the ending date." />
+                <label for="to" class="form-label">To</label>
+                <ValidationMessage For="() => Input.To" class="text-danger" />
+            </div>
+            <div class="form-check form-switch mb-3">
+                <InputCheckbox id="enabled" @bind-Value="Input.Enabled" class="form-check-input" role="switch" />
+                <label for="enabled" class="form-label">Enabled</label>
+                <ValidationMessage For="() => Input.Enabled" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/Iam/Delegations">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddDelegation()
+    {
+        var delegation = new Delegation
+        {
+            Who = Input.Who,
+            Whom = Input.Whom,
+            From = Input.From.Value,
+            To = Input.To.Value,
+            Enabled = Input.Enabled,
+        };
+
+        var result = await DelegationStore.CreateAsync(delegation);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Iam/Delegations");
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Who")]
+        public string? Who { get; set; }
+
+        [Required]
+        [Display(Name = "Whom")]
+        public string? Whom { get; set; }
+
+        [Required]
+        [Display(Name = "From")]
+        public DateTime? From { get; set; }
+
+        [Required]
+        [Display(Name = "To")]
+        public DateTime? To { get; set; }
+
+        [Required]
+        [Display(Name = "Enabled")]
+        public bool Enabled { get; set; } = true;
+    }
+}

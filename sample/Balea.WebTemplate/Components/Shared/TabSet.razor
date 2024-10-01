@@ -1,0 +1,35 @@
+﻿@using Balea.WebTemplate.Shared
+
+<CascadingValue Value="this">
+    <div class="tab">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+<div class="tabcontent">
+    @ActiveTab?.ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public ITab? ActiveTab { get; private set; }
+
+    public void AddTab(ITab tab)
+    {
+        if (ActiveTab is null)
+        {
+            SetActiveTab(tab);
+        }
+    }
+
+    public void SetActiveTab(ITab tab)
+    {
+        if (ActiveTab != tab)
+        {
+            ActiveTab = tab;
+            StateHasChanged();
+        }
+    }
+}

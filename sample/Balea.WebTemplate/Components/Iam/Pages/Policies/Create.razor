@@ -1,0 +1,81 @@
+﻿@page "/Iam/Policies/Create"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IPolicyStore PolicyStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Policy</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm method="post" Model="Input" OnValidSubmit="AddPolicy" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="form-floating mb-3">
+                <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Please enter the name." />
+                <label for="name" class="form-label">Name</label>
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText id="description" @bind-Value="Input.Description" class="form-control" placeholder="Please enter the description." />
+                <label for="description" class="form-label">Description</label>
+                <ValidationMessage For="() => Input.Description" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputTextArea id="content" @bind-Value="Input.Content" class="form-control" placeholder="Please enter the content." />
+                <label for="content" class="form-label">Content</label>
+                <ValidationMessage For="() => Input.Content" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/Iam/Policies">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddPolicy()
+    {
+        var policy = new Policy
+        {
+            Name = Input.Name,
+            Description = Input.Description,
+            Content = Input.Content,
+        };
+
+        var result = await PolicyStore.CreateAsync(policy);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Iam/Policies");
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Name")]
+        public string? Name { get; set; }
+
+        [Required]
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
+
+        [Required]
+        [Display(Name = "Content")]
+        public string? Content { get; set; }
+    }
+}

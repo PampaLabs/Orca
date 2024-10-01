@@ -1,0 +1,3 @@
+﻿::deep textarea.form-control {
+    height: calc(12.5rem + 2px);
+}

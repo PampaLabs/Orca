@@ -1,0 +1,53 @@
+﻿@page "/Iam/Permissions"
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Identity
+
+@inject IPermissionStore PermissionStore
+
+<PageTitle>Permissions</PageTitle>
+
+<h1>Permissions</h1>
+
+<a href="/Iam/Permissions/Create" class="btn btn-primary">
+    <i class="fa fa-solid fa-plus"></i> Create New
+</a>
+
+@if (permissions is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<QuickGrid Class="table" Items="@permissions" Pagination="@pagination">
+    <PropertyColumn Property="permission => permission.Name" Title="Name" />
+    <PropertyColumn Property="permission => permission.Description" Title="Description" />
+
+    <TemplateColumn Context="permission">
+        <div class="actions">
+            <a href="@($"/Iam/Permissions/{permission.Id}")">
+                <i class="fa fa-solid fa-eye"></i>
+            </a>
+            <a href="@($"/Iam/Permissions/{permission.Id}/Edit")">
+                <i class="fa fa-solid fa-pencil"></i>
+            </a>
+            <a href="@($"/Iam/Permissions/{permission.Id}/Delete")">
+                <i class="fa fa-solid fa-trash-can"></i>
+            </a>
+        </div>
+    </TemplateColumn>
+</QuickGrid>
+<Paginator State="@pagination"></Paginator>
+}
+
+@code {
+    IQueryable<Permission>? permissions;
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 20 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var list = await PermissionStore.ListAsync();
+        permissions = list.AsQueryable();
+    }
+}

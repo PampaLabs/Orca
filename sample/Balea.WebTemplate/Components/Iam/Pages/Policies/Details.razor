@@ -1,0 +1,56 @@
+﻿@page "/Iam/Policies/{id}"
+
+@using Microsoft.AspNetCore.Identity
+
+@inject IPolicyStore PolicyStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Policy</h4>
+    <hr />
+    @if (policy is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@policy.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@policy.Description</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Content</dt>
+            <dd class="col-sm-10">
+                <pre>@policy.Content</pre>
+            </dd>
+        </dl>
+        <div>
+            <a href="@($"/Iam/Policies/{Id}/Edit")">Edit</a> |
+            <a href="@($"/Iam/Policies")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Policy? policy;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        policy = await PolicyStore.FindByIdAsync(Id);
+
+        if (policy is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

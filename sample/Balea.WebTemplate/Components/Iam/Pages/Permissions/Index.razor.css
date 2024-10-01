@@ -1,0 +1,6 @@
+.actions {
+    display: flex;
+    float: right;
+    justify-content: space-between;
+    width: 6em;
+}

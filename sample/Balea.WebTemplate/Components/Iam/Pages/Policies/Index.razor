@@ -1,0 +1,53 @@
+﻿@page "/Iam/Policies"
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Identity
+
+@inject IPolicyStore PolicyStore
+
+<PageTitle>Policies</PageTitle>
+
+<h1>Policies</h1>
+
+<a href="/Iam/Policies/Create" class="btn btn-primary">
+    <i class="fa fa-solid fa-plus"></i> Create New
+</a>
+
+@if (policies is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<QuickGrid Class="table" Items="@policies" Pagination="@pagination">
+    <PropertyColumn Property="policy => policy.Name" Title="Name" />
+    <PropertyColumn Property="policy => policy.Description" Title="Description" />
+
+    <TemplateColumn Context="policy">
+        <div class="actions">
+            <a href="@($"/Iam/Policies/{policy.Id}")">
+                <i class="fa fa-solid fa-eye"></i>
+            </a>
+            <a href="@($"/Iam/Policies/{policy.Id}/Edit")">
+                <i class="fa fa-solid fa-pencil"></i>
+            </a>
+            <a href="@($"/Iam/Policies/{policy.Id}/Delete")">
+                <i class="fa fa-solid fa-trash-can"></i>
+            </a>
+        </div>
+    </TemplateColumn>
+</QuickGrid>
+<Paginator State="@pagination"></Paginator>
+}
+
+@code {
+    IQueryable<Policy>? policies;
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 20 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var list = await PolicyStore.ListAsync();
+        policies = list.AsQueryable();
+    }
+}
