@@ -172,4 +172,46 @@ public class RoleStore : IRoleStore
             return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
         }
     }
+
+    public async Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
+    {
+        var permissionMapper = new PermissionResponseMapper();
+
+        var uri = $"{endpoint}/{role.Id}/permissions";
+        var response = _httpClient.GetFromJsonAsAsyncEnumerable<PermissionResponse>(uri, cancellationToken);
+
+        var result = response.Select(permissionMapper.ToEntity);
+
+        return await result.ToListAsync(cancellationToken);
+    }
+
+    public async Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    {
+        var uri = $"{endpoint}/{permission.Id}/permissions/{role.Id}";
+        var response = await _httpClient.PostAsync(uri, null, cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return AccessControlResult.Success;
+        }
+        else
+        {
+            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+        }
+    }
+
+    public async Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    {
+        var uri = $"{endpoint}/{permission.Id}/permissions/{role.Id}";
+        var response = await _httpClient.DeleteAsync(uri, cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return AccessControlResult.Success;
+        }
+        else
+        {
+            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+        }
+    }
 }

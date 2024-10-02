@@ -40,7 +40,7 @@ namespace FunctionalTests.Seedwork
                 
                     foreach (var permission in permissions)
                     {
-                        await context.PermissionStore.AddRoleAsync(permission, role.Name);
+                        await context.PermissionStore.AddRoleAsync(permission, role);
                     }
                 }
             });

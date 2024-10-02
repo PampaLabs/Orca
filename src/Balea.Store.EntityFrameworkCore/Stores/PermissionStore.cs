@@ -74,25 +74,24 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
-    public async Task<IList<string>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
+    public async Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
+        var roleMapper = new RoleMapper();
+
         var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
 
         var targets = _context.RolePermissions.Where(x => x.PermissionId == entity.Id);
-        var roles = targets.Select(x => x.Role.Name).ToList();
+        var roles = targets.Select(x => roleMapper.FromEntity(x.Role));
 
-        return roles;
+        return roles.ToList();
     }
 
-    public async Task<AccessControlResult> AddRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
-        var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
-        var target = await _context.Roles.FindByNameAsync(roleName, cancellationToken);
-
         var binding = new RolePermissionEntity
         {
-            RoleId = target.Id,
-            PermissionId = entity.Id,
+            RoleId = role.Id,
+            PermissionId = permission.Id,
         };
 
         await _context.RolePermissions.AddAsync(binding, cancellationToken);
@@ -101,11 +100,11 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
-    public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = await _context.RolePermissions
             .Where(x => x.Permission.Id == permission.Id)
-            .Where(x => x.Role.Name == roleName)
+            .Where(x => x.Role.Id == role.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (binding is null)

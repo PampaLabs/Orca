@@ -189,4 +189,49 @@ public class RoleStore : IRoleStore
 
         return AccessControlResult.Success;
     }
+
+    public async Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
+    {
+        var permissionMapper = new PermissionMapper();
+
+        var entity = await _context.Permissions.FindAsync(role.Id, cancellationToken);
+
+        var targets = _context.RolePermissions.Where(x => x.PermissionId == entity.Id);
+        var permissions = targets.Select(x => permissionMapper.FromEntity(x.Permission));
+
+        return permissions.ToList();
+    }
+
+    public async Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    {
+        var binding = new RolePermissionEntity
+        {
+            RoleId = role.Id,
+            PermissionId = permission.Id,
+        };
+
+        await _context.RolePermissions.AddAsync(binding, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return AccessControlResult.Success;
+    }
+
+    public async Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    {
+        var binding = await _context.RolePermissions
+            .Where(x => x.Permission.Id == permission.Id)
+            .Where(x => x.Role.Id == role.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (binding is null)
+        {
+            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+        }
+
+        _context.RolePermissions.Remove(binding);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return AccessControlResult.Success;
+    }
 }

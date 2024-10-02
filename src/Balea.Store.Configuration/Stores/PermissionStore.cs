@@ -68,32 +68,35 @@ public class PermissionStore : IPermissionStore
 		return Task.FromResult(AccessControlResult.Success);
 	}
 
-    public Task<IList<string>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
+    public Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
+        var roleMapper = new RoleMapper();
+
         var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
         var model = application.Permissions.FirstOrDefault(x => x.Id == permission.Id);
+        var roles = application.Roles.Where(x => model.Roles.Contains(x.Name));
 
-        var roles = model.Roles.ToList();
+        var result = roles.Select(roleMapper.FromEntity).ToList();
 
-        return Task.FromResult<IList<string>>(roles);
+        return Task.FromResult<IList<Role>>(result);
     }
 
-    public Task<AccessControlResult> AddRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken)
+    public Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
         var model = application.Permissions.FirstOrDefault(x => x.Id == permission.Id);
 
-        model.Roles.Add(roleName);
+        model.Roles.Add(role.Name);
 
         return Task.FromResult(AccessControlResult.Success);
     }
 
-    public Task<AccessControlResult> RemoveRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken)
+    public Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
         var model = application.Permissions.FirstOrDefault(x => x.Id == permission.Id);
 
-        model.Roles.Remove(roleName);
+        model.Roles.Remove(role.Name);
 
         return Task.FromResult(AccessControlResult.Success);
     }

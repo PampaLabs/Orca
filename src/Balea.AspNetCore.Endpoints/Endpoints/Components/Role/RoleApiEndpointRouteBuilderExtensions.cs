@@ -206,6 +206,84 @@ public static class RoleApiEndpointRouteBuilderExtensions
             return TypedResults.Ok();
         });
 
+        routeGroup.MapGet("/{id}/permission", async Task<Results<Ok<PermissionResponse[]>, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
+        {
+            var roleStore = sp.GetRequiredService<IRoleStore>();
+
+            var permissionMapper = new PermissionResponseMapper();
+
+            var role = await roleStore.FindByIdAsync(id);
+
+            if (role is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var roles = await roleStore.GetPermissionsAsync(role);
+            var result = roles.Select(permissionMapper.FromEntity);
+
+            return TypedResults.Ok(result.ToArray());
+        });
+
+        routeGroup.MapPost("/{id}/permission/{permissionId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string permissionId) =>
+        {
+            var roleStore = sp.GetRequiredService<IRoleStore>();
+            var permissionStore = sp.GetRequiredService<IPermissionStore>();
+
+            var role = await roleStore.FindByIdAsync(id);
+            var permission = await permissionStore.FindByIdAsync(permissionId);
+
+            if (role is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (permission is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var result = await roleStore.AddPermissionAsync(role, permission);
+
+            if (!result.Succeeded)
+            {
+                return CreateValidationProblem(result);
+            }
+
+            return TypedResults.Ok();
+        });
+
+        routeGroup.MapDelete("/{id}/permission/{permissionId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string permissionId) =>
+        {
+            var roleStore = sp.GetRequiredService<IRoleStore>();
+            var permissionStore = sp.GetRequiredService<IPermissionStore>();
+
+            var role = await roleStore.FindByIdAsync(id);
+            var permission = await permissionStore.FindByIdAsync(permissionId);
+
+            if (role is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (permission is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var result = await roleStore.RemovePermissionAsync(role, permission);
+
+            if (!result.Succeeded)
+            {
+                return CreateValidationProblem(result);
+            }
+
+            return TypedResults.Ok();
+        });
+
         return new RoleEndpointsConventionBuilder(routeGroup);
     }
 

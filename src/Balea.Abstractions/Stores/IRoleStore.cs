@@ -16,5 +16,9 @@
         Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default);
         Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken = default);
     	Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken = default);
+
+        Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default);
+        Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken = default);
+        Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken = default);
     }
 }

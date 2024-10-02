@@ -32,14 +32,14 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeder
                 var teacherRole = new Role { Name = nameof(Roles.Teacher), Description = "Teacher role" };
                 await context.RoleStore.CreateAsync(teacherRole);
                 await context.RoleStore.AddSubjectAsync(teacherRole, "818727");
-                await context.PermissionStore.AddRoleAsync(viewGradesPermission, nameof(Roles.Teacher));
-                await context.PermissionStore.AddRoleAsync(editGradesPermission, nameof(Roles.Teacher));
+                await context.PermissionStore.AddRoleAsync(viewGradesPermission, teacherRole);
+                await context.PermissionStore.AddRoleAsync(editGradesPermission, teacherRole);
 
                 var substituteRole = new Role { Name = nameof(Roles.Substitute), Description = "Substitute role" };
                 await context.RoleStore.CreateAsync(substituteRole);
                 await context.RoleStore.AddSubjectAsync(substituteRole, "88421113");
-                await context.PermissionStore.AddRoleAsync(viewGradesPermission, nameof(Roles.Substitute));
-                await context.PermissionStore.AddRoleAsync(editGradesPermission, nameof(Roles.Substitute));
+                await context.PermissionStore.AddRoleAsync(viewGradesPermission, substituteRole);
+                await context.PermissionStore.AddRoleAsync(editGradesPermission, substituteRole);
 
                 var delegation = new Delegation { Who = "818727", Whom = "88421113", From = DateTime.UtcNow.AddDays(-1), To = DateTime.UtcNow.AddYears(1), Enabled = false };
                 await context.DelegationStore.CreateAsync(delegation);

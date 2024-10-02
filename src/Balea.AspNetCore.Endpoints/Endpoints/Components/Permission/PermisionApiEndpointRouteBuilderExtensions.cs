@@ -145,10 +145,12 @@ public static class PermissionApiEndpointRouteBuilderExtensions
             return TypedResults.Ok(response);
         });
 
-        routeGroup.MapGet("/{id}/roles", async Task<Results<Ok<string[]>, NotFound>>
+        routeGroup.MapGet("/{id}/roles", async Task<Results<Ok<RoleResponse[]>, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
         {
             var permissionStore = sp.GetRequiredService<IPermissionStore>();
+
+            var roleMapper = new RoleResponseMapper();
 
             var permission = await permissionStore.FindByIdAsync(id);
 
@@ -158,18 +160,26 @@ public static class PermissionApiEndpointRouteBuilderExtensions
             }
 
             var roles = await permissionStore.GetRolesAsync(permission);
+            var result = roles.Select(roleMapper.FromEntity);
 
-            return TypedResults.Ok(roles.ToArray());
+            return TypedResults.Ok(result.ToArray());
         });
 
-        routeGroup.MapPost("/{id}/roles/{role}", async Task<Results<Ok, ValidationProblem, NotFound>>
-            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string role) =>
+        routeGroup.MapPost("/{id}/roles/{roleId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string roleId) =>
         {
             var permissionStore = sp.GetRequiredService<IPermissionStore>();
+            var roleStore = sp.GetRequiredService<IRoleStore>();
 
             var permission = await permissionStore.FindByIdAsync(id);
+            var role = await roleStore.FindByIdAsync(roleId);
 
             if (permission is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (role is null)
             {
                 return TypedResults.NotFound();
             }
@@ -184,14 +194,21 @@ public static class PermissionApiEndpointRouteBuilderExtensions
             return TypedResults.Ok();
         });
 
-        routeGroup.MapDelete("/{id}/roles/{role}", async Task<Results<Ok, ValidationProblem, NotFound>>
-            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string role) =>
+        routeGroup.MapDelete("/{id}/roles/{roleId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string roleId) =>
         {
             var permissionStore = sp.GetRequiredService<IPermissionStore>();
+            var roleStore = sp.GetRequiredService<IRoleStore>();
 
             var permission = await permissionStore.FindByIdAsync(id);
+            var role = await roleStore.FindByIdAsync(roleId);
 
             if (permission is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (role is null)
             {
                 return TypedResults.NotFound();
             }

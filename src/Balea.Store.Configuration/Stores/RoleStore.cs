@@ -144,4 +144,37 @@ public class RoleStore : IRoleStore
 
 		return Task.FromResult(AccessControlResult.Success);
 	}
+
+    public Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
+    {
+        var permissionMapper = new PermissionMapper();
+
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Roles.FirstOrDefault(x => x.Id == role.Id);
+        var permissions = application.Permissions.Where(x => x.Roles.Contains(model.Name));
+
+        var result = permissions.Select(permissionMapper.FromEntity).ToList();
+
+        return Task.FromResult<IList<Permission>>(result);
+    }
+
+    public Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    {
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Permissions.FirstOrDefault(x => x.Id == permission.Id);
+
+        model.Roles.Add(role.Name);
+
+        return Task.FromResult(AccessControlResult.Success);
+    }
+
+    public Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    {
+        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
+        var model = application.Permissions.FirstOrDefault(x => x.Id == permission.Id);
+
+        model.Roles.Remove(role.Name);
+
+        return Task.FromResult(AccessControlResult.Success);
+    }
 }

@@ -84,17 +84,21 @@ public class PermissionStore : IPermissionStore
         }
     }
 
-    public async Task<IList<string>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
+    public async Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
-        var uri = $"{endpoint}/{permission.Id}/roles";
-        var response = _httpClient.GetFromJsonAsAsyncEnumerable<string>(uri, cancellationToken);
+        var roleMapper = new RoleResponseMapper();
 
-        return await response.ToListAsync(cancellationToken);
+        var uri = $"{endpoint}/{permission.Id}/roles";
+        var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
+
+        var result = response.Select(roleMapper.ToEntity);
+
+        return await result.ToListAsync(cancellationToken);
     }
 
-    public async Task<AccessControlResult> AddRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
-        var uri = $"{endpoint}/{permission.Id}/roles/{roleName}";
+        var uri = $"{endpoint}/{permission.Id}/roles/{role.Id}";
         var response = await _httpClient.PostAsync(uri, null, cancellationToken);
 
         if (response.IsSuccessStatusCode)
@@ -107,9 +111,9 @@ public class PermissionStore : IPermissionStore
         }
     }
 
-    public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
-        var uri = $"{endpoint}/{permission.Id}/roles/{roleName}";
+        var uri = $"{endpoint}/{permission.Id}/roles/{role.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)

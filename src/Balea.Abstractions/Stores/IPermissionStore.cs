@@ -13,8 +13,8 @@
 
         Task<IList<Permission>> SearchAsync(PermissionFilter filter, CancellationToken cancellationToken = default);
 
-        Task<IList<string>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default);
-        Task<AccessControlResult> AddRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken = default);
-        Task<AccessControlResult> RemoveRoleAsync(Permission permission, string roleName, CancellationToken cancellationToken = default);
+        Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default);
+        Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken = default);
+        Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken = default);
     }
 }
