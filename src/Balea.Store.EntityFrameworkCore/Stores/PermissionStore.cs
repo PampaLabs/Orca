@@ -78,9 +78,7 @@ public class PermissionStore : IPermissionStore
     {
         var roleMapper = new RoleMapper();
 
-        var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
-
-        var targets = _context.RolePermissions.Where(x => x.PermissionId == entity.Id);
+        var targets = _context.RolePermissions.Where(x => x.PermissionId == permission.Id);
         var roles = targets.Select(x => roleMapper.FromEntity(x.Role));
 
         return roles.ToList();
