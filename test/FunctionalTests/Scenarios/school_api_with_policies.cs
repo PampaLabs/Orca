@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using System.Net;
 using Xunit;
 
 namespace FunctionalTests.Scenarios
@@ -29,7 +29,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub))
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             }
         }
 
@@ -49,7 +49,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(Subs.Teacher))
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status200OK);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
     }

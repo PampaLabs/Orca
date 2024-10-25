@@ -14,11 +14,7 @@ namespace FunctionalTests.Seedwork
 {
     public class TestServerFixture : IAsyncLifetime
     {
-        private static readonly Checkpoint _checkpoint = new()
-        {
-            TablesToIgnore = ["__EFMigrationsHistory"],
-            WithReseed = true
-        };
+        private static Respawner _respawner;
 
         private readonly MsSqlContainer _container = new MsSqlBuilder().Build();
 
@@ -31,6 +27,7 @@ namespace FunctionalTests.Seedwork
         {
             await _container.StartAsync();
             await InitializeTestServer();
+            await InitializeRespawner();
         }
 
         public async Task DisposeAsync()
@@ -70,6 +67,25 @@ namespace FunctionalTests.Seedwork
             }
         }
 
+        private async Task InitializeRespawner()
+        {
+            var connectionString = _container.GetConnectionString();
+
+            _respawner = await Respawner.CreateAsync(connectionString, new RespawnerOptions
+            {
+                TablesToIgnore = ["__EFMigrationsHistory"],
+                WithReseed = true
+            });
+        }
+
+        public async Task ResetDatabase()
+        {
+            var connectionString = _container.GetConnectionString();
+
+            await _respawner.ResetAsync(connectionString);
+            await _hosts[typeof(TestEntityFrameworkCoreStartup)].SeedDbContextAsync<BaleaDbContext>();
+        }
+
         public async Task ExecuteScopeAsync(Func<IServiceProvider, Task> func)
         {
             using (var scope = _hosts[typeof(TestEntityFrameworkCoreStartup)]
@@ -84,12 +100,6 @@ namespace FunctionalTests.Seedwork
         public async Task ExecuteDbContextAsync(Func<IAccessControlContext, Task> func)
         {
             await ExecuteScopeAsync(sp => func(sp.GetRequiredService<IAccessControlContext>()));
-        }
-
-        public async Task ResetDatabase()
-        {
-            await _checkpoint.Reset(_container.GetConnectionString());
-            await _hosts[typeof(TestEntityFrameworkCoreStartup)].SeedDbContextAsync<BaleaDbContext>();
         }
 
         private static IConfigurationBuilder CreateTestConfiguration(IConfigurationBuilder builder)

@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using System.Net;
 using Xunit;
 
 namespace FunctionalTests.Scenarios
@@ -28,7 +28,7 @@ namespace FunctionalTests.Scenarios
                     .CreateRequest(Api.School.GetGrades)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             }
         }
 
@@ -42,7 +42,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub))
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             }
         }
 
@@ -60,7 +60,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(Subs.Teacher))
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status200OK);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
 
@@ -77,7 +77,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(Subs.SubstituteTwo))
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             }
         }
 
@@ -95,7 +95,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(Subs.Teacher))
                     .PutAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status200OK);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
 
@@ -113,7 +113,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Client(Subs.Teacher))
                     .PutAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status200OK);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
 
@@ -131,7 +131,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().UpnSub(Subs.Teacher))
                     .PutAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status200OK);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
 
@@ -152,7 +152,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(Subs.SubstituteOne))
                     .PutAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status200OK);
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
 
@@ -172,7 +172,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(Subs.SubstituteTwo))
                     .PutAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             }
         }
     }

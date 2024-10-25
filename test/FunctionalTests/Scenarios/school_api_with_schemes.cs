@@ -1,9 +1,9 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
+using System.Net;
 using Xunit;
 
 namespace FunctionalTests.Scenarios
@@ -33,7 +33,7 @@ namespace FunctionalTests.Scenarios
                     .CreateRequest(Api.School.GetGrades)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             }
         }
 
@@ -47,7 +47,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             }
         }
 
@@ -61,7 +61,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             }
         }
 
@@ -75,7 +75,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             }
         }
 
@@ -113,7 +113,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             }
         }
 
@@ -127,7 +127,7 @@ namespace FunctionalTests.Scenarios
                     .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
                     .GetAsync();
 
-                response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
             }
         }
 
