@@ -1,0 +1,108 @@
+﻿@page "/Iam/Roles/{id}/Users/Edit"
+@rendermode InteractiveServer
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IRoleStore RoleStore
+@inject IUserStore UserStore
+
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Role</h4>
+<hr />
+@if (role is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Role</dt>
+        <dd class="col-sm-10">@role.Name</dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-2">Users</dt>
+        <dd class="col-sm-10">
+            <div class="container_">
+                <DualListBox TItem="User"
+                             LeftItems="@availableUsers" LeftTitle="Available"
+                             RightItems="@assignedUsers" RightTitle="Assigned"
+                             Name="@(item => item.Username)"
+                             Value="@(item => item.SubjectId)"
+                             OnMoveToLeft="RemoveUsersAsync"
+                             OnMoveToRight="AddUsersAsync">
+                </DualListBox>
+            </div>
+        </dd>
+    </dl>
+}
+
+<div>
+    <a href="/Iam/Roles">Back to List</a>
+</div>
+
+@code {
+    Role? role;
+
+    IList<User> availableUsers = [];
+    IList<User> assignedUsers = [];
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        role = await RoleStore.FindByIdAsync(Id);
+
+        if (role is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        var currentUsers = await RoleStore.GetSubjectsAsync(role);
+        var currentUserSet = currentUsers.ToHashSet();
+
+        var users = await UserStore.ListAsync();
+
+        assignedUsers.Clear();
+        availableUsers.Clear();
+
+        foreach (var user in users)
+        {
+            if (currentUserSet.Contains(user.SubjectId))
+            {
+                assignedUsers.Add(user);
+            }
+            else
+            {
+                availableUsers.Add(user);
+            }
+        }
+    }
+
+    private async Task AddUsersAsync(MoveItemsEventArgs<User> e)
+    {
+        foreach (var user in e.Items)
+        {
+            await RoleStore.AddSubjectAsync(role, user.SubjectId);
+        }
+    }
+
+    private async Task RemoveUsersAsync(MoveItemsEventArgs<User> e)
+    {
+        foreach (var user in e.Items)
+        {
+            await RoleStore.RemoveSubjectAsync(role, user.SubjectId);
+        }
+    }
+}

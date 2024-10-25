@@ -23,15 +23,15 @@ else
     <PropertyColumn Property="policy => policy.Name" Title="Name" />
     <PropertyColumn Property="policy => policy.Description" Title="Description" />
 
-    <TemplateColumn Context="policy">
+    <TemplateColumn Context="policy" Title="Actions">
         <div class="actions">
-            <a href="@($"/Iam/Policies/{policy.Id}")">
+            <a href="@($"/Iam/Policies/{policy.Id}")" title="Details">
                 <i class="fa fa-solid fa-eye"></i>
             </a>
-            <a href="@($"/Iam/Policies/{policy.Id}/Edit")">
+            <a href="@($"/Iam/Policies/{policy.Id}/Edit")" title="Edit">
                 <i class="fa fa-solid fa-pencil"></i>
             </a>
-            <a href="@($"/Iam/Policies/{policy.Id}/Delete")">
+            <a href="@($"/Iam/Policies/{policy.Id}/Delete")" title="Delete">
                 <i class="fa fa-solid fa-trash-can"></i>
             </a>
         </div>

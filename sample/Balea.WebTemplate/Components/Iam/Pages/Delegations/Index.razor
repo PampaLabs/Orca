@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
+@inject IUserStore UserStore
 
 <PageTitle>Delegations</PageTitle>
 
@@ -24,17 +25,26 @@ else
     <PropertyColumn Property="delegation => delegation.Whom" Title="Whom" />
     <PropertyColumn Property="delegation => delegation.From" Title="From" Format="d" />
     <PropertyColumn Property="delegation => delegation.To" Title="To" Format="d" />
-    <PropertyColumn Property="delegation => delegation.Enabled" Title="Enabled" />
+    <TemplateColumn Context="delegation" Title="Enabled">
+        @if (delegation.Enabled)
+        {
+            <i class="fa-regular fa-square-check"></i>
+        }
+        else
+        {
+            <i class="fa-regular fa-square"></i>
+        }
+    </TemplateColumn>
 
-    <TemplateColumn Context="delegation">
+    <TemplateColumn Context="delegation" Title="Actions">
         <div class="actions">
-            <a href="@($"/Iam/Delegations/{delegation.Id}")">
+            <a href="@($"/Iam/Delegations/{delegation.Id}")" title="Details">
                 <i class="fa fa-solid fa-eye"></i>
             </a>
-            <a href="@($"/Iam/Delegations/{delegation.Id}/Edit")">
+            <a href="@($"/Iam/Delegations/{delegation.Id}/Edit")" title="Edit">
                 <i class="fa fa-solid fa-pencil"></i>
             </a>
-            <a href="@($"/Iam/Delegations/{delegation.Id}/Delete")">
+            <a href="@($"/Iam/Delegations/{delegation.Id}/Delete")" title="Delete">
                 <i class="fa fa-solid fa-trash-can"></i>
             </a>
         </div>
@@ -51,6 +61,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         var list = await DelegationStore.ListAsync();
+
+        var users = await UserStore.ListAsync();
+        var usernames = users.ToDictionary(user => user.SubjectId, user => user.Username);
+
+        foreach (var item in list)
+        {
+            item.Who = usernames[item.Who];
+            item.Whom = usernames[item.Whom];
+        }
+
         delegations = list.AsQueryable();
     }
 }

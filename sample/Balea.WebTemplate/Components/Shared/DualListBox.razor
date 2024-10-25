@@ -1,50 +1,113 @@
 ﻿@typeparam TItem
 
-<div class="container">
+<div class="dlb-container">
     <div class="column">
-        <h4>@LeftText</h4>
+        @if (LeftTitle is not null)
+        {
+            <h4>@LeftTitle</h4>
+        }
         <div class="list-box">
-            <ListBox Items="LeftItems" Name="Name" Value="Value" TItem="TItem"></ListBox>
+            <ListBox TItem="TItem"
+                Items="LeftItems"
+                Name="Name"
+                Value="Value"
+                SelectedItems="leftSelection">
+            </ListBox>
         </div>
     </div>
     <div class="controls">
         <ul>
             <li>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" @onclick="MoveToRight">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </li>
             <li>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" @onclick="MoveToLeft">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
             </li>
         </ul>
     </div>
     <div class="column">
-        <h4>@RightText</h4>
+        @if (LeftTitle is not null)
+        {
+            <h4>@RightTitle</h4>
+        }
         <div class ="list-box">
-            <ListBox Items="RightItems" Name="Name" Value="Value" TItem="TItem"></ListBox>
+            <ListBox TItem="TItem" 
+                Items="RightItems"
+                Name="Name"
+                Value="Value"
+                SelectedItems="rightSelection">
+            </ListBox>
         </div>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public string? LeftText { get; set; }
+    public string? LeftTitle { get; set; }
 
     [Parameter]
-    public string? RightText { get; set; }
+    public string? RightTitle { get; set; }
 
     [Parameter]
-    public IList<TItem> LeftItems { get; set; }
+    public IList<TItem> LeftItems { get; set; } = [];
 
     [Parameter]
-    public IList<TItem> RightItems { get; set; }
+    public IList<TItem> RightItems { get; set; } = [];
 
     [Parameter]
     public Func<TItem, string> Name { get; set; }
 
     [Parameter]
     public Func<TItem, string> Value { get; set; }
+
+    [Parameter]
+    public EventCallback<MoveItemsEventArgs<TItem>> OnMoveToRight { get; set; }
+
+    [Parameter]
+    public EventCallback<MoveItemsEventArgs<TItem>> OnMoveToLeft { get; set; }
+
+    private IList<TItem> leftSelection = [];
+    private IList<TItem> rightSelection = [];
+
+    private async Task MoveToRight()
+    {
+        var selection = new List<TItem>(leftSelection);
+
+        leftSelection.Clear();
+        rightSelection.Clear();
+
+        foreach (var item in selection)
+        {
+            LeftItems.Remove(item);
+            RightItems.Add(item);
+        }
+
+        var eventArgs = new MoveItemsEventArgs<TItem>(selection);
+        await OnMoveToRight.InvokeAsync(eventArgs);
+
+        StateHasChanged();
+    }
+
+    private async Task MoveToLeft()
+    {
+        var selection = new List<TItem>(rightSelection);
+
+        rightSelection.Clear();
+        leftSelection.Clear();
+
+        foreach (var item in selection)
+        {
+            RightItems.Remove(item);
+            LeftItems.Add(item);
+        }
+
+        var eventArgs = new MoveItemsEventArgs<TItem>(selection);
+        await OnMoveToLeft.InvokeAsync(eventArgs);
+
+        StateHasChanged();
+    }
 }

@@ -28,7 +28,8 @@
             <dd class="col-sm-10">@permission.Description</dd>
         </dl>
         <EditForm method="post" Model="permission" OnValidSubmit="DeletePermission" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(permission is null)">Delete</button> |
+            <button type="submit" class="btn btn-danger" disabled="@(permission is null)">Delete</button>
+            <div class="vr"></div>
             <a href="/Iam/Permissions">Back to List</a>
         </EditForm>
     }

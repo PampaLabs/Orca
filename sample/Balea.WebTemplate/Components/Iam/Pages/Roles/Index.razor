@@ -22,17 +22,33 @@ else
 <QuickGrid Class="table" Items="@roles" Pagination="@pagination">
     <PropertyColumn Property="role => role.Name" Title="Name" />
     <PropertyColumn Property="role => role.Description" Title="Description" />
-    <PropertyColumn Property="role => role.Enabled" Title="Enabled" />
+    <TemplateColumn Context="delegation" Title="Enabled">
+        @if (delegation.Enabled)
+        {
+            <i class="fa-regular fa-square-check"></i>
+        }
+        else
+        {
+            <i class="fa-regular fa-square"></i>
+        }
+    </TemplateColumn>
 
-    <TemplateColumn Context="role">
+    <TemplateColumn Context="role" Title="Actions">
         <div class="actions">
-            <a href="@($"/Iam/Roles/{role.Id}")">
+            <a href="@($"/Iam/Roles/{role.Id}/Users")" title="Users">
+                <i class="fa fa-solid fa-user-group"></i>
+            </a>
+            <a href="@($"/Iam/Roles/{role.Id}/Permissions")" title="Permissions">
+                <i class="fa fa-solid fa-key"></i>
+            </a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Roles/{role.Id}")" title="Details">
                 <i class="fa fa-solid fa-eye"></i>
             </a>
-            <a href="@($"/Iam/Roles/{role.Id}/Edit")">
+            <a href="@($"/Iam/Roles/{role.Id}/Edit")" title="Edit">
                 <i class="fa fa-solid fa-pencil"></i>
             </a>
-            <a href="@($"/Iam/Roles/{role.Id}/Delete")">
+            <a href="@($"/Iam/Roles/{role.Id}/Delete")" title="Delete">
                 <i class="fa fa-solid fa-trash-can"></i>
             </a>
         </div>

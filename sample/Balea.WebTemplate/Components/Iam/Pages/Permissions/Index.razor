@@ -23,15 +23,19 @@ else
     <PropertyColumn Property="permission => permission.Name" Title="Name" />
     <PropertyColumn Property="permission => permission.Description" Title="Description" />
 
-    <TemplateColumn Context="permission">
+    <TemplateColumn Context="permission" Title="Actions">
         <div class="actions">
-            <a href="@($"/Iam/Permissions/{permission.Id}")">
+            <a href="@($"/Iam/Permissions/{permission.Id}/Roles")" title="Roles">
+                <i class="fa fa-solid fa-user-tie"></i>
+            </a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Permissions/{permission.Id}")" title="Details">
                 <i class="fa fa-solid fa-eye"></i>
             </a>
-            <a href="@($"/Iam/Permissions/{permission.Id}/Edit")">
+            <a href="@($"/Iam/Permissions/{permission.Id}/Edit")" title="Edit">
                 <i class="fa fa-solid fa-pencil"></i>
             </a>
-            <a href="@($"/Iam/Permissions/{permission.Id}/Delete")">
+            <a href="@($"/Iam/Permissions/{permission.Id}/Delete")" title="Delete">
                 <i class="fa fa-solid fa-trash-can"></i>
             </a>
         </div>

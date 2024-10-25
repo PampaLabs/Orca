@@ -1,0 +1,108 @@
+﻿@page "/Iam/Permissions/{id}/Roles/Edit"
+@rendermode InteractiveServer
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject IPermissionStore PermissionStore
+@inject IRoleStore RoleStore
+
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Permission</h4>
+<hr />
+@if (permission is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Permission</dt>
+        <dd class="col-sm-10">@permission.Name</dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-2">Roles</dt>
+        <dd class="col-sm-10">
+            <div class="container_">
+                <DualListBox TItem="Role"
+                             LeftItems="@availableRoles" LeftTitle="Available"
+                             RightItems="@assignedRoles" RightTitle="Assigned"
+                             Name="@(item => item.Name)"
+                             Value="@(item => item.Id)"
+                             OnMoveToLeft="RemoveRolesAsync"
+                             OnMoveToRight="AddRolesAsync">
+                </DualListBox>
+            </div>
+        </dd>
+    </dl>
+}
+
+<div>
+    <a href="/Iam/Permissions">Back to List</a>
+</div>
+
+@code {
+    Permission? permission;
+
+    IList<Role> availableRoles = [];
+    IList<Role> assignedRoles = [];
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        permission = await PermissionStore.FindByIdAsync(Id);
+
+        if (permission is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        await LoadRolesAsync();
+    }
+
+    private async Task LoadRolesAsync()
+    {
+        var currentRoles = await PermissionStore.GetRolesAsync(permission);
+        var currentRoleSet = currentRoles.Select(x => x.Id).ToHashSet();
+
+        var roles = await RoleStore.ListAsync();
+
+        assignedRoles.Clear();
+        availableRoles.Clear();
+
+        foreach (var role in roles)
+        {
+            if (currentRoleSet.Contains(role.Id))
+            {
+                assignedRoles.Add(role);
+            }
+            else
+            {
+                availableRoles.Add(role);
+            }
+        }
+    }
+
+    private async Task AddRolesAsync(MoveItemsEventArgs<Role> e)
+    {
+        foreach (var role in e.Items)
+        {
+            await PermissionStore.AddRoleAsync(permission, role);
+        }
+    }
+
+    private async Task RemoveRolesAsync(MoveItemsEventArgs<Role> e)
+    {
+        foreach (var role in e.Items)
+        {
+            await PermissionStore.RemoveRoleAsync(permission, role);
+        }
+    }
+}

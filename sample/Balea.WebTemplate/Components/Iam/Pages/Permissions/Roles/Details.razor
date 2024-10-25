@@ -1,0 +1,76 @@
+﻿@page "/Iam/Permissions/{id}/Roles"
+
+@using Microsoft.AspNetCore.Identity
+
+@inject IPermissionStore PermissionStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Permission Roles</h4>
+    <hr />
+    @if (permission is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-2">Permission</dt>
+            <dd class="col-sm-10">@permission.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Roles</dt>
+            <dd class="col-sm-4">
+                @if (roles.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var role in roles)
+                        {
+                            <li class="list-group-item">
+                                @role.Name
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="fst-italic">
+                        No roles have been assigned.
+                    </p>
+                }
+            </dd>
+        </dl>
+        <div>
+            <a href="@($"/Iam/Permissions/{Id}/Roles/Edit")">Edit</a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Permissions/{Id}")">Back to Permission</a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Permissions")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Permission? permission;
+
+    IList<Role>? roles;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        permission = await PermissionStore.FindByIdAsync(Id);
+
+        if (permission is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        roles = await PermissionStore.GetRolesAsync(permission);
+    }
+}

@@ -3,6 +3,8 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
+@inject IUserStore UserStore
+
 @inject NavigationManager NavigationManager
 
 <PageTitle>Details</PageTitle>
@@ -16,7 +18,8 @@
     {
         <p><em>Loading...</em></p>
     }
-    else {
+    else
+    {
         <dl class="row">
             <dt class="col-sm-2">Who</dt>
             <dd class="col-sm-10">@delegation.Who</dd>
@@ -40,7 +43,8 @@
             </dd>
         </dl>
         <div>
-            <a href="@($"/Iam/Delegations/{Id}/Edit")">Edit</a> |
+            <a href="@($"/Iam/Delegations/{Id}/Edit")">Edit</a>
+            <div class="vr"></div>
             <a href="@($"/Iam/Delegations")">Back to List</a>
         </div>
     }
@@ -59,6 +63,14 @@
         if (delegation is null)
         {
             NavigationManager.NavigateTo("notfound");
+        }
+        else
+        {
+            var who = await UserStore.FindBySubjectAsync(delegation.Who);
+            var whom = await UserStore.FindBySubjectAsync(delegation.Whom);
+
+            delegation.Who = who.Username;
+            delegation.Whom = whom.Username;
         }
     }
 }

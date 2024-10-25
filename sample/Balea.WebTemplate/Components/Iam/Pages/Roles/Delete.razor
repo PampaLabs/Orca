@@ -48,7 +48,8 @@
             </dl>
         }
         <EditForm method="post" Model="role" OnValidSubmit="DeleteRole" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(role is null)">Delete</button> |
+            <button type="submit" class="btn btn-danger" disabled="@(role is null)">Delete</button>
+            <div class="vr"></div>
             <a href="/Iam/Roles">Back to List</a>
         </EditForm>
     }

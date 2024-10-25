@@ -1,0 +1,78 @@
+﻿@page "/Iam/Users/{id}/Roles"
+
+@using Microsoft.AspNetCore.Identity
+
+@inject IUserStore UserStore
+@inject IRoleStore RoleStore
+
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>User Roles</h4>
+    <hr />
+    @if (user is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-2">User</dt>
+            <dd class="col-sm-10">@user.Username</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Roles</dt>
+            <dd class="col-sm-4">
+                @if (roles.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var role in roles)
+                        {
+                            <li class="list-group-item">
+                                @role.Name
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="fst-italic">
+                        No roles have been assigned.
+                    </p>
+                }
+            </dd>
+        </dl>
+        <div>
+            <a href="@($"/Iam/Users/{Id}/Roles/Edit")">Edit</a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Users/{Id}")">Back to Users</a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Users")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    User? user;
+
+    IList<Role>? roles;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserStore.FindBySubjectAsync(Id);
+
+        if (user is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        roles = await RoleStore.SearchAsync(new() { Subjects = [ Id ] });
+    }
+}

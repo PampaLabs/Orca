@@ -1,13 +1,10 @@
-﻿@using Balea.WebTemplate.Shared
-@using System.Linq.Expressions
-
-@typeparam TItem
+﻿@typeparam TItem
 @implements IListBox
 
-<select multiple>
+<select multiple @onchange="@OnSelectionChanged">
     @foreach (var item in Items)
     {
-        <option value="@Value(item)">@Name(item)</option>
+        <option value="@Value(item)" selected="@IsItemSelected(item)">@Name(item)</option>
     }
 </select>
 
@@ -20,4 +17,33 @@
 
     [Parameter]
     public Func<TItem, string> Value { get; set; }
+
+    [Parameter]
+    public IList<TItem> SelectedItems { get; set; } = [];
+
+    private void OnSelectionChanged(ChangeEventArgs e)
+    {
+        SelectedItems.Clear();
+
+        var selectedOptions = (string[]?)e.Value;
+
+        if (selectedOptions is not null)
+        {
+            foreach (var value in selectedOptions)
+            {
+                var selectedItem = Items.FirstOrDefault(item => Value(item) == value);
+                if (selectedItem is not null)
+                {
+                    SelectedItems.Add(selectedItem);
+                }
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private bool IsItemSelected(TItem item)
+    {
+        return SelectedItems.Contains(item);
+    }
 }

@@ -3,6 +3,8 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
+@inject IUserStore UserStore
+
 @inject NavigationManager NavigationManager
 
 <PageTitle>Delete</PageTitle>
@@ -42,7 +44,8 @@
             </dd>
         </dl>
         <EditForm method="post" Model="delegation" OnValidSubmit="DeleteDelegation" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(delegation is null)">Delete</button> |
+            <button type="submit" class="btn btn-danger" disabled="@(delegation is null)">Delete</button>
+            <div class="vr"></div>
             <a href="/Iam/Delegations">Back to List</a>
         </EditForm>
     }
@@ -61,6 +64,14 @@
         if (delegation is null)
         {
             NavigationManager.NavigateTo("notfound");
+        }
+        else
+        {
+            var who = await UserStore.FindBySubjectAsync(delegation.Who);
+            var whom = await UserStore.FindBySubjectAsync(delegation.Whom);
+
+            delegation.Who = who.Username;
+            delegation.Whom = whom.Username;
         }
     }
 

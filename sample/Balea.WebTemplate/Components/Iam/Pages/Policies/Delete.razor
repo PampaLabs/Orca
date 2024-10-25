@@ -34,7 +34,8 @@
             </dd>
         </dl>
         <EditForm method="post" Model="policy" OnValidSubmit="DeletePolicy" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(policy is null)">Delete</button> |
+            <button type="submit" class="btn btn-danger" disabled="@(policy is null)">Delete</button>
+            <div class="vr"></div>
             <a href="/Iam/Policies">Back to List</a>
         </EditForm>
     }

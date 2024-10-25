@@ -1,4 +1,4 @@
-﻿namespace Balea.WebTemplate.Shared;
+﻿namespace Balea.WebTemplate.Components.Shared;
 
 public interface IListBox
 {

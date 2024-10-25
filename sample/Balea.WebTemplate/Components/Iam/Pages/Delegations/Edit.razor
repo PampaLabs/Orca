@@ -4,6 +4,8 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
+@inject IUserStore UserStore
+
 @inject NavigationManager NavigationManager
 
 <PageTitle>Edit</PageTitle>
@@ -27,12 +29,24 @@ else
                 <input type="hidden" name="Input.ConcurrencyStamp" value="@Input.ConcurrencyStamp" />
 
                 <div class="form-floating mb-3">
-                    <InputText id="who" @bind-Value="Input.Who" class="form-control" placeholder="Please enter the who." />
+                    <InputSelect id="who" @bind-Value="Input.Who" class="form-control" placeholder="Please enter the who.">
+                        <option value="">Select an user</option>
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.SubjectId">@user.Username</option>
+                        }
+                    </InputSelect>
                     <label for="who" class="form-label">Who</label>
                     <ValidationMessage For="() => Input.Who" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
-                    <InputText id="whom" @bind-Value="Input.Whom" class="form-control" placeholder="Please enter the whom." />
+                    <InputSelect id="whom" @bind-Value="Input.Whom" class="form-control" placeholder="Please enter the whom.">
+                        <option value="">Select an user</option>
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.SubjectId">@user.Username</option>
+                        }
+                    </InputSelect>
                     <label for="whom" class="form-label">Whom</label>
                     <ValidationMessage For="() => Input.Whom" class="text-danger" />
                 </div>
@@ -68,6 +82,8 @@ else
     [SupplyParameterFromForm]
     private InputModel? Input { get; set; }
 
+    private IList<User> users;
+
     protected override async Task OnInitializedAsync()
     {
         var delegation = await DelegationStore.FindByIdAsync(Id);
@@ -86,6 +102,8 @@ else
             Enabled = delegation.Enabled,
             // ConcurrencyStamp = delegation.ConcurrencyStamp,
         };
+
+        users = await UserStore.ListAsync();
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
