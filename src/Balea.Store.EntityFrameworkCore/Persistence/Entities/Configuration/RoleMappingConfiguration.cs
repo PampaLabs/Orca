@@ -10,6 +10,7 @@ internal class RoleMappingEntityConfiguration : IEntityTypeConfiguration<RoleMap
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Mapping)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder

@@ -6,9 +6,4 @@ internal static class ModelExtensions
     {
         return delegations.FirstOrDefault(d => d.Active && d.Whom == subjectId);
     }
-
-    public static Application GetByName(this IEnumerable<Application> applications, string name)
-    {
-        return applications.First(a => a.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-    }
 }

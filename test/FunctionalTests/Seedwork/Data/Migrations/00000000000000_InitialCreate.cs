@@ -12,20 +12,6 @@ namespace FunctionalTests.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Applications",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Applications", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Delegations",
                 columns: table => new
                 {
@@ -34,17 +20,11 @@ namespace FunctionalTests.Migrations
                     Whom = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     From = table.Column<DateTime>(type: "datetime2", nullable: false),
                     To = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Enabled = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
+                    Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Delegations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Delegations_Applications_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Applications",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -53,17 +33,11 @@ namespace FunctionalTests.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Permissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Permissions_Applications_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Applications",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -73,17 +47,11 @@ namespace FunctionalTests.Migrations
                     Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
+                    Content = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Policies", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Policies_Applications_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Applications",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -93,17 +61,11 @@ namespace FunctionalTests.Migrations
                     Id = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Enabled = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationId = table.Column<string>(type: "nvarchar(50)", nullable: true)
+                    Enabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Roles_Applications_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Applications",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -112,7 +74,7 @@ namespace FunctionalTests.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Mapping = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Mapping = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     RoleId = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
@@ -156,7 +118,7 @@ namespace FunctionalTests.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Sub = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Sub = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     RoleId = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
@@ -171,17 +133,6 @@ namespace FunctionalTests.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Applications_Name",
-                table: "Applications",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Delegations_ApplicationId",
-                table: "Delegations",
-                column: "ApplicationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Delegations_From_To",
                 table: "Delegations",
                 columns: new[] { "From", "To" });
@@ -190,16 +141,6 @@ namespace FunctionalTests.Migrations
                 name: "IX_Delegations_Whom",
                 table: "Delegations",
                 column: "Whom");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Permissions_ApplicationId",
-                table: "Permissions",
-                column: "ApplicationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Policies_ApplicationId",
-                table: "Policies",
-                column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleMappings_Mapping_RoleId",
@@ -216,11 +157,6 @@ namespace FunctionalTests.Migrations
                 name: "IX_RolePermissions_RoleId",
                 table: "RolePermissions",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Roles_ApplicationId",
-                table: "Roles",
-                column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleSubjects_RoleId",
@@ -257,9 +193,6 @@ namespace FunctionalTests.Migrations
 
             migrationBuilder.DropTable(
                 name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "Applications");
         }
     }
 }

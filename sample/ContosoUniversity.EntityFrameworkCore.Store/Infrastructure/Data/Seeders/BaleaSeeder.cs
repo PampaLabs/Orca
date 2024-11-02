@@ -1,6 +1,5 @@
 ﻿using Balea;
 using Balea.Store.EntityFrameworkCore;
-using Balea.Store.EntityFrameworkCore.Entities;
 
 using ContosoUniversity.EntityFrameworkCore.Store.Models;
 
@@ -10,20 +9,8 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeder
     {
         public static async Task Seed(BaleaDbContext db, IAccessControlContext context)
         {
-            if (!db.Applications.Any())
+            if (!db.Permissions.Any())
             {
-                var application = new ApplicationEntity
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = BaleaConstants.DefaultApplicationName,
-                    Description = "Default Application",
-                };
-
-                await db.Applications.AddAsync(application);
-                await db.SaveChangesAsync();
-
-                // -----------------------------------------
-
                 var viewGradesPermission = new Permission { Name = Permissions.GradesRead };
                 var editGradesPermission = new Permission { Name = Permissions.GradesEdit };
                 await context.PermissionStore.CreateAsync(viewGradesPermission);

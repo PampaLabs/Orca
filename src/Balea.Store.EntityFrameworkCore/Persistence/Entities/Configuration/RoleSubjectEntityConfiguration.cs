@@ -10,6 +10,7 @@ internal class RoleSubjectEntityConfiguration : IEntityTypeConfiguration<RoleSub
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Sub)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder

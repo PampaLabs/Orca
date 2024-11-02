@@ -24,7 +24,5 @@ internal class PolicyEntityConfiguration : IEntityTypeConfiguration<PolicyEntity
         builder.Property(x => x.Content)
             .HasMaxLength(4000)
             .IsRequired();
-
-        builder.IsApplicationScoped();
     }
 }

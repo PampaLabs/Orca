@@ -1,7 +1,5 @@
 ﻿using Balea;
-using Balea.Store;
 using Balea.Store.EntityFrameworkCore;
-using Balea.Store.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -24,7 +22,6 @@ public static class ServiceCollectionExtensions
         ConfigureServices(builder.Services);
 
         builder.Services.AddDbContext<BaleaDbContext>(optionsAction);
-        builder.Services.AddScoped<ApplicationScopedInterceptor>();
 
         return builder;
     }
@@ -36,7 +33,6 @@ public static class ServiceCollectionExtensions
         ConfigureServices(builder.Services);
 
         builder.Services.AddDbContext<BaleaDbContext>(optionsAction);
-        builder.Services.AddScoped<ApplicationScopedInterceptor>();
 
         return builder;
     }

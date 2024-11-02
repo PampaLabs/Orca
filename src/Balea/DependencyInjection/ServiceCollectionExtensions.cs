@@ -21,7 +21,6 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = options ?? throw new ArgumentNullException(nameof(options));
 
             services.AddAccessControlContext();
-            services.AddAppContextAccessor();
 
             services.AddScoped<IAuthorizationGrantor, DefaultAuthorizationGrantor>();
             services.AddScoped<IPermissionEvaluator, DefaultPermissionEvaluator>();
@@ -31,13 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return new BaleaBuilder(services);
         }
 
-        public static IServiceCollection AddAppContextAccessor(this IServiceCollection services)
-    	{
-    		services.TryAddSingleton<IAppContextAccessor, AppContextAccessor>();
-    		return services;
-    	}
-
-        public static IServiceCollection AddAccessControlContext(this IServiceCollection services)
+        private static IServiceCollection AddAccessControlContext(this IServiceCollection services)
         {
             services.TryAddScoped<IAccessControlContext, AccessControlContext>();
             return services;

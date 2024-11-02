@@ -1,108 +1,58 @@
 {
   "Balea": {
-    "applications": [
+    "roles": [
       {
-        "name": "default",
-        "roles": [
-          {
-            "name": "teacher",
-            "enabled": true,
-            "description": "Teacher role",
-            "permissions": [
-              "edit.grades",
-              "view.grades"
-            ],
-            "subjects": [
-              "1",
-              "m2m"
-            ]
-          },
-          {
-            "name": "student",
-            "description": "Student role",
-            "permissions": [
-              "view.grades"
-            ],
-            "mappings": [
-              "customer"
-            ]
-          }
-        ],
+        "name": "teacher",
+        "enabled": true,
+        "description": "Teacher role",
         "permissions": [
-          {
-            "name": "edit.grades"
-          },
-          {
-            "name": "view.grades"
-          }
+          "edit.grades",
+          "view.grades"
         ],
-        "delegations": [
-          {
-            "who": "1",
-            "whom": "2",
-            "from": "1900-01-01 00:00:00",
-            "to": "9999-12-31 23:59:59",
-            "enabled": true
-          },
-          {
-            "who": "1",
-            "whom": "3",
-            "from": "1900-01-01 00:00:00",
-            "to": "9999-12-31 23:59:59",
-            "enabled": false
-          }
-        ],
-        "policies": [
-          {
-            "name": "abac-policy",
-            "content": "policy substitute begin\r\n    rule A (PERMIT) begin\r\n  Subject.Role CONTAINS \"Teacher\" AND Subject.Sub = \"1\" AND Resource.Controller = \"School\" \r\n  end\r\nend"
-          }
+        "subjects": [
+          "1",
+          "m2m"
         ]
       },
       {
-        "name": "another",
-        "roles": [
-          {
-            "name": "teacher",
-            "enabled": true,
-            "description": "Teacher role",
-            "permissions": [
-              "edit.grades",
-              "view.grades"
-            ],
-            "subjects": [
-              "1",
-              "m2m"
-            ]
-          },
-          {
-            "name": "student",
-            "description": "Student role",
-            "permissions": [
-              "view.grades"
-            ],
-            "mappings": [
-              "customer"
-            ]
-          }
-        ],
+        "name": "student",
+        "description": "Student role",
         "permissions": [
-          {
-            "name": "edit.grades"
-          },
-          {
-            "name": "view.grades"
-          }
+          "view.grades"
         ],
-        "delegations": [
-          {
-            "who": "2",
-            "whom": "3",
-            "from": "1900-01-01 00:00:00",
-            "to": "9999-12-31 23:59:59",
-            "enabled": true
-          }
+        "mappings": [
+          "customer"
         ]
+      }
+    ],
+    "permissions": [
+      {
+        "name": "edit.grades"
+      },
+      {
+        "name": "view.grades"
+      }
+    ],
+    "delegations": [
+      {
+        "who": "1",
+        "whom": "2",
+        "from": "1900-01-01 00:00:00",
+        "to": "9999-12-31 23:59:59",
+        "enabled": true
+      },
+      {
+        "who": "1",
+        "whom": "3",
+        "from": "1900-01-01 00:00:00",
+        "to": "9999-12-31 23:59:59",
+        "enabled": false
+      }
+    ],
+    "policies": [
+      {
+        "name": "abac-policy",
+        "content": "policy substitute begin\r\n    rule A (PERMIT) begin\r\n  Subject.Role CONTAINS \"Teacher\" AND Subject.Sub = \"1\" AND Resource.Controller = \"School\" \r\n  end\r\nend"
       }
     ]
   }

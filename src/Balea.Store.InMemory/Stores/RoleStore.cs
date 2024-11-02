@@ -3,40 +3,30 @@
 public class RoleStore : IRoleStore
 {
     private readonly MemoryStoreOptions _options;
-	private readonly IAppContextAccessor _contextAccessor;
 
-	public RoleStore(
-        MemoryStoreOptions options,
-		IAppContextAccessor contextAccessor)
+	public RoleStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
-		_contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
 	}
 
     public Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var role = application.Roles.FirstOrDefault(x => x.Id == roleId);
+        var role = _options.Roles.FirstOrDefault(x => x.Id == roleId);
 
         return Task.FromResult(role);
     }
 
     public Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
-        var role = application.Roles.FirstOrDefault(x => x.Name == roleName);
+        var role = _options.Roles.FirstOrDefault(x => x.Name == roleName);
 
         return Task.FromResult(role);
     }
 
 	public Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         role.Id = Guid.NewGuid().ToString();
-        application.Roles.Add(role);
+        _options.Roles.Add(role);
 
         return Task.FromResult(AccessControlResult.Success);
     }
@@ -48,27 +38,22 @@ public class RoleStore : IRoleStore
 
 	public Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         role.Id = Guid.NewGuid().ToString();
-        application.Roles.Remove(role);
+        _options.Roles.Remove(role);
 
         return Task.FromResult(AccessControlResult.Success);
 	}
 
     public Task<IList<Role>> ListAsync(CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var result = application.Roles.ToList();
+        var result = _options.Roles.ToList();
 
         return Task.FromResult<IList<Role>>(result);
     }
 
     public Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default)
     {
-        var application = _options.Applications.GetByName(_contextAccessor.AppContext.Name);
-        var source = application.Roles.AsQueryable();
+        var source = _options.Roles.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -94,7 +79,7 @@ public class RoleStore : IRoleStore
 
         if (filter.Subjects is not null)
         {
-            var bindings = application.SubejctBindings
+            var bindings = _options.SubejctBindings
                 .Where(binding => filter.Subjects.Contains(binding.Subject))
                 .Select(binding => binding.Role)
                 .ToHashSet();
@@ -109,9 +94,7 @@ public class RoleStore : IRoleStore
 
     public Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
-        var application = GetCurrentApplication();
-
-        var result = application.SubejctBindings
+        var result = _options.SubejctBindings
             .Where(binding => binding.Role == role)
             .Select(binding => binding.Subject)
             .ToList();
@@ -121,29 +104,23 @@ public class RoleStore : IRoleStore
 
     public Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         var binding = (subject, role);
-        application.SubejctBindings.Add(binding);
+        _options.SubejctBindings.Add(binding);
 
         return Task.FromResult(AccessControlResult.Success);
     }
 
     public Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         var binding = (subject, role);
-        application.SubejctBindings.Remove(binding);
+        _options.SubejctBindings.Remove(binding);
 
         return Task.FromResult(AccessControlResult.Success);
     }
 
     public Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
     {
-        var application = GetCurrentApplication();
-
-        var result = application.PermissionBindings
+        var result = _options.PermissionBindings
             .Where(binding => binding.Role == role)
             .Select(binding => binding.Permission)
             .ToList();
@@ -153,26 +130,17 @@ public class RoleStore : IRoleStore
 
     public Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
         var binding = (permission, role);
-        application.PermissionBindings.Add(binding);
+        _options.PermissionBindings.Add(binding);
 
         return Task.FromResult(AccessControlResult.Success);
     }
 
     public Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
         var binding = (permission, role);
-        application.PermissionBindings.Remove(binding);
+        _options.PermissionBindings.Remove(binding);
 
         return Task.FromResult(AccessControlResult.Success);
-    }
-
-    private Application GetCurrentApplication()
-    {
-        return _options.Applications.GetByName(_contextAccessor.AppContext.Name);
     }
 }

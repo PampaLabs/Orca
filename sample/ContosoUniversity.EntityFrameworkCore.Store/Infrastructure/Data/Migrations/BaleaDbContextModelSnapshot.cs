@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrations
+namespace FunctionalTests.Migrations
 {
     [DbContext(typeof(BaleaDbContext))]
     partial class BaleaDbContextModelSnapshot : ModelSnapshot
@@ -22,55 +22,17 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.ApplicationEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Applications");
-                });
-
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.DelegationEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("From")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reference")
-                        .IsRequired()
+                    b.Property<string>("Id")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("To")
                         .HasColumnType("datetime2");
@@ -87,28 +49,18 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
-
                     b.HasIndex("Whom");
 
                     b.HasIndex("From", "To");
-
-                    b.HasIndex("Reference", "ApplicationId")
-                        .IsUnique();
 
                     b.ToTable("Delegations");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.PermissionEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationId")
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -121,24 +73,14 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
-
-                    b.HasIndex("Name", "ApplicationId")
-                        .IsUnique();
-
                     b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.PolicyEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationId")
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -156,24 +98,14 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
-
-                    b.HasIndex("Name", "ApplicationId")
-                        .IsUnique();
-
                     b.ToTable("Policies");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationId")
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -189,11 +121,6 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationId");
-
-                    b.HasIndex("Name", "ApplicationId")
-                        .IsUnique();
-
                     b.ToTable("Roles");
                 });
 
@@ -206,29 +133,31 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Mapping")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("Mapping", "RoleId")
-                        .IsUnique()
-                        .HasFilter("[Mapping] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("RoleMappings");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RolePermissionEntity", b =>
                 {
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
+                    b.Property<string>("PermissionId")
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("PermissionId", "RoleId");
 
@@ -245,71 +174,29 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Sub")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
                     b.HasIndex("Sub", "RoleId")
-                        .IsUnique()
-                        .HasFilter("[Sub] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("RoleSubjects");
-                });
-
-            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.DelegationEntity", b =>
-                {
-                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.ApplicationEntity", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Application");
-                });
-
-            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.PermissionEntity", b =>
-                {
-                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.ApplicationEntity", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Application");
-                });
-
-            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.PolicyEntity", b =>
-                {
-                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.ApplicationEntity", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Application");
-                });
-
-            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", b =>
-                {
-                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.ApplicationEntity", "Application")
-                        .WithMany()
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleMappingEntity", b =>
                 {
                     b.HasOne("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", "Role")
-                        .WithMany()
+                        .WithMany("Mappings")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -345,6 +232,11 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Migrat
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", b =>
+                {
+                    b.Navigation("Mappings");
                 });
 #pragma warning restore 612, 618
         }

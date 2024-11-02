@@ -2,16 +2,11 @@
 
 public class MemoryStoreOptions
 {
-    public HashSet<Application> Applications { get; set; } = [];
+    public HashSet<Role> Roles { get; set; } = [];
+    public HashSet<Delegation> Delegations { get; set; } = [];
+    public HashSet<Policy> Policies { get; set; } = [];
+    public HashSet<Permission> Permissions { get; set; } = [];
 
-    public MemoryStoreOptions()
-    {
-        Applications =
-            [
-                new ()
-                {
-                    Name = "default",
-                }
-            ];
-    }
+    public HashSet<(Permission Permission, Role Role)> PermissionBindings { get; set; } = [];
+    public HashSet<(string Subject, Role Role)> SubejctBindings { get; set; } = [];
 }

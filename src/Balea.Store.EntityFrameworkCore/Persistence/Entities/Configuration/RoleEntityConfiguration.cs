@@ -23,7 +23,5 @@ internal class RoleEntityConfiguration : IEntityTypeConfiguration<RoleEntity>
 
         builder.Property(x => x.Enabled)
             .IsRequired();
-
-        builder.IsApplicationScoped();
     }
 }

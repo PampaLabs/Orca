@@ -3,40 +3,30 @@
 public class DelegationStore : IDelegationStore
 {
     private readonly MemoryStoreOptions _options;
-	private readonly IAppContextAccessor _contextAccessor;
 
-	public DelegationStore(
-        MemoryStoreOptions options,
-		IAppContextAccessor contextAccessor)
+	public DelegationStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
-		_contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
 	}
 
     public Task<Delegation> FindByIdAsync(string delegationId, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var delegation = application.Delegations.FirstOrDefault(x => x.Id == delegationId);
+        var delegation = _options.Delegations.FirstOrDefault(x => x.Id == delegationId);
 
         return Task.FromResult(delegation);
     }
 
     public Task<Delegation> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var delegation = application.Delegations.GetCurrentDelegation(subject);
+        var delegation = _options.Delegations.GetCurrentDelegation(subject);
 
         return Task.FromResult(delegation);
     }
 
     public Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         delegation.Id = Guid.NewGuid().ToString();
-        application.Delegations.Add(delegation);
+        _options.Delegations.Add(delegation);
 
         return Task.FromResult(AccessControlResult.Success);
 	}
@@ -48,27 +38,21 @@ public class DelegationStore : IDelegationStore
 
 	public Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        application.Delegations.Remove(delegation);
+        _options.Delegations.Remove(delegation);
 
         return Task.FromResult(AccessControlResult.Success);
     }
 
     public Task<IList<Delegation>> ListAsync(CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var result = application.Delegations.ToList();
+        var result = _options.Delegations.ToList();
 
         return Task.FromResult<IList<Delegation>>(result);
     }
 
     public Task<IList<Delegation>> SearchAsync(DelegationFilter filter, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var source = application.Delegations.AsQueryable();
+        var source = _options.Delegations.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Who))
         {
@@ -98,10 +82,5 @@ public class DelegationStore : IDelegationStore
         var result = source.ToList();
 
         return Task.FromResult<IList<Delegation>>(result);
-    }
-
-    private Application GetCurrentApplication()
-    {
-        return _options.Applications.GetByName(_contextAccessor.AppContext.Name);
     }
 }

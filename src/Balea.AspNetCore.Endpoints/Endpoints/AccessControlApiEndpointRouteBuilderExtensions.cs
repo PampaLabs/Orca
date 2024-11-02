@@ -22,8 +22,6 @@ public static class AccessControlApiEndpointRouteBuilderExtensions
 
         var routeGroup = endpoints.MapGroup("").RequireAuthorization();
 
-        routeGroup.AddAppContextFilter();
-
         routeGroup.MapDelegationEndpoints();
         routeGroup.MapPermissionEndpoints();
         routeGroup.MapPolicyEndpoints();

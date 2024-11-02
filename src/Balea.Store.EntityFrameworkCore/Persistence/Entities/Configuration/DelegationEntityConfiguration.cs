@@ -33,7 +33,5 @@ internal class DelegationEntityConfiguration : IEntityTypeConfiguration<Delegati
         builder.HasIndex(x => x.Whom);
 
         builder.HasIndex(x => new { x.From, x.To });
-
-        builder.IsApplicationScoped();
     }
 }

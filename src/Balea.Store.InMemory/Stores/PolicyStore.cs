@@ -3,40 +3,30 @@
 public class PolicyStore : IPolicyStore
 {
     private readonly MemoryStoreOptions _options;
-	private readonly IAppContextAccessor _contextAccessor;
 
-	public PolicyStore(
-        MemoryStoreOptions options,
-		IAppContextAccessor contextAccessor)
+	public PolicyStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
-		_contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
 	}
 
     public Task<Policy> FindByIdAsync(string policyId, CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var policy = application.Policies.FirstOrDefault(x => x.Id == policyId);
+        var policy = _options.Policies.FirstOrDefault(x => x.Id == policyId);
 
         return Task.FromResult(policy);
     }
 
     public Task<Policy> FindByNameAsync(string policyName, CancellationToken cancellationToken)
 	{
-		var application = GetCurrentApplication();
-
-		var policy = application.Policies.FirstOrDefault(x => x.Name == policyName);
+		var policy = _options.Policies.FirstOrDefault(x => x.Name == policyName);
 
         return Task.FromResult(policy);
     }
 
     public Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         policy.Id = Guid.NewGuid().ToString();
-        application.Policies.Add(policy);
+        _options.Policies.Add(policy);
 
         return Task.FromResult(AccessControlResult.Success);
 	}
@@ -48,28 +38,22 @@ public class PolicyStore : IPolicyStore
 
 	public Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
 	{
-        var application = GetCurrentApplication();
-
         policy.Id = Guid.NewGuid().ToString();
-        application.Policies.Remove(policy);
+        _options.Policies.Remove(policy);
 
         return Task.FromResult(AccessControlResult.Success);
     }
 
     public Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
-        var application = GetCurrentApplication();
-
-        var result = application.Policies.ToList();
+        var result = _options.Policies.ToList();
 
         return Task.FromResult<IList<Policy>>(result);
     }
 
     public Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
     {
-        var application = GetCurrentApplication();
-
-        var source = application.Policies.AsQueryable();
+        var source = _options.Policies.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -86,10 +70,5 @@ public class PolicyStore : IPolicyStore
         var result = source.ToList();
 
         return Task.FromResult<IList<Policy>>(result);
-    }
-
-    private Application GetCurrentApplication()
-    {
-        return _options.Applications.GetByName(_contextAccessor.AppContext.Name);
     }
 }

@@ -20,7 +20,5 @@ internal class PermissionEntityConfiguration : IEntityTypeConfiguration<Permissi
         builder.Property(x => x.Description)
             .HasMaxLength(500)
             .IsRequired(false);
-
-        builder.IsApplicationScoped();
     }
 }
