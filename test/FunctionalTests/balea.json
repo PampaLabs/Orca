@@ -6,7 +6,12 @@
         "roles": [
           {
             "name": "teacher",
+            "enabled": true,
             "description": "Teacher role",
+            "permissions": [
+              "edit.grades",
+              "view.grades"
+            ],
             "subjects": [
               "1",
               "m2m"
@@ -15,6 +20,9 @@
           {
             "name": "student",
             "description": "Student role",
+            "permissions": [
+              "view.grades"
+            ],
             "mappings": [
               "customer"
             ]
@@ -22,17 +30,10 @@
         ],
         "permissions": [
           {
-            "name": "edit.grades",
-            "roles": [
-              "teacher",
-              "student"
-            ]
+            "name": "edit.grades"
           },
           {
-            "name": "view.grades",
-            "roles": [
-              "teacher"
-            ]
+            "name": "view.grades"
           }
         ],
         "delegations": [
@@ -65,6 +66,10 @@
             "name": "teacher",
             "enabled": true,
             "description": "Teacher role",
+            "permissions": [
+              "edit.grades",
+              "view.grades"
+            ],
             "subjects": [
               "1",
               "m2m"
@@ -73,6 +78,9 @@
           {
             "name": "student",
             "description": "Student role",
+            "permissions": [
+              "view.grades"
+            ],
             "mappings": [
               "customer"
             ]
@@ -80,17 +88,10 @@
         ],
         "permissions": [
           {
-            "name": "edit.grades",
-            "roles": [
-              "teacher",
-              "student"
-            ]
+            "name": "edit.grades"
           },
           {
-            "name": "view.grades",
-            "roles": [
-              "teacher"
-            ]
+            "name": "view.grades"
           }
         ],
         "delegations": [
@@ -99,7 +100,7 @@
             "whom": "3",
             "from": "1900-01-01 00:00:00",
             "to": "9999-12-31 23:59:59",
-            "enabled": false
+            "enabled": true
           }
         ]
       }

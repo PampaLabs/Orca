@@ -1,5 +1,6 @@
 using Balea;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,7 @@ builder.Services
             PermissionClaimType = "permissions"
         };
     })
-    .AddConfigurationStore()
+    .AddInMemoryStore()
     .AddAuthorization(options =>
     {
         options.Events.UnauthorizedFallback = AuthorizationFallbackAction.RedirectToAction("Account", "AccessDenied");
@@ -39,6 +40,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+
+    await app.ImportConfigurationAsync();
 }
 else
 {

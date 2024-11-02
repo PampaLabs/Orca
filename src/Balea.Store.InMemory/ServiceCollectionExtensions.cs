@@ -1,41 +1,35 @@
 ﻿using Balea;
 using Balea.Store.Configuration;
 
-using Microsoft.Extensions.Configuration;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IBaleaBuilder AddConfigurationStore(this IBaleaBuilder builder)
+    public static IBaleaBuilder AddInMemoryStore(this IBaleaBuilder builder)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
-        return AddConfigurationStore(builder, (sp, options) =>
-        {
-            var configuration = sp.GetRequiredService<IConfiguration>();
-            configuration.GetSection("Balea").Bind(options);
-        });
+        return AddInMemoryStore(builder, (sp, options) => { });
     }
 
-    public static IBaleaBuilder AddConfigurationStore(this IBaleaBuilder builder, Action<ConfigurationStoreOptions> optionsAction)
+    public static IBaleaBuilder AddInMemoryStore(this IBaleaBuilder builder, Action<MemoryStoreOptions> optionsAction)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
         ConfigureServices(builder.Services);
 
-        builder.Services.AddScoped(_ => optionsAction.Build());
+        builder.Services.AddSingleton(_ => optionsAction.Build());
 
         return builder;
     }
 
-    public static IBaleaBuilder AddConfigurationStore(this IBaleaBuilder builder, Action<IServiceProvider, ConfigurationStoreOptions> optionsAction)
+    public static IBaleaBuilder AddInMemoryStore(this IBaleaBuilder builder, Action<IServiceProvider, MemoryStoreOptions> optionsAction)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
         ConfigureServices(builder.Services);
 
-        builder.Services.AddScoped(sp => optionsAction.Build(sp));
+        builder.Services.AddSingleton(sp => optionsAction.Build(sp));
 
         return builder;
     }

@@ -4,7 +4,6 @@ internal class RoleMapper : IEntityMapper<RoleConfiguration, Role>
 {
     public void FromEntity(RoleConfiguration source, Role destination)
     {
-        destination.Id = source.Id;
         destination.Name = source.Name;
         destination.Description = source.Description;
         destination.Enabled = source.Enabled;
@@ -13,7 +12,6 @@ internal class RoleMapper : IEntityMapper<RoleConfiguration, Role>
 
     public void ToEntity(Role source, RoleConfiguration destination)
     {
-        destination.Id = source.Id;
         destination.Name = source.Name;
         destination.Description = source.Description;
         destination.Enabled = source.Enabled;

@@ -1,8 +1,7 @@
 ﻿namespace Balea.Store.Configuration;
 
-public class ApplicationConfiguration
+internal class ApplicationConfiguration
 {
-    public string Id { get; set; }
     public string Name { get; set; }
 	public string Description { get; set; }
 	public string ImageUrl { get; set; }

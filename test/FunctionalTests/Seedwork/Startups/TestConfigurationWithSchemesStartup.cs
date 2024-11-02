@@ -17,7 +17,7 @@ namespace FunctionalTests.Seedwork
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
                 })
-                .AddConfigurationStore()
+                .AddInMemoryStore()
                 .AddAuthorization(options =>
                 {
                     options.Schemes.Add("scheme2");
@@ -46,6 +46,11 @@ namespace FunctionalTests.Seedwork
                     });
                 })
                 .AddMvc();
+
+            services.AddSingleton<IAsyncTestServerLifetime>(new AsyncTestServerLifetime
+            {
+                OnSetUpAsync = server => server.Host.ImportConfigurationAsync()
+            });
 
             return services.BuildServiceProvider();
         }

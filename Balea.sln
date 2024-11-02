@@ -21,13 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balea", "src\Balea\Balea.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balea.AspNetCore.Authorization", "src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj", "{B6AE3CFE-F70D-420A-B71C-85D4D4A48B09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.Configuration.Store", "sample\ContosoUniversity.Configuration.Store\ContosoUniversity.Configuration.Store.csproj", "{4BC1F93E-EF93-4AD2-BCD7-632E2A782D80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.InMemory.Store", "sample\ContosoUniversity.InMemory.Store\ContosoUniversity.InMemory.Store.csproj", "{4BC1F93E-EF93-4AD2-BCD7-632E2A782D80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.EntityFrameworkCore.Store", "sample\ContosoUniversity.EntityFrameworkCore.Store\ContosoUniversity.EntityFrameworkCore.Store.csproj", "{FAB1588F-DEE0-4A06-94E2-51FC0B02C897}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoUniversity.IdentityServer", "sample\ContosoUniversity.IdentityServer\ContosoUniversity.IdentityServer.csproj", "{9624712C-B17A-438B-9653-83F1BC35F38C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balea.Store.Configuration", "src\Balea.Store.Configuration\Balea.Store.Configuration.csproj", "{1C99812D-069E-4029-9E23-CEF5B348A4E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balea.Store.InMemory", "src\Balea.Store.InMemory\Balea.Store.InMemory.csproj", "{1C99812D-069E-4029-9E23-CEF5B348A4E8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Balea.Store.EntityFrameworkCore", "src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj", "{17F7DAE8-305B-4E62-8B78-A1F2F6D9A505}"
 EndProject

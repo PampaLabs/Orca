@@ -9,6 +9,10 @@
             "name": "Teacher",
             "enabled": true,
             "description": "Teacher role",
+            "permissions": [
+              "grades.read",
+              "grades.edit"
+            ],
             "subjects": [
               "1"
             ]
@@ -17,6 +21,10 @@
             "name": "Substitute",
             "enabled": true,
             "description": "Substitute role",
+            "permissions": [
+              "grades.read",
+              "grades.edit"
+            ],
             "subjects": [
               "2"
             ]
@@ -27,12 +35,19 @@
             "enabled": true,
             "mappings": [
               "customer"
+            ],
+            "permissions": [
+              "grades.read"
             ]
           },
           {
             "name": "Custodian",
             "description": "Custodian role",
             "enabled": true,
+            "permissions": [
+              "doors.open",
+              "doors.close"
+            ],
             "subjects": [
               "3"
             ]
@@ -40,31 +55,16 @@
         ],
         "permissions": [
           {
-            "name": "grades.read",
-            "roles": [
-              "Teacher",
-              "Substitute",
-              "Student"
-            ]
+            "name": "grades.read"
           },
           {
-            "name": "grades.edit",
-            "roles": [
-              "Teacher",
-              "Substitute"
-            ]
+            "name": "grades.edit"
           },
           {
-            "name": "doors.open",
-            "roles": [
-              "Custodian"
-            ]
+            "name": "doors.open"
           },
           {
-            "name": "doors.close",
-            "roles": [
-              "Custodian"
-            ]
+            "name": "doors.close"
           }
         ],
         "delegations": [
@@ -73,14 +73,14 @@
             "whom": "2",
             "from": "2020-01-15 00:00:00",
             "to": "2021-12-31 23:59:59",
-            "selected": true
+            "enabled": true
           },
           {
             "who": "3",
             "whom": "2",
             "from": "2020-01-15 00:00:00",
             "to": "2020-12-31 23:59:59",
-            "selected": false
+            "enabled": false
           }
         ],
         "policies": [
