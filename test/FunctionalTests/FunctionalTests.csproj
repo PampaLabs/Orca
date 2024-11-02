@@ -27,6 +27,7 @@
     </PackageReference>
     <PackageReference Include="Acheve.TestHost" />
     <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Respawn" />
@@ -48,7 +49,6 @@
     <ProjectReference Include="..\..\src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj" />
     <ProjectReference Include="..\..\src\Balea.Store.Configuration\Balea.Store.Configuration.csproj" />
     <ProjectReference Include="..\..\src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj" />
-
   </ItemGroup>
 
   <ItemGroup>
@@ -63,4 +63,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
 </Project>

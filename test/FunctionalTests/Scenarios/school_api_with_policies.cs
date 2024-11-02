@@ -1,7 +1,9 @@
 ﻿using AutoFixture;
+using Balea;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using Xunit;
 
@@ -10,47 +12,46 @@ namespace FunctionalTests.Scenarios
     public class school_api_with_policies : ApiServerTest
     {
         private const string InvalidSub = "0";
-        private readonly IEnumerable<TestServer> servers;
 
         public school_api_with_policies(TestServerFixture fixture) : base(fixture)
         {
-            this.servers = fixture.Servers
-                .Where(x => !x.SupportSchemes)
-                .Select(x => x.TestServer);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_policie_is_not_satisfied()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_policie_is_not_satisfied(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetAbacPolicy)
-                    .WithIdentity(new Fixture().Sub(InvalidSub))
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetAbacPolicy)
+                .WithIdentity(new Fixture().Sub(InvalidSub))
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task allow_to_view_grades_if_the_policie_is_satisfied()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_view_grades_if_the_policie_is_satisfied(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
+            var server = Fixture.GetTestServer(serverType);
 
-            await Fixture.GivenAPolicy("abac-policy", AbacPolicies.Substitute);
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetAbacPolicy)
-                    .WithIdentity(new Fixture().Sub(Subs.Teacher))
-                    .GetAsync();
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-            }
+            await context.GivenAPolicy("abac-policy", AbacPolicies.Substitute);
+
+            var response = await server
+                .CreateRequest(Api.School.GetAbacPolicy)
+                .WithIdentity(new Fixture().Sub(Subs.Teacher))
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace FunctionalTests.Scenarios
 
         public async Task InitializeAsync()
         {
-            await Fixture.ResetDatabase();
+            await Fixture.CleanUpAsync();
         }
 
         public Task DisposeAsync()

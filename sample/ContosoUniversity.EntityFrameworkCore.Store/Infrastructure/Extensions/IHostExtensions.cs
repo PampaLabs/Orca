@@ -6,30 +6,15 @@ namespace Microsoft.Extensions.Hosting
 {
     public static class IHostExtensions
     {
-        public static IHost MigrateDbContext<TContext>(this IHost host, Action<TContext, IAccessControlContext> seed = null) where TContext : DbContext
+        public static async Task MigrateDbContextAsync<TContext>(this IHost host, Action<TContext, IAccessControlContext> seed = null) where TContext : DbContext
         {
-            using (var scope = host.Services.CreateScope())
-            {
-                try
-                {
-                    var context = scope.ServiceProvider.GetService<TContext>();
-                    var acc = scope.ServiceProvider.GetService<IAccessControlContext>();
+            using var scope = host.Services.CreateScope();
 
-                    if (context != null)
-                    {
-                        context.Database.Migrate();
-                        seed?.Invoke(context, acc);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    var logger = scope.ServiceProvider.GetService<ILogger<TContext>>();
+            var context = scope.ServiceProvider.GetRequiredService<TContext>();
+            var acc = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                    logger.LogError(exception, $"An error ocurred while migrating database for ${nameof(TContext)}");
-                }
-
-                return host;
-            }
+            await context.Database.MigrateAsync();
+            seed?.Invoke(context, acc);
         }
     }
 }

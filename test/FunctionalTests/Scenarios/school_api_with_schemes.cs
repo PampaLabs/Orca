@@ -1,7 +1,9 @@
 ﻿using AutoFixture;
+using Balea;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Net;
 using Xunit;
@@ -15,160 +17,158 @@ namespace FunctionalTests.Scenarios
         private const string BaleaScheme = "scheme2";
         private const string NotBaleaScheme = "scheme3";
 
-        private readonly IEnumerable<TestServer> servers;
-
         public school_api_with_schemes(TestServerFixture fixture) : base(fixture)
         {
-            this.servers = fixture.Servers
-                .Where(x => x.SupportSchemes)
-                .Select(x => x.TestServer);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_not_authenticated()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_not_authenticated(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_not_authorized()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_not_authorized(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_not_authorized()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_not_authorized(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_belongs_to_the_teacher_role()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_belongs_to_the_teacher_role(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact]
-        public async Task allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_belongs_to_the_teacher_role()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_belongs_to_the_teacher_role(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(Subs.Teacher), BaleaScheme)
-                    .GetAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                await response.IsSuccessStatusCodeOrThrow();
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
-                var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(Subs.Teacher), BaleaScheme)
+                .GetAsync();
 
-                schemes.Should().HaveCount(2);
-                schemes.Should().Contain(BaleaScheme);
-                schemes.Should().Contain("Balea");
-            }
+            await response.IsSuccessStatusCodeOrThrow();
+
+            var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+
+            schemes.Should().HaveCount(2);
+            schemes.Should().Contain(BaleaScheme);
+            schemes.Should().Contain("Balea");
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_not_belongs_to_the_teacher_role()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_not_belongs_to_the_teacher_role(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_not_belongs_to_the_teacher_role()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_not_belongs_to_the_teacher_role(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task call_to_endpoint_authorized_with_default_non_balea_scheme_should_not_include_balea()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task call_to_endpoint_authorized_with_default_non_balea_scheme_should_not_include_balea(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetSchemes)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                await response.IsSuccessStatusCodeOrThrow();
+            var response = await server
+                .CreateRequest(Api.School.GetSchemes)
+                .WithIdentity(new Fixture().Sub(InvalidSub), DefaultScheme)
+                .GetAsync();
 
-                var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+            await response.IsSuccessStatusCodeOrThrow();
 
-                schemes.Should().HaveCount(1);
-                schemes.Should().Contain(DefaultScheme);
-                schemes.Should().NotContain("Balea");
-            }
+            var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+
+            schemes.Should().HaveCount(1);
+            schemes.Should().Contain(DefaultScheme);
+            schemes.Should().NotContain("Balea");
         }
 
-        [Fact]
-        public async Task call_to_endpoint_authorized_with_not_balea_configured_scheme_should_not_include_balea()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task call_to_endpoint_authorized_with_not_balea_configured_scheme_should_not_include_balea(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetCustomPolicy)
-                    .WithIdentity(new Fixture().Sub(InvalidSub), NotBaleaScheme)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                await response.IsSuccessStatusCodeOrThrow();
+            var response = await server
+                .CreateRequest(Api.School.GetCustomPolicy)
+                .WithIdentity(new Fixture().Sub(InvalidSub), NotBaleaScheme)
+                .GetAsync();
 
-                var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+            await response.IsSuccessStatusCodeOrThrow();
 
-                schemes.Should().HaveCount(1);
-                schemes.Should().Contain(NotBaleaScheme);
-                schemes.Should().NotContain("Balea");
-            }
+            var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
+
+            schemes.Should().HaveCount(1);
+            schemes.Should().Contain(NotBaleaScheme);
+            schemes.Should().NotContain("Balea");
         }
     }
 }

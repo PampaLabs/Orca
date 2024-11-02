@@ -1,7 +1,9 @@
 ﻿using AutoFixture;
+using Balea;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using Xunit;
 
@@ -10,170 +12,188 @@ namespace FunctionalTests.Scenarios
     public class school_api : ApiServerTest
     {
         private const string InvalidSub = "0";
-        private readonly IEnumerable<TestServer> servers;
 
         public school_api(TestServerFixture fixture) : base(fixture)
         {
-            this.servers = fixture.Servers
-                .Where(x => !x.SupportSchemes)
-                .Select(x => x.TestServer);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_not_authenticated()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_not_authenticated(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_is_not_authorized()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_is_not_authorized(Type serverType)
         {
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(InvalidSub))
-                    .GetAsync();
+            var server = Fixture.GetTestServer(serverType);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            }
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(InvalidSub))
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task allow_to_view_grades_if_the_user_have_permission()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_view_grades_if_the_user_have_permission(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(Subs.Teacher))
-                    .GetAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(Subs.Teacher))
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
-        public async Task not_allow_to_view_grades_if_the_user_does_not_have_permissions()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_view_grades_if_the_user_does_not_have_permissions(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.SubstituteTwo);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.GetGrades)
-                    .WithIdentity(new Fixture().Sub(Subs.SubstituteTwo))
-                    .GetAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.SubstituteTwo);
+
+            var response = await server
+                .CreateRequest(Api.School.GetGrades)
+                .WithIdentity(new Fixture().Sub(Subs.SubstituteTwo))
+                .GetAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task allow_to_edit_grades_if_the_user_does_have_permission()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_edit_grades_if_the_user_does_have_permission(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.EditGrades)
-                    .WithIdentity(new Fixture().Sub(Subs.Teacher))
-                    .PutAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+
+            var response = await server
+                .CreateRequest(Api.School.EditGrades)
+                .WithIdentity(new Fixture().Sub(Subs.Teacher))
+                .PutAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
-        public async Task allow_to_edit_grades_if_the_client_does_have_permission()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_edit_grades_if_the_client_does_have_permission(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.EditGrades)
-                    .WithIdentity(new Fixture().Client(Subs.Teacher))
-                    .PutAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+
+            var response = await server
+                .CreateRequest(Api.School.EditGrades)
+                .WithIdentity(new Fixture().Client(Subs.Teacher))
+                .PutAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
-        public async Task allow_to_edit_grades_if_the_upn_user_does_have_permission()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_edit_grades_if_the_upn_user_does_have_permission(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.EditGrades)
-                    .WithIdentity(new Fixture().UpnSub(Subs.Teacher))
-                    .PutAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+
+            var response = await server
+                .CreateRequest(Api.School.EditGrades)
+                .WithIdentity(new Fixture().UpnSub(Subs.Teacher))
+                .PutAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
 
-        [Fact]
-        public async Task allow_to_edit_grades_if_someone_has_delegated_his_permissions()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task allow_to_edit_grades_if_someone_has_delegated_his_permissions(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            // await Fixture.GivenAnSubject(Subs.SubstituteOne);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
-            await Fixture.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteOne);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.EditGrades)
-                    .WithIdentity(new Fixture().Sub(Subs.SubstituteOne))
-                    .PutAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            // await context.GivenAnSubject(Subs.SubstituteOne);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+
+            await context.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteOne);
+
+            var response = await server
+                .CreateRequest(Api.School.EditGrades)
+                .WithIdentity(new   Fixture().Sub(Subs.SubstituteOne))
+                .PutAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact]
-        public async Task not_allow_to_edit_grades_if_someone_has_delegated_his_permissions_but_no_delegations_has_been_selected()
+        [Theory]
+        [MemberData(nameof(TestServerData.GetTestServersWithoutSchemaSupport), MemberType = typeof(TestServerData))]
+        public async Task not_allow_to_edit_grades_if_someone_has_delegated_his_permissions_but_no_delegations_has_been_selected(Type serverType)
         {
-            await Fixture.GivenAnApplication();
-            // await Fixture.GivenAnSubject(Subs.Teacher);
-            // await Fixture.GivenAnSubject(Subs.SubstituteTwo);
-            await Fixture.GivenARole(Roles.Teacher, Subs.Teacher);
-            await Fixture.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteTwo, false);
+            var server = Fixture.GetTestServer(serverType);
 
-            foreach (var server in servers)
-            {
-                var response = await server
-                    .CreateRequest(Api.School.EditGrades)
-                    .WithIdentity(new Fixture().Sub(Subs.SubstituteTwo))
-                    .PutAsync();
+            using var scope = server.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
-                response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            }
+            await context.GivenAnApplication();
+            // await context.GivenAnSubject(Subs.Teacher);
+            // await context.GivenAnSubject(Subs.SubstituteTwo);
+            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+            await context.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteTwo, false);
+
+            var response = await server
+                .CreateRequest(Api.School.EditGrades)
+                .WithIdentity(new Fixture().Sub(Subs.SubstituteTwo))
+                .PutAsync();
+
+            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
     }
 }
