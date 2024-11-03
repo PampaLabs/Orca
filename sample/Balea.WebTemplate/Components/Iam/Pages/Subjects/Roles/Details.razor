@@ -1,9 +1,8 @@
-﻿@page "/Iam/Users/{id}/Roles"
+﻿@page "/Iam/Subjects/{id}/Roles"
 
 @using Microsoft.AspNetCore.Identity
 
-@inject IUserStore UserStore
-@inject IRoleStore RoleStore
+@inject ISubjectStore SubjectStore
 
 @inject NavigationManager NavigationManager
 
@@ -12,17 +11,17 @@
 <h1>Details</h1>
 
 <div>
-    <h4>User Roles</h4>
+    <h4>Subject Roles</h4>
     <hr />
-    @if (user is null)
+    @if (subject is null)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
         <dl class="row">
-            <dt class="col-sm-2">User</dt>
-            <dd class="col-sm-10">@user.Username</dd>
+            <dt class="col-sm-2">Subject</dt>
+            <dd class="col-sm-10">@subject.Name</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Roles</dt>
@@ -47,17 +46,17 @@
             </dd>
         </dl>
         <div>
-            <a href="@($"/Iam/Users/{Id}/Roles/Edit")">Edit</a>
+            <a href="@($"/Iam/Subjects/{Id}/Roles/Edit")">Edit</a>
             <div class="vr"></div>
-            <a href="@($"/Iam/Users/{Id}")">Back to Users</a>
+            <a href="@($"/Iam/Subjects/{Id}")">Back to Subjects</a>
             <div class="vr"></div>
-            <a href="@($"/Iam/Users")">Back to List</a>
+            <a href="@($"/Iam/Subjects")">Back to List</a>
         </div>
     }
 </div>
 
 @code {
-    User? user;
+    Subject? subject;
 
     IList<Role>? roles;
 
@@ -66,13 +65,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserStore.FindBySubjectAsync(Id);
+        subject = await SubjectStore.FindByIdAsync(Id);
 
-        if (user is null)
+        if (subject is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
 
-        roles = await RoleStore.SearchAsync(new() { Subjects = [ Id ] });
+        roles = await SubjectStore.GetRolesAsync(subject);
     }
 }

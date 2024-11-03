@@ -126,18 +126,6 @@ public class RoleStore : IRoleStore
             );
         }
 
-        if (filter.Subjects is not null)
-        {
-            var bindings = _context.RoleSubjects.Where(x => filter.Subjects.Contains(x.Sub));
-
-            source = source.Join(
-                bindings,
-                role => role.Id,
-                binding => binding.RoleId,
-                (role, binding) => role
-            );
-        }
-
         var roles = source
             .Include(role => role.Mappings)
             .Select(role => _mapper.FromEntity(role)).ToList();
@@ -145,24 +133,24 @@ public class RoleStore : IRoleStore
         return Task.FromResult<IList<Role>>(roles);
     }
 
-    public async Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
+    public Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+        var subjectMapper = new SubjectMapper();
 
-        var targets = _context.RoleSubjects.Where(x => x.RoleId == entity.Id);
-        var subjects = targets.Select(x => x.Sub).ToList();
+        var targets = _context.RoleSubjects.Where(x => x.RoleId == role.Id);
+        var subjects = targets.Select(x => subjectMapper.FromEntity(x.Subject)).ToList();
 
-        return subjects;
+        return Task.FromResult<IList<Subject>>(subjects);
     }
 
-    public async Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
 
         var binding = new RoleSubjectEntity
         {
             RoleId = entity.Id,
-            Sub = subject
+            SubjectId = subject.Id
         };
 
         await _context.RoleSubjects.AddAsync(binding, cancellationToken);
@@ -171,11 +159,11 @@ public class RoleStore : IRoleStore
         return AccessControlResult.Success;
     }
 
-    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var binding = await _context.RoleSubjects
-            .Where(x => x.Role.Id == role.Id)
-            .Where(x => x.Sub == subject)
+            .Where(x => x.RoleId == role.Id)
+            .Where(x => x.SubjectId == subject.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (binding is null)
@@ -190,14 +178,14 @@ public class RoleStore : IRoleStore
         return AccessControlResult.Success;
     }
 
-    public async Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
+    public Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
     {
         var permissionMapper = new PermissionMapper();
 
         var targets = _context.RolePermissions.Where(x => x.RoleId == role.Id);
-        var permissions = targets.Select(x => permissionMapper.FromEntity(x.Permission));
+        var permissions = targets.Select(x => permissionMapper.FromEntity(x.Permission)).ToList();
 
-        return permissions.ToList();
+        return Task.FromResult<IList<Permission>>(permissions);
     }
 
     public async Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)

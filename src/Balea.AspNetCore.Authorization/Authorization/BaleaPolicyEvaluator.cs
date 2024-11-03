@@ -166,7 +166,7 @@ namespace Balea.Authorization
 
             if (authorization.Delegation != null)
             {
-                identity.AddClaim(new Claim(BaleaClaims.DelegatedBy, authorization.Delegation.Who));
+                identity.AddClaim(new Claim(BaleaClaims.DelegatedBy, authorization.Delegation.Who.Sub));
                 identity.AddClaim(new Claim(BaleaClaims.DelegatedFrom, authorization.Delegation.From.ToString()));
                 identity.AddClaim(new Claim(BaleaClaims.DelegatedTo, authorization.Delegation.To.ToString()));
             }

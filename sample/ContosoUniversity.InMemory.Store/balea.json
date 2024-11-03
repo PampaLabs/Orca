@@ -1,5 +1,19 @@
 {
   "Balea": {
+    "subjects": [
+      {
+        "subject": "1",
+        "name": "alice"
+      },
+      {
+        "subject": "2",
+        "name": "bob"
+      },
+      {
+        "subject": "3",
+        "name": "mary"
+      }
+    ],
     "roles": [
       {
         "name": "Teacher",

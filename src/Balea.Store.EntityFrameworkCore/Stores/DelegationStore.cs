@@ -17,7 +17,12 @@ public class DelegationStore : IDelegationStore
 
     public async Task<Delegation> FindByIdAsync(string delegationId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Delegations.FindAsync(delegationId, cancellationToken);
+        var entity = await _context.Delegations
+            .Include(x => x.Who)
+            .Include(x => x.Whom)
+            .Where(x => x.Id == delegationId)
+            .FirstOrDefaultAsync(cancellationToken);
+
         return _mapper.FromEntity(entity);
     }
 
@@ -26,9 +31,11 @@ public class DelegationStore : IDelegationStore
         var now = DateTime.UtcNow;
 
         var entity = await _context.Delegations
+            .Include(x => x.Who)
+            .Include(x => x.Whom)
             .Where(x => x.Enabled)
             .Where(x => x.From <= now && x.To >= now)
-            .Where(x => x.Whom == subject)
+            .Where(x => x.Whom.Sub == subject)
             .FirstOrDefaultAsync(cancellationToken);
 
         return _mapper.FromEntity(entity);
@@ -83,7 +90,9 @@ public class DelegationStore : IDelegationStore
 
     public Task<IList<Delegation>> ListAsync(CancellationToken cancellationToken)
     {
-        var entities = _context.Delegations;
+        var entities = _context.Delegations
+            .Include(x => x.Who)
+            .Include(x => x.Whom);
 
         var result = entities.Select(delegation => _mapper.FromEntity(delegation)).ToList();
 
@@ -92,16 +101,19 @@ public class DelegationStore : IDelegationStore
 
     public Task<IList<Delegation>> SearchAsync(DelegationFilter filter, CancellationToken cancellationToken)
     {
-        var source = _context.Delegations.AsQueryable();
+        var source = _context.Delegations
+            .Include(x => x.Who)
+            .Include(x => x.Whom)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Who))
         {
-            source = source.Where(delegation => delegation.Who == filter.Who);
+            source = source.Where(delegation => delegation.Who.Sub == filter.Who);
         }
 
         if (!string.IsNullOrEmpty(filter.Whom))
         {
-            source = source.Where(delegation => delegation.Who == filter.Whom);
+            source = source.Where(delegation => delegation.Who.Sub == filter.Whom);
         }
 
         if (filter.From.HasValue)

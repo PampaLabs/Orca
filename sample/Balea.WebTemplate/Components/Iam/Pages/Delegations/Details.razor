@@ -3,7 +3,6 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
-@inject IUserStore UserStore
 
 @inject NavigationManager NavigationManager
 
@@ -22,11 +21,11 @@
     {
         <dl class="row">
             <dt class="col-sm-2">Who</dt>
-            <dd class="col-sm-10">@delegation.Who</dd>
+            <dd class="col-sm-10">@delegation.Who.Name</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Whom</dt>
-            <dd class="col-sm-10">@delegation.Whom</dd>
+            <dd class="col-sm-10">@delegation.Whom.Name</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">From</dt>
@@ -63,14 +62,6 @@
         if (delegation is null)
         {
             NavigationManager.NavigateTo("notfound");
-        }
-        else
-        {
-            var who = await UserStore.FindBySubjectAsync(delegation.Who);
-            var whom = await UserStore.FindBySubjectAsync(delegation.Whom);
-
-            delegation.Who = who.Username;
-            delegation.Whom = whom.Username;
         }
     }
 }

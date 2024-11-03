@@ -8,6 +8,7 @@ namespace Balea
         public IPermissionStore PermissionStore { get; }
         public IPolicyStore PolicyStore { get; }
         public IRoleStore RoleStore { get; }
+        public ISubjectStore SubjectStore { get; }
 
         public AccessControlContext(IServiceProvider serviceProvider)
         {
@@ -15,6 +16,7 @@ namespace Balea
             PermissionStore = serviceProvider.GetRequiredService<IPermissionStore>();
             PolicyStore = serviceProvider.GetRequiredService<IPolicyStore>();
             RoleStore = serviceProvider.GetRequiredService<IRoleStore>();
+            SubjectStore = serviceProvider.GetRequiredService<ISubjectStore>();
         }
     }
 }

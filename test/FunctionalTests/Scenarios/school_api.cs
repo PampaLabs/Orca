@@ -54,7 +54,7 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.Teacher);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
@@ -75,7 +75,7 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.SubstituteTwo);
+            await context.GivenAnSubject(Subs.SubstituteTwo);
 
             var response = await server
                 .CreateRequest(Api.School.GetGrades)
@@ -95,7 +95,7 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.Teacher);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
@@ -116,7 +116,7 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.Teacher);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
@@ -137,7 +137,7 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.Teacher);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
@@ -159,8 +159,8 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
-            // await context.GivenAnSubject(Subs.SubstituteOne);
+            await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.SubstituteOne);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
             await context.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteOne);
@@ -183,8 +183,8 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
-            // await context.GivenAnSubject(Subs.SubstituteTwo);
+            await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.SubstituteTwo);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
             await context.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteTwo, false);
 

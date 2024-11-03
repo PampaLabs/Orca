@@ -40,19 +40,19 @@ namespace FunctionalTests.Migrations
                     b.Property<DateTime>("To")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Who")
+                    b.Property<string>("WhoId")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Whom")
+                    b.Property<string>("WhomId")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Whom");
+                    b.HasIndex("WhoId");
+
+                    b.HasIndex("WhomId");
 
                     b.HasIndex("From", "To");
 
@@ -171,15 +171,33 @@ namespace FunctionalTests.Migrations
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleSubjectEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("SubjectId")
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("RoleId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("SubjectId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RoleSubjects");
+                });
+
+            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.SubjectEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Sub")
                         .IsRequired()
@@ -188,12 +206,29 @@ namespace FunctionalTests.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("Sub", "RoleId")
+                    b.HasIndex("Sub")
                         .IsUnique();
 
-                    b.ToTable("RoleSubjects");
+                    b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.DelegationEntity", b =>
+                {
+                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.SubjectEntity", "Who")
+                        .WithMany()
+                        .HasForeignKey("WhoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.SubjectEntity", "Whom")
+                        .WithMany()
+                        .HasForeignKey("WhomId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Who");
+
+                    b.Navigation("Whom");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleMappingEntity", b =>
@@ -234,7 +269,15 @@ namespace FunctionalTests.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Balea.Store.EntityFrameworkCore.Entities.SubjectEntity", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Role");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("Balea.Store.EntityFrameworkCore.Entities.RoleEntity", b =>

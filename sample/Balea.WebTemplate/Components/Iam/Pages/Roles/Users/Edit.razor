@@ -1,11 +1,11 @@
-﻿@page "/Iam/Roles/{id}/Users/Edit"
+﻿@page "/Iam/Roles/{id}/Subjects/Edit"
 @rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 
 @inject IRoleStore RoleStore
-@inject IUserStore UserStore
+@inject ISubjectStore SubjectStore
 
 @inject NavigationManager NavigationManager
 
@@ -26,16 +26,16 @@ else
         <dd class="col-sm-10">@role.Name</dd>
     </dl>
     <dl class="row">
-        <dt class="col-sm-2">Users</dt>
+        <dt class="col-sm-2">Subjects</dt>
         <dd class="col-sm-10">
             <div class="container_">
-                <DualListBox TItem="User"
-                             LeftItems="@availableUsers" LeftTitle="Available"
-                             RightItems="@assignedUsers" RightTitle="Assigned"
-                             Name="@(item => item.Username)"
-                             Value="@(item => item.SubjectId)"
-                             OnMoveToLeft="RemoveUsersAsync"
-                             OnMoveToRight="AddUsersAsync">
+                <DualListBox TItem="Subject"
+                             LeftItems="@availableSubjects" LeftTitle="Available"
+                             RightItems="@assignedSubjects" RightTitle="Assigned"
+                             Name="@(item => item.Name)"
+                             Value="@(item => item.Id)"
+                             OnMoveToLeft="RemoveSubjectsAsync"
+                             OnMoveToRight="AddSubjectsAsync">
                 </DualListBox>
             </div>
         </dd>
@@ -49,8 +49,8 @@ else
 @code {
     Role? role;
 
-    IList<User> availableUsers = [];
-    IList<User> assignedUsers = [];
+    IList<Subject> availableSubjects = [];
+    IList<Subject> assignedSubjects = [];
 
     [Parameter]
     public string Id { get; set; }
@@ -64,45 +64,45 @@ else
             NavigationManager.NavigateTo("notfound");
         }
 
-        await LoadUsersAsync();
+        await LoadSubjectsAsync();
     }
 
-    private async Task LoadUsersAsync()
+    private async Task LoadSubjectsAsync()
     {
-        var currentUsers = await RoleStore.GetSubjectsAsync(role);
-        var currentUserSet = currentUsers.ToHashSet();
+        var currentSubjects = await RoleStore.GetSubjectsAsync(role);
+        var currentSubjectSet = currentSubjects.Select(x => x.Id).ToHashSet();
 
-        var users = await UserStore.ListAsync();
+        var subjects = await SubjectStore.ListAsync();
 
-        assignedUsers.Clear();
-        availableUsers.Clear();
+        assignedSubjects.Clear();
+        availableSubjects.Clear();
 
-        foreach (var user in users)
+        foreach (var subject in subjects)
         {
-            if (currentUserSet.Contains(user.SubjectId))
+            if (currentSubjectSet.Contains(subject.Id))
             {
-                assignedUsers.Add(user);
+                assignedSubjects.Add(subject);
             }
             else
             {
-                availableUsers.Add(user);
+                availableSubjects.Add(subject);
             }
         }
     }
 
-    private async Task AddUsersAsync(MoveItemsEventArgs<User> e)
+    private async Task AddSubjectsAsync(MoveItemsEventArgs<Subject> e)
     {
-        foreach (var user in e.Items)
+        foreach (var subject in e.Items)
         {
-            await RoleStore.AddSubjectAsync(role, user.SubjectId);
+            await RoleStore.AddSubjectAsync(role, subject);
         }
     }
 
-    private async Task RemoveUsersAsync(MoveItemsEventArgs<User> e)
+    private async Task RemoveSubjectsAsync(MoveItemsEventArgs<Subject> e)
     {
-        foreach (var user in e.Items)
+        foreach (var subject in e.Items)
         {
-            await RoleStore.RemoveSubjectAsync(role, user.SubjectId);
+            await RoleStore.RemoveSubjectAsync(role, subject);
         }
     }
 }

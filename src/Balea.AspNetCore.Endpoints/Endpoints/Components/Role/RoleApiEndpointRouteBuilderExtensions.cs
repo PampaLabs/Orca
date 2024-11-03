@@ -145,10 +145,12 @@ public static class RoleApiEndpointRouteBuilderExtensions
             return TypedResults.Ok(response);
         });
 
-        routeGroup.MapGet("/{id}/subjects", async Task<Results<Ok<string[]>, ValidationProblem, NotFound>>
+        routeGroup.MapGet("/{id}/subjects", async Task<Results<Ok<SubjectResponse[]>, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
+
+            var subjectMapper = new SubjectResponseMapper();
 
             var role = await roleStore.FindByIdAsync(id);
 
@@ -158,23 +160,31 @@ public static class RoleApiEndpointRouteBuilderExtensions
             }
 
             var subjects = await roleStore.GetSubjectsAsync(role);
+            var result = subjects.Select(subjectMapper.FromEntity);
 
-            return TypedResults.Ok(subjects.ToArray());
+            return TypedResults.Ok(result.ToArray());
         });
 
-        routeGroup.MapPost("/{id}/subjects/{sub}", async Task<Results<Ok, ValidationProblem, NotFound>>
-            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string sub) =>
+        routeGroup.MapPost("/{id}/subjects/{subjectId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string subjectId) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
+            var subjectStore = sp.GetRequiredService<ISubjectStore>();
 
             var role = await roleStore.FindByIdAsync(id);
+            var subject = await subjectStore.FindByIdAsync(subjectId);
 
             if (role is null)
             {
                 return TypedResults.NotFound();
             }
 
-            var result = await roleStore.AddSubjectAsync(role, sub);
+            if (subject is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var result = await roleStore.AddSubjectAsync(role, subject);
 
             if (!result.Succeeded)
             {
@@ -184,19 +194,26 @@ public static class RoleApiEndpointRouteBuilderExtensions
             return TypedResults.Ok();
         });
 
-        routeGroup.MapDelete("/{id}/subjects/{sub}", async Task<Results<Ok, ValidationProblem, NotFound>>
-            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string sub) =>
+        routeGroup.MapDelete("/{id}/subjects/{subjectId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+            ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string subjectId) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
+            var subjectStore = sp.GetRequiredService<ISubjectStore>();
 
             var role = await roleStore.FindByIdAsync(id);
+            var subject = await subjectStore.FindByIdAsync(subjectId);
 
             if (role is null)
             {
                 return TypedResults.NotFound();
             }
 
-            var result = await roleStore.RemoveSubjectAsync(role, sub);
+            if (subject is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var result = await roleStore.RemoveSubjectAsync(role, subject);
 
             if (!result.Succeeded)
             {

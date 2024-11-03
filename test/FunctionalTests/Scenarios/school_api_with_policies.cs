@@ -41,7 +41,7 @@ namespace FunctionalTests.Scenarios
             var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
 
             await context.GivenAnApplication();
-            // await context.GivenAnSubject(Subs.Teacher);
+            await context.GivenAnSubject(Subs.Teacher);
             await context.GivenARole(Roles.Teacher, Subs.Teacher);
 
             await context.GivenAPolicy("abac-policy", AbacPolicies.Substitute);

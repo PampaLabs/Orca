@@ -4,8 +4,8 @@ internal class DelegationRequestMapper : IEntityMapper<Delegation, DelegationReq
 {
     public void FromEntity(Delegation source, DelegationRequest destination)
     {
-        destination.Who = source.Who;
-        destination.Whom = source.Whom;
+        destination.Who = source.Who.Id;
+        destination.Whom = source.Whom.Id;
         destination.From = source.From;
         destination.To = source.To;
         destination.Enabled = source.Enabled;
@@ -13,8 +13,8 @@ internal class DelegationRequestMapper : IEntityMapper<Delegation, DelegationReq
 
     public void ToEntity(DelegationRequest source, Delegation destination)
     {
-        destination.Who = source.Who;
-        destination.Whom = source.Whom;
+        destination.Who = new () { Id = source.Who };
+        destination.Whom = new () { Id = source.Whom };
         destination.From = source.From;
         destination.To = source.To;
         destination.Enabled = source.Enabled;

@@ -14,10 +14,19 @@ namespace FunctionalTests.Seedwork
             await context.PermissionStore.CreateAsync(editGradesPermission);
         }
 
+        public static async Task GivenAnSubject(
+            this IAccessControlContext context,
+            string sub)
+        {
+            var subject = new Subject { Sub = sub, Name = sub };
+
+            await context.SubjectStore.CreateAsync(subject);
+        }
+
         public static async Task GivenARole(
             this IAccessControlContext context,
             string name,
-            string subject,
+            string sub,
             bool withPermissions = true)
         {
             var role = new Role
@@ -25,6 +34,8 @@ namespace FunctionalTests.Seedwork
                 Name = name,
                 Description = $"{name} role"
             };
+
+            var subject = await context.SubjectStore.FindBySubAsync(sub);
 
             await context.RoleStore.CreateAsync(role);
             await context.RoleStore.AddSubjectAsync(role, subject);
@@ -60,10 +71,13 @@ namespace FunctionalTests.Seedwork
             string whom,
             bool enabled = true)
         {
+            var subjectWho = await context.SubjectStore.FindBySubAsync(who);
+            var subjectWhom = await context.SubjectStore.FindBySubAsync(whom);
+
             var delegation = new Delegation
             {
-                Who = who,
-                Whom = whom,
+                Who = subjectWho,
+                Whom = subjectWhom,
                 From = DateTime.UtcNow.AddDays(-1),
                 To = DateTime.UtcNow.AddDays(1),
                 Enabled = enabled,

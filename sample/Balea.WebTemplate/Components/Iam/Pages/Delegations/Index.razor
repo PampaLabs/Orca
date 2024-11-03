@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
-@inject IUserStore UserStore
+@inject ISubjectStore SubjectStore
 
 <PageTitle>Delegations</PageTitle>
 
@@ -21,8 +21,8 @@
 else
 {
 <QuickGrid Class="table" Items="@delegations" Pagination="@pagination">
-    <PropertyColumn Property="delegation => delegation.Who" Title="Who" />
-    <PropertyColumn Property="delegation => delegation.Whom" Title="Whom" />
+    <PropertyColumn Property="delegation => delegation.Who.Name" Title="Who" />
+    <PropertyColumn Property="delegation => delegation.Whom.Name" Title="Whom" />
     <PropertyColumn Property="delegation => delegation.From" Title="From" Format="d" />
     <PropertyColumn Property="delegation => delegation.To" Title="To" Format="d" />
     <TemplateColumn Context="delegation" Title="Enabled">
@@ -61,16 +61,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         var list = await DelegationStore.ListAsync();
-
-        var users = await UserStore.ListAsync();
-        var usernames = users.ToDictionary(user => user.SubjectId, user => user.Username);
-
-        foreach (var item in list)
-        {
-            item.Who = usernames[item.Who];
-            item.Whom = usernames[item.Whom];
-        }
-
         delegations = list.AsQueryable();
     }
 }

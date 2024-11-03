@@ -18,7 +18,7 @@ public class DelegationStore : IDelegationStore
 
     public Task<Delegation> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
     {
-        var delegation = _options.Delegations.GetCurrentDelegation(subject);
+        var delegation = _options.Delegations.FirstOrDefault(d => d.Active && d.Whom.Sub == subject);
 
         return Task.FromResult(delegation);
     }
@@ -56,12 +56,12 @@ public class DelegationStore : IDelegationStore
 
         if (!string.IsNullOrEmpty(filter.Who))
         {
-            source = source.Where(delegation => delegation.Who == filter.Who);
+            source = source.Where(delegation => delegation.Who.Sub == filter.Who);
         }
 
         if (!string.IsNullOrEmpty(filter.Whom))
         {
-            source = source.Where(delegation => delegation.Who == filter.Whom);
+            source = source.Where(delegation => delegation.Who.Sub == filter.Whom);
         }
 
         if (filter.From.HasValue)

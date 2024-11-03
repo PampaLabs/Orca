@@ -74,14 +74,14 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
-    public async Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
+    public Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
         var roleMapper = new RoleMapper();
 
         var targets = _context.RolePermissions.Where(x => x.PermissionId == permission.Id);
-        var roles = targets.Select(x => roleMapper.FromEntity(x.Role));
+        var roles = targets.Select(x => roleMapper.FromEntity(x.Role)).ToList();
 
-        return roles.ToList();
+        return Task.FromResult<IList<Role>>(roles);
     }
 
     public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)

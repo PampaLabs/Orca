@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IDelegationStore DelegationStore
-@inject IUserStore UserStore
+@inject ISubjectStore SubjectStore
 
 @inject NavigationManager NavigationManager
 
@@ -31,9 +31,9 @@ else
                 <div class="form-floating mb-3">
                     <InputSelect id="who" @bind-Value="Input.Who" class="form-control" placeholder="Please enter the who.">
                         <option value="">Select an user</option>
-                        @foreach (var user in users)
+                        @foreach (var subject in subjects)
                         {
-                            <option value="@user.SubjectId">@user.Username</option>
+                            <option value="@subject.Id">@subject.Name</option>
                         }
                     </InputSelect>
                     <label for="who" class="form-label">Who</label>
@@ -42,9 +42,9 @@ else
                 <div class="form-floating mb-3">
                     <InputSelect id="whom" @bind-Value="Input.Whom" class="form-control" placeholder="Please enter the whom.">
                         <option value="">Select an user</option>
-                        @foreach (var user in users)
+                        @foreach (var subject in subjects)
                         {
-                            <option value="@user.SubjectId">@user.Username</option>
+                            <option value="@subject.Id">@subject.Name</option>
                         }
                     </InputSelect>
                     <label for="whom" class="form-label">Whom</label>
@@ -82,7 +82,7 @@ else
     [SupplyParameterFromForm]
     private InputModel? Input { get; set; }
 
-    private IList<User> users;
+    private IList<Subject> subjects;
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,15 +95,15 @@ else
 
         Input = new InputModel
         {
-            Who = delegation.Who,
-            Whom = delegation.Whom,
+            Who = delegation.Who.Id,
+            Whom = delegation.Whom.Id,
             From = delegation.From,
             To = delegation.To,
             Enabled = delegation.Enabled,
             // ConcurrencyStamp = delegation.ConcurrencyStamp,
         };
 
-        users = await UserStore.ListAsync();
+        subjects = await SubjectStore.ListAsync();
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -112,8 +112,11 @@ else
     {
         var delegation = await DelegationStore.FindByIdAsync(Id);
 
-        delegation.Who = Input.Who;
-        delegation.Whom = Input.Whom;
+        var subjectWho = await SubjectStore.FindByIdAsync(Input.Who);
+        var subjectWhom = await SubjectStore.FindByIdAsync(Input.Whom);
+
+        delegation.Who = subjectWho;
+        delegation.Whom = subjectWhom;
         delegation.From = Input.From.Value;
         delegation.To = Input.To.Value;
         delegation.Enabled = Input.Enabled;

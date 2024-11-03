@@ -77,32 +77,22 @@ public class RoleStore : IRoleStore
             source = source.Where(role => filter.Mappings.Any(mapping => role.Mappings.Contains(mapping)));
         }
 
-        if (filter.Subjects is not null)
-        {
-            var bindings = _options.SubejctBindings
-                .Where(binding => filter.Subjects.Contains(binding.Subject))
-                .Select(binding => binding.Role)
-                .ToHashSet();
-
-            source = source.Where(role => bindings.Contains(role));
-        }
-
         var result = source.ToList();
 
         return Task.FromResult<IList<Role>>(result);
     }
 
-    public Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
+    public Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
         var result = _options.SubejctBindings
             .Where(binding => binding.Role == role)
             .Select(binding => binding.Subject)
             .ToList();
 
-        return Task.FromResult<IList<string>>(result);
+        return Task.FromResult<IList<Subject>>(result);
     }
 
-    public Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    public Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
 	{
         var binding = (subject, role);
         _options.SubejctBindings.Add(binding);
@@ -110,7 +100,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
-    public Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    public Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
 	{
         var binding = (subject, role);
         _options.SubejctBindings.Remove(binding);

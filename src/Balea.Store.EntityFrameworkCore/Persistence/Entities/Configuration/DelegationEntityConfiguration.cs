@@ -19,18 +19,22 @@ internal class DelegationEntityConfiguration : IEntityTypeConfiguration<Delegati
         builder.Property(x => x.To)
             .IsRequired();
 
-        builder.Property(x => x.Who)
-            .HasMaxLength(200)
-            .IsRequired();
-
-        builder.Property(x => x.Whom)
-            .HasMaxLength(200)
-            .IsRequired();
-
         builder.Property(x => x.Enabled)
             .IsRequired();
 
-        builder.HasIndex(x => x.Whom);
+        builder
+            .HasOne(x => x.Who)
+            .WithMany()
+            .HasForeignKey(x => x.WhoId)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired();
+
+        builder
+            .HasOne(x => x.Whom)
+            .WithMany()
+            .HasForeignKey(x => x.WhomId)
+            .OnDelete(DeleteBehavior.NoAction)
+            .IsRequired();
 
         builder.HasIndex(x => new { x.From, x.To });
     }

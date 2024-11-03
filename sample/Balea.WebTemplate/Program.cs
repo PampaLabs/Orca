@@ -1,8 +1,6 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Balea.WebTemplate.Components;
-using Balea.WebTemplate;
-using Balea.WebTemplate.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +21,6 @@ builder.Services
             sqlServerOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
         });
     });
-
-builder.Services.AddScoped<IUserStore, UserStore>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

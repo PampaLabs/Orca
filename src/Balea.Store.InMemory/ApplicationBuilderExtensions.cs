@@ -30,6 +30,12 @@ public static class ApplicationBuilderExtensions
         var baleaConfig = new BaleaConfiguration();
         configuration.GetSection("Balea").Bind(baleaConfig);
 
+        foreach (var item in baleaConfig.Subjects)
+        {
+            var subject = new SubjectMapper().FromEntity(item);
+            await context.SubjectStore.CreateAsync(subject);
+        }
+
         foreach (var item in baleaConfig.Policies)
         {
             var policy = new PolicyMapper().FromEntity(item);
@@ -47,8 +53,9 @@ public static class ApplicationBuilderExtensions
             var role = new RoleMapper().FromEntity(item);
             await context.RoleStore.CreateAsync(role);
 
-            foreach (var subject in item.Subjects)
+            foreach (var sub in item.Subjects)
             {
+                var subject = await context.SubjectStore.FindBySubAsync(sub);
                 await context.RoleStore.AddSubjectAsync(role, subject);
             }
 

@@ -1,0 +1,58 @@
+﻿@page "/Iam/Subjects"
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Identity
+
+@inject ISubjectStore SubjectStore
+
+<PageTitle>Subjects</PageTitle>
+
+<h1>Subjects</h1>
+
+<a href="/Iam/Subjects/Create" class="btn btn-primary pe-none disabled">
+    <i class="fa fa-solid fa-plus"></i> Create New
+</a>
+
+@if (subjects is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<QuickGrid Class="table" Items="@subjects" Pagination="@pagination">
+    <PropertyColumn Property="subject => subject.Sub" Title="Sub" />
+    <PropertyColumn Property="subject => subject.Name" Title="Name" />
+    <PropertyColumn Property="subject => subject.Email" Title="Email" />
+
+    <TemplateColumn Context="subject" Title="Actions">
+        <div class="actions">
+            <a href="@($"/Iam/Subjects/{subject.Id}/Roles")" title="Roles">
+                <i class="fa fa-solid fa-user-tie"></i>
+            </a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Subjects/{subject.Id}")" title="Details" class="btn-link pe-none disabled">
+                <i class="fa fa-solid fa-eye"></i>
+            </a>
+            <a href="@($"/Iam/Subjects/{subject.Id}/Edit")" title="Edit" class="btn-link pe-none disabled">
+                <i class="fa fa-solid fa-pencil"></i>
+            </a>
+            <a href="@($"/Iam/Subjects/{subject.Id}/Delete")" title="Delete" class="btn-link pe-none disabled">
+                <i class="fa fa-solid fa-trash-can"></i>
+            </a>
+        </div>
+    </TemplateColumn>
+</QuickGrid>
+<Paginator State="@pagination"></Paginator>
+}
+
+@code {
+    IQueryable<Subject>? subjects;
+
+    PaginationState pagination = new PaginationState { ItemsPerPage = 20 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var list = await SubjectStore.ListAsync();
+        subjects = list.AsQueryable();
+    }
+}

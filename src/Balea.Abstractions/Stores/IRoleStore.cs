@@ -13,9 +13,9 @@
 
         Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default);
 
-        Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default);
-        Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken = default);
-    	Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken = default);
+        Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default);
+        Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken = default);
+    	Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken = default);
 
         Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default);
         Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken = default);

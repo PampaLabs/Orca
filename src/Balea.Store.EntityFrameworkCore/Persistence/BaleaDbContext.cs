@@ -5,7 +5,8 @@ namespace Balea.Store.EntityFrameworkCore;
 
 public class BaleaDbContext : DbContext
 {
-	public DbSet<RoleEntity> Roles { get; set; }
+    public DbSet<SubjectEntity> Subjects { get; set; }
+    public DbSet<RoleEntity> Roles { get; set; }
 	public DbSet<PermissionEntity> Permissions { get; set; }
 	public DbSet<DelegationEntity> Delegations { get; set; }
 	public DbSet<PolicyEntity> Policies { get; set; }

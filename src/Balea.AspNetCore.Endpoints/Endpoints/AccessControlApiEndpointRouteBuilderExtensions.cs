@@ -26,6 +26,7 @@ public static class AccessControlApiEndpointRouteBuilderExtensions
         routeGroup.MapPermissionEndpoints();
         routeGroup.MapPolicyEndpoints();
         routeGroup.MapRoleEndpoints();
+        routeGroup.MapSubjectEndpoints();
 
         return new MapAccessControlApiEndpointsConventionBuilder(routeGroup);
     }

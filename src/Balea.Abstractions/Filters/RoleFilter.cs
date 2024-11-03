@@ -7,6 +7,5 @@
         public bool? Enabled { get; set; }
 
         public string[] Mappings { get; set; }
-        public string[] Subjects { get; set; }
     }
 }

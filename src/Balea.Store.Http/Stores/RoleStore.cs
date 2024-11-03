@@ -120,14 +120,6 @@ public class RoleStore : IRoleStore
             }
         }
 
-        if (filter.Subjects is not null)
-        {
-            foreach (var subject in filter.Subjects)
-            {
-                query.Add(nameof(filter.Subjects), subject);
-            }
-        }
-
         var uri = $"{endpoint}{query.ToUriComponent()}";
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
@@ -135,17 +127,21 @@ public class RoleStore : IRoleStore
         return await entities.ToListAsync(cancellationToken);
     }
 
-    public async Task<IList<string>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
+    public async Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
-        var uri = $"{endpoint}/{role.Id}/subjects";
-        var response = _httpClient.GetFromJsonAsAsyncEnumerable<string>(uri, cancellationToken);
+        var subjectMapper = new SubjectResponseMapper();
 
-        return await response.ToListAsync(cancellationToken);
+        var uri = $"{endpoint}/{role.Id}/subjects";
+        var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
+
+        var result = response.Select(subjectMapper.ToEntity);
+
+        return await result.ToListAsync(cancellationToken);
     }
 
-    public async Task<AccessControlResult> AddSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
-        var uri = $"{endpoint}/{role.Id}/subjects/{subject}";
+        var uri = $"{endpoint}/{role.Id}/subjects/{subject.Id}";
         var response = await _httpClient.PostAsync(uri, null, cancellationToken);
 
         if (response.IsSuccessStatusCode)
@@ -158,9 +154,9 @@ public class RoleStore : IRoleStore
         }
     }
 
-    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, string subject, CancellationToken cancellationToken)
+    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
-        var uri = $"{endpoint}/{role.Id}/subjects/{subject}";
+        var uri = $"{endpoint}/{role.Id}/subjects/{subject.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)

@@ -4,9 +4,11 @@ internal class DelegationResponseMapper : IEntityMapper<Delegation, DelegationRe
 {
     public void FromEntity(Delegation source, DelegationResponse destination)
     {
+        var subjectMapper = new SubjectResponseMapper();
+
         destination.Id = source.Id;
-        destination.Who = source.Who;
-        destination.Whom = source.Whom;
+        destination.Who = subjectMapper.FromEntity(source.Who);
+        destination.Whom = subjectMapper.FromEntity(source.Whom);
         destination.From = source.From;
         destination.To = source.To;
         destination.Enabled = source.Enabled;
@@ -14,9 +16,11 @@ internal class DelegationResponseMapper : IEntityMapper<Delegation, DelegationRe
 
     public void ToEntity(DelegationResponse source, Delegation destination)
     {
+        var subjectMapper = new SubjectResponseMapper();
+
         destination.Id = source.Id;
-        destination.Who = source.Who;
-        destination.Whom = source.Whom;
+        destination.Who = subjectMapper.ToEntity(source.Who);
+        destination.Whom = subjectMapper.ToEntity(source.Whom);
         destination.From = source.From;
         destination.To = source.To;
         destination.Enabled = source.Enabled;

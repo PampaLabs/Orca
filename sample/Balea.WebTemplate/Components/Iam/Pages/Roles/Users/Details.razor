@@ -1,9 +1,9 @@
-﻿@page "/Iam/Roles/{id}/Users"
+﻿@page "/Iam/Roles/{id}/Subjects"
 
 @using Microsoft.AspNetCore.Identity
 
 @inject IRoleStore RoleStore
-@inject IUserStore UserStore
+@inject ISubjectStore SubjectStore
 
 @inject NavigationManager NavigationManager
 
@@ -12,7 +12,7 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Role Users</h4>
+    <h4>Role Subjects</h4>
     <hr />
     @if (role is null)
     {
@@ -25,15 +25,15 @@
             <dd class="col-sm-10">@role.Name</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">Users</dt>
+            <dt class="col-sm-2">Subjects</dt>
             <dd class="col-sm-4">
-                @if (users.Any())
+                @if (subjects.Any())
                 {
                     <ul class="list-group list-group-flush">
-                        @foreach (var user in users)
+                        @foreach (var subject in subjects)
                         {
                             <li class="list-group-item">
-                                @user.Username
+                                @subject.Name
                             </li>
                         }
                     </ul>
@@ -47,7 +47,7 @@
             </dd>
         </dl>
         <div>
-            <a href="@($"/Iam/Roles/{Id}/Users/Edit")">Edit</a>
+            <a href="@($"/Iam/Roles/{Id}/Subjects/Edit")">Edit</a>
             <div class="vr"></div>
             <a href="@($"/Iam/Roles/{Id}")">Back to Role</a>
             <div class="vr"></div>
@@ -59,7 +59,7 @@
 @code {
     Role? role;
 
-    IList<User>? users;
+    IList<Subject>? subjects;
 
     [Parameter]
     public string Id { get; set; }
@@ -74,9 +74,5 @@
         }
 
         var subjects = await RoleStore.GetSubjectsAsync(role);
-        var subjectSet = subjects.ToHashSet();
-
-        users = await UserStore.ListAsync();
-        users = users.Where(user => subjectSet.Contains(user.SubjectId)).ToList();
     }
 }

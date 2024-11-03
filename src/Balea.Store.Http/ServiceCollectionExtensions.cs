@@ -45,5 +45,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPermissionStore, PermissionStore>();
         services.AddScoped<IPolicyStore, PolicyStore>();
         services.AddScoped<IRoleStore, RoleStore>();
+        services.AddScoped<ISubjectStore, SubjectStore>();
     }
 }

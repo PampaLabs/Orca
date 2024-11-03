@@ -1,10 +1,10 @@
-﻿@page "/Iam/Users/{id}/Roles/Edit"
+﻿@page "/Iam/Subjects/{id}/Roles/Edit"
 @rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 
-@inject IUserStore UserStore
+@inject ISubjectStore SubjectStore
 @inject IRoleStore RoleStore
 
 @inject NavigationManager NavigationManager
@@ -13,17 +13,17 @@
 
 <h1>Edit</h1>
 
-<h4>User</h4>
+<h4>Subject</h4>
 <hr />
-@if (user is null)
+@if (subject is null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <dl class="row">
-        <dt class="col-sm-2">User</dt>
-        <dd class="col-sm-10">@user.Username</dd>
+        <dt class="col-sm-2">Subject</dt>
+        <dd class="col-sm-10">@subject.Name</dd>
     </dl>
     <dl class="row">
         <dt class="col-sm-2">Roles</dt>
@@ -43,11 +43,11 @@ else
 }
 
 <div>
-    <a href="/Iam/Users">Back to List</a>
+    <a href="/Iam/Subjects">Back to List</a>
 </div>
 
 @code {
-    User? user;
+    Subject? subject;
 
     IList<Role> availableRoles = [];
     IList<Role> assignedRoles = [];
@@ -57,9 +57,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserStore.FindBySubjectAsync(Id);
+        subject = await SubjectStore.FindByIdAsync(Id);
 
-        if (user is null)
+        if (subject is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -69,7 +69,7 @@ else
 
     private async Task LoadRolesAsync()
     {
-        var currentRoles = await RoleStore.SearchAsync(new() { Subjects = [Id] });
+        var currentRoles = await SubjectStore.GetRolesAsync(subject);
         var currentRoleSet = currentRoles.Select(x => x.Id).ToHashSet();
 
         var roles = await RoleStore.ListAsync();
@@ -94,7 +94,7 @@ else
     {
         foreach (var role in e.Items)
         {
-            await RoleStore.AddSubjectAsync(role, Id);
+            await SubjectStore.AddRoleAsync(subject, role);
         }
     }
 
@@ -102,7 +102,7 @@ else
     {
         foreach (var role in e.Items)
         {
-            await RoleStore.RemoveSubjectAsync(role, Id);
+            await SubjectStore.RemoveRoleAsync(subject, role);
         }
     }
 }

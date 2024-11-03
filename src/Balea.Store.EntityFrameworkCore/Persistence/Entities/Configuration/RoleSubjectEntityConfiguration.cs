@@ -7,10 +7,13 @@ internal class RoleSubjectEntityConfiguration : IEntityTypeConfiguration<RoleSub
 {
     public void Configure(EntityTypeBuilder<RoleSubjectEntity> builder)
     {
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => new { x.SubjectId, x.RoleId });
 
-        builder.Property(x => x.Sub)
-            .HasMaxLength(100)
+        builder
+            .HasOne(x => x.Subject)
+            .WithMany()
+            .HasForeignKey(x => x.SubjectId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder
@@ -19,8 +22,5 @@ internal class RoleSubjectEntityConfiguration : IEntityTypeConfiguration<RoleSub
             .HasForeignKey(x => x.RoleId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
-
-        builder.HasIndex(x => new { x.Sub, x.RoleId })
-            .IsUnique();
     }
 }
