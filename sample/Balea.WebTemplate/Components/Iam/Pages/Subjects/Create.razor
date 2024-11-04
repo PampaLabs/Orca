@@ -1,0 +1,72 @@
+﻿@page "/Iam/Subjects/Create"
+@rendermode InteractiveServer
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+
+@inject ISubjectStore SubjectStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Subject</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <EditForm method="post" Model="Input" OnValidSubmit="AddSubject" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="form-floating mb-3">
+                <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Please enter the name." />
+                <label for="name" class="form-label">Name</label>
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText id="email" @bind-Value="Input.Email" class="form-control" placeholder="Please enter the email." />
+                <label for="email" class="form-label">Email</label>
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/Iam/Roles">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddSubject()
+    {
+        var subject = new Subject
+        {
+            Name = Input.Name,
+            Email = Input.Email,
+        };
+
+        var result = await SubjectStore.CreateAsync(subject);
+
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/Iam/Subjects");
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Name")]
+        public string? Name { get; set; }
+
+        [Required]
+        [Display(Name = "Email")]
+        public string? Email { get; set; }
+    }
+}

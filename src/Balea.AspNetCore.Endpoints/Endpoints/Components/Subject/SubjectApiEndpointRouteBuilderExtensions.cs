@@ -128,7 +128,7 @@ public static class SubjectApiEndpointRouteBuilderExtensions
             return TypedResults.Ok();
         });
 
-        routeGroup.MapGet("/sub/{subject}", async Task<Results<Ok<SubjectResponse>, NotFound>>
+        routeGroup.MapGet("/sub/{sub}", async Task<Results<Ok<SubjectResponse>, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string sub) =>
         {
             var subjectStore = sp.GetRequiredService<ISubjectStore>();

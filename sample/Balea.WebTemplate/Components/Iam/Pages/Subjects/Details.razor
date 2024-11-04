@@ -1,0 +1,52 @@
+﻿@page "/Iam/Subjects/{id}"
+
+@using Microsoft.AspNetCore.Identity
+
+@inject ISubjectStore SubjectStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Subject</h4>
+    <hr />
+    @if (subject is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@subject.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@subject.Email</dd>
+        </dl>
+        <div>
+            <a href="@($"/Iam/Subjects/{Id}/Edit")">Edit</a>
+            <div class="vr"></div>
+            <a href="@($"/Iam/Subjects")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Subject? subject;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        subject = await SubjectStore.FindByIdAsync(Id);
+
+        if (subject is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
