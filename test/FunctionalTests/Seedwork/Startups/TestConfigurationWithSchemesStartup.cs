@@ -17,7 +17,7 @@ namespace FunctionalTests.Seedwork
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
                 })
-                .AddInMemoryStore()
+                .AddInMemoryStores()
                 .AddAuthorization(options =>
                 {
                     options.Schemes.Add("scheme2");

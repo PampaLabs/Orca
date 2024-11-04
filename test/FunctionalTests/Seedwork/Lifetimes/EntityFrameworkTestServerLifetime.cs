@@ -30,8 +30,6 @@ public class EntityFrameworkTestServerLifetime : IAsyncTestServerLifetime
     {
         var connectionString = _container.GetConnectionString();
         await _respawner.ResetAsync(connectionString);
-
-        await server.Host.SeedDbContextAsync<BaleaDbContext>();
     }
 
     public async Task TearDownAsync(TestServer server)

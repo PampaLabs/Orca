@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FunctionalTests.Migrations
+namespace Balea.WebTemplate.Data.Migrations
 {
-    [DbContext(typeof(BaleaDbContext))]
-    partial class BaleaDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ContosoDbContext))]
+    partial class ContosoDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

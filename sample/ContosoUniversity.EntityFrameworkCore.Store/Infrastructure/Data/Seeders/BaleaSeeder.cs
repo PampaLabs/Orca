@@ -1,5 +1,4 @@
 ﻿using Balea;
-using Balea.Store.EntityFrameworkCore;
 
 using ContosoUniversity.EntityFrameworkCore.Store.Models;
 
@@ -7,9 +6,20 @@ namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeder
 {
     public static class BaleaSeeder
     {
-        public static async Task Seed(BaleaDbContext db, IAccessControlContext context)
+        public static async Task SeedDataContextAsync(this IApplicationBuilder host, Func<IAccessControlContext, Task> seed = null)
         {
-            if (!db.Subjects.Any())
+            using var scope = host.ApplicationServices.CreateScope();
+
+            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+
+            await Seed(context);
+        }
+
+        private static async Task Seed(IAccessControlContext context)
+        {
+            var records = await context.SubjectStore.ListAsync();
+
+            if (!records.Any())
             {
                 var alice = new Subject { Sub = "818727", Name = "Alice" };
                 var bob = new Subject { Sub = "88421113", Name = "Bob" };

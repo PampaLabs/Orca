@@ -14,7 +14,7 @@ builder.Services
             PermissionClaimType = "permissions"
         };
     })
-    .AddInMemoryStore()
+    .AddInMemoryStores()
     .AddAuthorization(options =>
     {
         options.Events.UnauthorizedFallback = AuthorizationFallbackAction.RedirectToAction("Account", "AccessDenied");

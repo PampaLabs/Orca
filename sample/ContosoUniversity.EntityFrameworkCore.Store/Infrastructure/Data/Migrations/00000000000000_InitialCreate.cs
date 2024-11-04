@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FunctionalTests.Migrations
+namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

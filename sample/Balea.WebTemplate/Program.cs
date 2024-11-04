@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Balea.WebTemplate.Components;
+using Balea.WebTemplate.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,17 +11,18 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
+builder.Services.AddDbContext<ContosoDbContext>((sp, options) => {
+    var configuration = sp.GetRequiredService<IConfiguration>();
+
+    options.UseSqlServer(configuration.GetConnectionString("Default"), sqlServerOptions =>
+    {
+        sqlServerOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+    });
+});
+
 builder.Services
     .AddBalea()
-    .AddEntityFrameworkCoreStore((sp, options) =>
-    {
-        var configuration = sp.GetRequiredService<IConfiguration>();
-
-        options.UseSqlServer(configuration.GetConnectionString("Default"), sqlServerOptions =>
-        {
-            sqlServerOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-        });
-    });
+    .AddEntityFrameworkStores<ContosoDbContext>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,5 +1,6 @@
 using Balea;
 using Balea.Store.EntityFrameworkCore;
+using ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data;
 using ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeders;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -8,6 +9,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ContosoDbContext>((sp, options) => {
+    var configuration = sp.GetRequiredService<IConfiguration>();
+
+    options.UseSqlServer(configuration.GetConnectionString("Default"), sqlServerOptions =>
+    {
+        sqlServerOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+    });
+});
 
 builder.Services
     .AddBalea(options =>
@@ -21,15 +31,7 @@ builder.Services
         options.ClaimTypeMap.AllowedSubjectClaimTypes.Clear();
         options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
     })
-    .AddEntityFrameworkCoreStore((sp, options) =>
-    {
-        var configuration = sp.GetRequiredService<IConfiguration>();
-
-        options.UseSqlServer(configuration.GetConnectionString("Default"), sqlServerOptions =>
-        {
-            sqlServerOptions.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-        });
-    })
+    .AddEntityFrameworkStores<ContosoDbContext>()
     .AddAuthorization();
 
 builder.Services
@@ -74,7 +76,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    await app.MigrateDbContextAsync<BaleaDbContext>(async (db, acc) => await BaleaSeeder.Seed(db, acc));
+    await app.MigrateDbContextAsync<BaleaDbContext>();
+    await app.SeedDataContextAsync();
 }
 else
 {

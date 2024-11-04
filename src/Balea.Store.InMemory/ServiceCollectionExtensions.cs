@@ -5,14 +5,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IBaleaBuilder AddInMemoryStore(this IBaleaBuilder builder)
+    public static IBaleaBuilder AddInMemoryStores(this IBaleaBuilder builder)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
-        return AddInMemoryStore(builder, (sp, options) => { });
+        return AddInMemoryStores(builder, (sp, options) => { });
     }
 
-    public static IBaleaBuilder AddInMemoryStore(this IBaleaBuilder builder, Action<MemoryStoreOptions> optionsAction)
+    public static IBaleaBuilder AddInMemoryStores(this IBaleaBuilder builder, Action<MemoryStoreOptions> optionsAction)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IBaleaBuilder AddInMemoryStore(this IBaleaBuilder builder, Action<IServiceProvider, MemoryStoreOptions> optionsAction)
+    public static IBaleaBuilder AddInMemoryStores(this IBaleaBuilder builder, Action<IServiceProvider, MemoryStoreOptions> optionsAction)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 

@@ -1,12 +1,11 @@
 ﻿using Balea;
-using Balea.Store;
 using Balea.Store.Http;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IBaleaBuilder AddHttpStore(this IBaleaBuilder builder)
+    public static IBaleaBuilder AddHttpStores(this IBaleaBuilder builder)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
@@ -15,7 +14,7 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IBaleaBuilder AddHttpStore(this IBaleaBuilder builder, Action<HttpClient> configureClient)
+    public static IBaleaBuilder AddHttpStores(this IBaleaBuilder builder, Action<HttpClient> configureClient)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
@@ -27,7 +26,7 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static IBaleaBuilder AddHttpStore(this IBaleaBuilder builder, Action<IServiceProvider, HttpClient> configureClient)
+    public static IBaleaBuilder AddHttpStores(this IBaleaBuilder builder, Action<IServiceProvider, HttpClient> configureClient)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 

@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FunctionalTests.Migrations
+namespace ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data
 {
-    [DbContext(typeof(BaleaDbContext))]
+    [DbContext(typeof(ContosoDbContext))]
     [Migration("00000000000000_InitialCreate")]
     partial class InitialCreate
     {

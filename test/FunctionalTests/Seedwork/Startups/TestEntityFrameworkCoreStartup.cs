@@ -1,6 +1,7 @@
 ﻿using Acheve.AspNetCore.TestHost.Security;
 using Acheve.TestHost;
 using Balea;
+using Balea.Store.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -15,25 +16,27 @@ namespace FunctionalTests.Seedwork
     {
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<BaleaDbContext>((sp, options) =>
+            {
+                var container = sp.GetRequiredService<MsSqlContainer>();
+
+                options.UseSqlServer(container.GetConnectionString(), sqlServerOptions =>
+                {
+                    sqlServerOptions.MigrationsAssembly(typeof(TestEntityFrameworkCoreStartup).Assembly.FullName);
+                })
+                .UseLoggerFactory(LoggerFactory.Create(builder =>
+                {
+                    builder.SetMinimumLevel(LogLevel.Information).AddConsole();
+                }));
+            });
+
             services
                 .AddBalea(options =>
                 {
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);
                 })
-                .AddEntityFrameworkCoreStore((sp, options) =>
-                {
-                    var container = sp.GetRequiredService<MsSqlContainer>();
-
-                    options.UseSqlServer(container.GetConnectionString(), sqlServerOptions =>
-                    {
-                        sqlServerOptions.MigrationsAssembly(typeof(TestEntityFrameworkCoreStartup).Assembly.FullName);
-                    })
-                    .UseLoggerFactory(LoggerFactory.Create(builder =>
-                    {
-                        builder.SetMinimumLevel(LogLevel.Information).AddConsole();
-                    }));
-                })
+                .AddEntityFrameworkStores()
                 .AddAuthorization();
 
             services

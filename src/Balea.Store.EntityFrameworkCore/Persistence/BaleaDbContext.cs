@@ -25,8 +25,4 @@ public class BaleaDbContext : DbContext
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(BaleaDbContext).Assembly);
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-    }
 }
