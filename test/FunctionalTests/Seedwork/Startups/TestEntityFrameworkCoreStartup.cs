@@ -1,7 +1,7 @@
 ﻿using Acheve.AspNetCore.TestHost.Security;
 using Acheve.TestHost;
-using Balea;
-using Balea.Store.EntityFrameworkCore;
+using Orca;
+using Orca.Store.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +16,7 @@ namespace FunctionalTests.Seedwork
     {
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<BaleaDbContext>((sp, options) =>
+            services.AddDbContext<OrcaDbContext>((sp, options) =>
             {
                 var container = sp.GetRequiredService<MsSqlContainer>();
 
@@ -31,7 +31,7 @@ namespace FunctionalTests.Seedwork
             });
 
             services
-                .AddBalea(options =>
+                .AddOrca(options =>
                 {
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);

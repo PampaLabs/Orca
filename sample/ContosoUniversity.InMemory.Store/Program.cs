@@ -1,13 +1,12 @@
-using Balea;
+using Orca;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("balea.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("orca.json", optional: false, reloadOnChange: true);
 
 builder.Services
-    .AddBalea(options =>
+    .AddOrca(options =>
     {
         options.ClaimTypeMap = new ClaimTypeMap
         {

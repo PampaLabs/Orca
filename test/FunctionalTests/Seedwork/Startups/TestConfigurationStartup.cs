@@ -1,6 +1,6 @@
 ﻿using Acheve.AspNetCore.TestHost.Security;
 using Acheve.TestHost;
-using Balea;
+using Orca;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,7 @@ namespace FunctionalTests.Seedwork
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
-                .AddBalea(options =>
+                .AddOrca(options =>
                 {
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(JwtClaimTypes.Subject);
                     options.ClaimTypeMap.AllowedSubjectClaimTypes.Add(ClaimTypes.Upn);

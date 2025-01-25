@@ -1,4 +1,4 @@
-﻿using Balea.Store.EntityFrameworkCore;
+﻿using Orca.Store.EntityFrameworkCore;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Respawn;
@@ -21,7 +21,7 @@ public class EntityFrameworkTestServerLifetime : IAsyncTestServerLifetime
     {
         await _container.StartAsync();
 
-        await server.Host.MigrateDbContextAsync<BaleaDbContext>();
+        await server.Host.MigrateDbContextAsync<OrcaDbContext>();
 
         _respawner = await CreateCheckpointAsync();
     }

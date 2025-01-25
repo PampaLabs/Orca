@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using Balea.Authorization.Abac;
+using Orca.Authorization.Abac;
 
 using ContosoUniversity.Configuration.Store.Models;
 

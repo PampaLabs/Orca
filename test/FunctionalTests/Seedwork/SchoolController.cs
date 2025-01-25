@@ -1,4 +1,4 @@
-﻿using Balea.Authorization.Abac;
+﻿using Orca.Authorization.Abac;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

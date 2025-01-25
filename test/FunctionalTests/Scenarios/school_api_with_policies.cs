@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Balea;
+using Orca;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
 using Microsoft.AspNetCore.TestHost;

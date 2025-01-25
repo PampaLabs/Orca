@@ -1,5 +1,5 @@
-using Balea;
-using Balea.Store.EntityFrameworkCore;
+using Orca;
+using Orca.Store.EntityFrameworkCore;
 using ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data;
 using ContosoUniversity.EntityFrameworkCore.Store.Infrastructure.Data.Seeders;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,7 +20,7 @@ builder.Services.AddDbContext<ContosoDbContext>((sp, options) => {
 });
 
 builder.Services
-    .AddBalea(options =>
+    .AddOrca(options =>
     {
         options.ClaimTypeMap = new ClaimTypeMap
         {
@@ -76,7 +76,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    await app.MigrateDbContextAsync<BaleaDbContext>();
+    await app.MigrateDbContextAsync<OrcaDbContext>();
     await app.SeedDataContextAsync();
 }
 else

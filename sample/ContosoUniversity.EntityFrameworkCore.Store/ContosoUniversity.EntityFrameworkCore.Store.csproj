@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Orca.AspNetCore.Authorization\Orca.AspNetCore.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Orca.Store.EntityFrameworkCore\Orca.Store.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

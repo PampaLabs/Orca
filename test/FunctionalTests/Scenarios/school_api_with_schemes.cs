@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Balea;
+using Orca;
 using FluentAssertions;
 using FunctionalTests.Seedwork;
 using Microsoft.AspNetCore.TestHost;
@@ -14,8 +14,8 @@ namespace FunctionalTests.Scenarios
     {
         private const string InvalidSub = "0";
         private const string DefaultScheme = "scheme1";
-        private const string BaleaScheme = "scheme2";
-        private const string NotBaleaScheme = "scheme3";
+        private const string OrcaScheme = "scheme2";
+        private const string NotOrcaScheme = "scheme3";
 
         public school_api_with_schemes(TestServerFixture fixture) : base(fixture)
         {
@@ -36,7 +36,7 @@ namespace FunctionalTests.Scenarios
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_not_authorized(Type serverType)
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_orca_schema_and_not_authorized(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
@@ -50,13 +50,13 @@ namespace FunctionalTests.Scenarios
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_not_authorized(Type serverType)
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_orca_schema_and_not_authorized(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
             var response = await server
                 .CreateRequest(Api.School.GetGrades)
-                .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
+                .WithIdentity(new Fixture().Sub(InvalidSub), OrcaScheme)
                 .GetAsync();
 
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -64,7 +64,7 @@ namespace FunctionalTests.Scenarios
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_belongs_to_the_teacher_role(Type serverType)
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_orca_schema_and_belongs_to_the_teacher_role(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
@@ -78,7 +78,7 @@ namespace FunctionalTests.Scenarios
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_belongs_to_the_teacher_role(Type serverType)
+        public async Task allow_to_view_grades_if_the_user_is_authenticated_with_orca_schema_and_belongs_to_the_teacher_role(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
@@ -91,7 +91,7 @@ namespace FunctionalTests.Scenarios
 
             var response = await server
                 .CreateRequest(Api.School.GetGrades)
-                .WithIdentity(new Fixture().Sub(Subs.Teacher), BaleaScheme)
+                .WithIdentity(new Fixture().Sub(Subs.Teacher), OrcaScheme)
                 .GetAsync();
 
             await response.IsSuccessStatusCodeOrThrow();
@@ -99,13 +99,13 @@ namespace FunctionalTests.Scenarios
             var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
 
             schemes.Should().HaveCount(2);
-            schemes.Should().Contain(BaleaScheme);
-            schemes.Should().Contain("Balea");
+            schemes.Should().Contain(OrcaScheme);
+            schemes.Should().Contain("Orca");
         }
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_balea_schema_and_not_belongs_to_the_teacher_role(Type serverType)
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_non_orca_schema_and_not_belongs_to_the_teacher_role(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
@@ -119,13 +119,13 @@ namespace FunctionalTests.Scenarios
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_balea_schema_and_not_belongs_to_the_teacher_role(Type serverType)
+        public async Task not_allow_to_view_grades_if_the_user_is_authenticated_with_orca_schema_and_not_belongs_to_the_teacher_role(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
             var response = await server
                 .CreateRequest(Api.School.GetGrades)
-                .WithIdentity(new Fixture().Sub(InvalidSub), BaleaScheme)
+                .WithIdentity(new Fixture().Sub(InvalidSub), OrcaScheme)
                 .GetAsync();
 
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -133,7 +133,7 @@ namespace FunctionalTests.Scenarios
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task call_to_endpoint_authorized_with_default_non_balea_scheme_should_not_include_balea(Type serverType)
+        public async Task call_to_endpoint_authorized_with_default_non_orca_scheme_should_not_include_orca(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
@@ -148,18 +148,18 @@ namespace FunctionalTests.Scenarios
 
             schemes.Should().HaveCount(1);
             schemes.Should().Contain(DefaultScheme);
-            schemes.Should().NotContain("Balea");
+            schemes.Should().NotContain("Orca");
         }
 
         [Theory]
         [MemberData(nameof(TestServerData.GetTestServersWithSchemaSupport), MemberType = typeof(TestServerData))]
-        public async Task call_to_endpoint_authorized_with_not_balea_configured_scheme_should_not_include_balea(Type serverType)
+        public async Task call_to_endpoint_authorized_with_not_orca_configured_scheme_should_not_include_orca(Type serverType)
         {
             var server = Fixture.GetTestServer(serverType);
 
             var response = await server
                 .CreateRequest(Api.School.GetCustomPolicy)
-                .WithIdentity(new Fixture().Sub(InvalidSub), NotBaleaScheme)
+                .WithIdentity(new Fixture().Sub(InvalidSub), NotOrcaScheme)
                 .GetAsync();
 
             await response.IsSuccessStatusCodeOrThrow();
@@ -167,8 +167,8 @@ namespace FunctionalTests.Scenarios
             var schemes = JsonConvert.DeserializeObject<string[]>(await response.Content.ReadAsStringAsync());
 
             schemes.Should().HaveCount(1);
-            schemes.Should().Contain(NotBaleaScheme);
-            schemes.Should().NotContain("Balea");
+            schemes.Should().Contain(NotOrcaScheme);
+            schemes.Should().NotContain("Orca");
         }
     }
 }

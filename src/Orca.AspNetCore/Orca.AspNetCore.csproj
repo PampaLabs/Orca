@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Orca.AspNetCore</PackageId>
+    <Description>Orca extensions for ASP.NET Core.</Description>
+    <PackageTags>Orca;Authorization;Roles;Permissions;Delegations;AspNetCore</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Orca.AspNetCore.Authorization\Orca.AspNetCore.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Orca.AspNetCore.Endpoints\Orca.AspNetCore.Endpoints.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+</Project>

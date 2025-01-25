@@ -1,0 +1,13 @@
+﻿namespace Orca
+{
+    public class AuthorizationContext
+    {
+        public Subject Subject { get; set; }
+
+        public IEnumerable<Role> Roles { get; set; } = [];
+
+        public IEnumerable<Permission> Permissions { get; set; } = [];
+
+        public Delegation Delegation { get; set; }
+    }
+}

@@ -1,5 +1,5 @@
-﻿using Balea.Authorization.Abac.Context;
-using Balea.Authorization.Abac.Grammars;
+﻿using Orca.Authorization.Abac.Context;
+using Orca.Authorization.Abac.Grammars;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Xunit;

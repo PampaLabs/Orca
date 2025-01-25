@@ -31,20 +31,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Balea\Balea.csproj" />
-    <ProjectReference Include="..\..\src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Store.InMemory\Balea.Store.InMemory.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Store.EntityFrameworkCore\Balea.Store.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Orca\Orca.csproj" />
+    <ProjectReference Include="..\..\src\Orca.AspNetCore.Authorization\Orca.AspNetCore.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Orca.Store.InMemory\Orca.Store.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Orca.Store.EntityFrameworkCore\Orca.Store.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-	
-  <ItemGroup>
-    <Content Include="balea.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -15,7 +15,7 @@ namespace FunctionalTests.Seedwork
                 {
                     configuration
                         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                        .AddJsonFile("balea.json", optional: false, reloadOnChange: true)
+                        .AddJsonFile("orca.json", optional: false, reloadOnChange: true)
                         .AddEnvironmentVariables();
                 });
 

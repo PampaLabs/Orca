@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Balea.AspNetCore.Authorization\Balea.AspNetCore.Authorization.csproj" />
-    <ProjectReference Include="..\..\src\Balea.Store.InMemory\Balea.Store.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\Orca.AspNetCore.Authorization\Orca.AspNetCore.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Orca.Store.InMemory\Orca.Store.InMemory.csproj" />
   </ItemGroup>
 
 </Project>
