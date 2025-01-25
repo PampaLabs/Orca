@@ -2,16 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-    <PackageLicenseUrl>$(PackageLicenseUrl)</PackageLicenseUrl>
-    <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Balea.Store.EntityFrameworkCore</PackageId>
     <Description>EntityFrameworkCore store support for Balea. For more information see http://github.com/Xabaril/Balea </Description>
     <PackageTags>Authorization;Roles;Permissions;Delegations;AspNetCore</PackageTags>
-    <Version>$(Balea)</Version>
-    <PackageId>Balea.Store.EntityFrameworkCore</PackageId>
-    <PackageVersion>$(Balea)</PackageVersion>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +15,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Balea\Balea.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

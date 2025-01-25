@@ -87,10 +87,18 @@ public class SubjectStore : ISubjectStore
     public async Task<IList<Subject>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
+
+#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
 
         return await entities.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
+        var entities = response.Select(item => _responseMapper.ToEntity(item));
+
+        return entities.ToList();
+#endif
     }
 
     public async Task<IList<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken = default)
@@ -103,10 +111,18 @@ public class SubjectStore : ISubjectStore
         }
 
         var uri = $"{endpoint}{query.ToUriComponent()}";
+
+#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
 
         return await entities.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
+        var entities = response.Select(item => _responseMapper.ToEntity(item));
+
+        return entities.ToList();
+#endif
     }
 
     public async Task<IList<Role>> GetRolesAsync(Subject subject, CancellationToken cancellationToken = default)
@@ -114,11 +130,18 @@ public class SubjectStore : ISubjectStore
         var roleMapper = new RoleResponseMapper();
 
         var uri = $"{endpoint}/{subject.Id}/roles";
-        var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
 
+#if NET8_0_OR_GREATER
+        var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
         var result = response.Select(roleMapper.ToEntity);
 
         return await result.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
+        var result = response.Select(roleMapper.ToEntity);
+
+        return result.ToList();
+#endif
     }
 
     public async Task<AccessControlResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)

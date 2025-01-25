@@ -1,28 +1,29 @@
 ﻿<Project>
-  <Import Project="build/dependencies.props" />
 
-  <PropertyGroup Label="Package information">
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>http://github.com/xabaril/Balea</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/xabaril/Balea</RepositoryUrl>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="SDK Versions">
+    <SupportedTargetFrameworks>net6.0;net8.0</SupportedTargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>8.0.0</Version>
+    <PackageVersion>$(Version)</PackageVersion>
     <Authors>Xabaril Contributors</Authors>
-    <Company>Xabaril</Company>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Copyright>Copyright (c) Xabaril 2025</Copyright>
+    <PackageProjectUrl>http://github.com/xabaril/Balea</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile></PackageReadmeFile>
+    <RepositoryUrl>https://github.com/xabaril/Balea</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGithub)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 
 </Project>

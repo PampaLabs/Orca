@@ -87,10 +87,18 @@ public class DelegationStore : IDelegationStore
     public async Task<IList<Delegation>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
+
+#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<DelegationResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
 
         return await entities.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<DelegationResponse>>(uri, cancellationToken);
+        var entities = response.Select(item => _responseMapper.ToEntity(item));
+
+        return entities.ToList();
+#endif
     }
 
     public async Task<IList<Delegation>> SearchAsync(DelegationFilter filter, CancellationToken cancellationToken = default)
@@ -123,9 +131,17 @@ public class DelegationStore : IDelegationStore
         }
 
         var uri = $"{endpoint}{query.ToUriComponent()}";
+
+#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<DelegationResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
 
         return await entities.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<DelegationResponse>>(uri, cancellationToken);
+        var entities = response.Select(item => _responseMapper.ToEntity(item));
+
+        return entities.ToList();
+#endif
     }
 }

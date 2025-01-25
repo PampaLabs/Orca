@@ -1,21 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(NetCoreTargetVersion)</TargetFrameworks>
-    <PackageLicenseUrl>$(PackageLicenseUrl)</PackageLicenseUrl>
-    <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Balea</PackageId>
     <Description>Authorization Framework Library. For more information see http://github.com/Xabaril/Balea </Description>
     <PackageTags>Authorization;Roles;Permissions;Delegations</PackageTags>
-    <Version>$(Balea)</Version>
-    <RepositoryUrl>$(RepositoryUrl)</RepositoryUrl>
-    <Company>$(Company)</Company>
-    <Authors>$(Authors)</Authors>
-    <PackageId>Balea</PackageId>
-    <PackageVersion>$(Balea)</PackageVersion>
-    <PublishRepositoryUrl>$(RepositoryUrl)</PublishRepositoryUrl>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,9 +15,18 @@
     <PackageReference Include="Antlr4.Runtime" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" />
   </ItemGroup>
- 
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Balea.Abstractions\Balea.Abstractions.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

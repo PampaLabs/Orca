@@ -2,16 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <PackageLicenseUrl>$(PackageLicenseUrl)</PackageLicenseUrl>
-    <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Balea.AspNetCore.Endpoints</PackageId>
     <Description>Minimal API for Balea. For more information see http://github.com/Xabaril/Balea </Description>
     <PackageTags>Authorization;Roles;Permissions;Delegations;AspNetCore</PackageTags>
-    <Version>$(Balea)</Version>
-    <PackageId>Balea.AspNetCore.Endpoints</PackageId>
-    <PackageVersion>$(Balea)</PackageVersion>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,12 +15,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Balea\Balea.csproj" />
     <ProjectReference Include="..\Balea.Abstractions\Balea.Abstractions.csproj" />
     <ProjectReference Include="..\Balea.AspNetCore.Endpoints.Abstractions\Balea.AspNetCore.Endpoints.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

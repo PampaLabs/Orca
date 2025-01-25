@@ -86,10 +86,18 @@ public class PolicyStore : IPolicyStore
     public async Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
+
+#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PolicyResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
 
         return await entities.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<PolicyResponse>>(uri, cancellationToken);
+        var entities = response.Select(item => _responseMapper.ToEntity(item));
+
+        return entities.ToList();
+#endif
     }
 
     public async Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
@@ -107,9 +115,17 @@ public class PolicyStore : IPolicyStore
         }
 
         var uri = $"{endpoint}{query.ToUriComponent()}";
+
+#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PolicyResponse>(uri, cancellationToken);
         var entities = response.Select(item => _responseMapper.ToEntity(item));
 
         return await entities.ToListAsync(cancellationToken);
+#else
+        var response = await _httpClient.GetFromJsonAsync<IEnumerable<PolicyResponse>>(uri, cancellationToken);
+        var entities = response.Select(item => _responseMapper.ToEntity(item));
+
+        return entities.ToList();
+#endif
     }
 }
