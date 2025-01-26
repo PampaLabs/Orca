@@ -1,9 +1,27 @@
 ﻿namespace Orca.AspNetCore.Endpoints;
 
+/// <summary>
+/// Represents a subject response.
+/// </summary>
 public class SubjectResponse
 {
+    /// <summary>
+    ///The unique identifier for the subject.
+    /// </summary>
     public string Id { get; set; }
+
+    /// <summary>
+    /// The value associated with the subject.
+    /// </summary>
     public string Sub { get; set; }
+
+    /// <summary>
+    /// The name of the subject.
+    /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    /// The email address associated with the subject.
+    /// </summary>
     public string Email { get; set; }
 }

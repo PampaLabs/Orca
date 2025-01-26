@@ -9,28 +9,38 @@ using Microsoft.Extensions.Options;
 
 namespace Orca.Authorization
 {
+    /// <inheritdoc />
     public class OrcaPolicyEvaluator : IPolicyEvaluator
     {
         private readonly IAuthorizationService _authorization;
-        private readonly IAuthorizationGrantor _store;
+        private readonly IAuthorizationGrantor _authorizationGrantor;
         private readonly OrcaOptions _options;
         private readonly OrcaWebHost _webHost;
         private readonly ILogger<OrcaPolicyEvaluator> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrcaPolicyEvaluator"/> class.
+        /// </summary>
+        /// <param name="authorization">The authorization service to be used.</param>
+        /// <param name="authorizationGrantor">The authorization grantor to be used.</param>
+        /// <param name="options">The basic configuration options.</param>
+        /// <param name="webHost">The web configuration options.</param>
+        /// <param name="logger">The logger used to log events and errors in policy evaluation.</param>
         public OrcaPolicyEvaluator(
             IAuthorizationService authorization,
-            IAuthorizationGrantor store,
+            IAuthorizationGrantor authorizationGrantor,
             IOptions<OrcaOptions> options,
             IOptions<OrcaWebHost> webHost,
             ILogger<OrcaPolicyEvaluator> logger)
         {
             _authorization = authorization;
-            _store = store;
+            _authorizationGrantor = authorizationGrantor;
             _options = options.Value;
             _webHost = webHost.Value;
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public async Task<AuthenticateResult> AuthenticateAsync(AuthorizationPolicy policy, HttpContext context)
         {
             var hasSchemes = _webHost.Schemes.Any();
@@ -83,6 +93,7 @@ namespace Orca.Authorization
             return AuthenticateResult.NoResult();
         }
 
+        /// <inheritdoc />
         public async Task<PolicyAuthorizationResult> AuthorizeAsync(
             AuthorizationPolicy policy,
             AuthenticateResult authenticationResult,
@@ -115,7 +126,7 @@ namespace Orca.Authorization
 
         private async Task AddOrcaIdentity(ClaimsPrincipal user, HttpContext context)
         {
-            var authorization = await _store
+            var authorization = await _authorizationGrantor
                 .FindAuthorizationAsync(user);
 
             if (authorization.Roles.Any())

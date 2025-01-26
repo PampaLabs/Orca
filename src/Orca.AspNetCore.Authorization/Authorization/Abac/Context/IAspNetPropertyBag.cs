@@ -2,6 +2,7 @@
 
 namespace Orca.Authorization.Abac.Context
 {
+    /// <inheritdoc />
     public interface IAspNetPropertyBag : IPropertyBag
     	{
         /// <summary>

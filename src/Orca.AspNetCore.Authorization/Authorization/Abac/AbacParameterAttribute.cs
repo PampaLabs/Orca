@@ -1,10 +1,7 @@
-﻿using System;
-
-namespace Orca.Authorization.Abac
+﻿namespace Orca.Authorization.Abac
 {
     /// <summary>
-    /// Decorate action parameter to be allow be used on auhtorization policies using the
-    /// <see cref="ParameterPropertyBag"/> property bag.
+    /// Decorate action parameter to be allow be used on auhtorization policies.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class AbacParameterAttribute

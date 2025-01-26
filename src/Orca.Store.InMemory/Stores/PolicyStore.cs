@@ -1,14 +1,20 @@
 ﻿namespace Orca.Store.Configuration;
 
+/// <inheritdoc />
 public class PolicyStore : IPolicyStore
 {
     private readonly MemoryStoreOptions _options;
 
-	public PolicyStore(MemoryStoreOptions options)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolicyStore"/> class.
+    /// </summary>
+    /// <param name="options">The options to configure the in-memory stores.</param>
+    public PolicyStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
+    /// <inheritdoc />
     public Task<Policy> FindByIdAsync(string policyId, CancellationToken cancellationToken)
     {
         var policy = _options.Policies.FirstOrDefault(x => x.Id == policyId);
@@ -16,6 +22,7 @@ public class PolicyStore : IPolicyStore
         return Task.FromResult(policy);
     }
 
+    /// <inheritdoc />
     public Task<Policy> FindByNameAsync(string policyName, CancellationToken cancellationToken)
 	{
 		var policy = _options.Policies.FirstOrDefault(x => x.Name == policyName);
@@ -23,6 +30,7 @@ public class PolicyStore : IPolicyStore
         return Task.FromResult(policy);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
 	{
         policy.Id = Guid.NewGuid().ToString();
@@ -31,12 +39,14 @@ public class PolicyStore : IPolicyStore
         return Task.FromResult(AccessControlResult.Success);
 	}
 
-	public Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
 	{
         return Task.FromResult(AccessControlResult.Success);
     }
 
-	public Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
 	{
         policy.Id = Guid.NewGuid().ToString();
         _options.Policies.Remove(policy);
@@ -44,6 +54,7 @@ public class PolicyStore : IPolicyStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
         var result = _options.Policies.ToList();
@@ -51,6 +62,7 @@ public class PolicyStore : IPolicyStore
         return Task.FromResult<IList<Policy>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
     {
         var source = _options.Policies.AsQueryable();

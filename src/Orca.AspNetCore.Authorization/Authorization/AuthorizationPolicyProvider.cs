@@ -7,6 +7,9 @@ using Microsoft.Extensions.Options;
 
 namespace Orca.Authorization
 {
+    /// <summary>
+    /// A custom implementation of the <see cref="DefaultAuthorizationPolicyProvider"/> to retrieve and create authorization policies.
+    /// </summary>
     public class AuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
     {
         private readonly AuthorizationOptions _options;
@@ -15,6 +18,12 @@ namespace Orca.Authorization
 
         private object sync_root = new object();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationPolicyProvider"/> class.
+        /// </summary>
+        /// <param name="options">The basic configuration options.</param>
+        /// <param name="webHost">The web configuration options.</param>
+        /// <param name="logger">The logger used to log events and errors in policy evaluation.</param>
         public AuthorizationPolicyProvider(
             IOptions<AuthorizationOptions> options,
             IOptions<OrcaWebHost> webHost,
@@ -26,6 +35,7 @@ namespace Orca.Authorization
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public override async Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
             var policy = await base.GetPolicyAsync(policyName);

@@ -23,8 +23,6 @@ public static class PermissionApiEndpointRouteBuilderExtensions
     /// The <see cref="IEndpointRouteBuilder"/> to add the identity endpoints to.
     /// Call <see cref="EndpointRouteBuilderExtensions.MapGroup(IEndpointRouteBuilder, string)"/> to add a prefix to all the endpoints.
     /// </param>
-    /// <param name="builder">
-    /// </param>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> to further customize the added endpoints.</returns>
     public static IEndpointConventionBuilder MapPermissionEndpoints(this IEndpointRouteBuilder endpoints)
     {

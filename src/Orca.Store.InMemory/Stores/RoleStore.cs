@@ -1,14 +1,20 @@
 ﻿namespace Orca.Store.Configuration;
 
+/// <inheritdoc />
 public class RoleStore : IRoleStore
 {
     private readonly MemoryStoreOptions _options;
 
-	public RoleStore(MemoryStoreOptions options)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoleStore"/> class.
+    /// </summary>
+    /// <param name="options">The options to configure the in-memory stores.</param>
+    public RoleStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
+    /// <inheritdoc />
     public Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
         var role = _options.Roles.FirstOrDefault(x => x.Id == roleId);
@@ -16,6 +22,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult(role);
     }
 
+    /// <inheritdoc />
     public Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
 	{
         var role = _options.Roles.FirstOrDefault(x => x.Name == roleName);
@@ -23,7 +30,8 @@ public class RoleStore : IRoleStore
         return Task.FromResult(role);
     }
 
-	public Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
 	{
         role.Id = Guid.NewGuid().ToString();
         _options.Roles.Add(role);
@@ -31,12 +39,14 @@ public class RoleStore : IRoleStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
-	public Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
 	{
         return Task.FromResult(AccessControlResult.Success);
 	}
 
-	public Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
 	{
         role.Id = Guid.NewGuid().ToString();
         _options.Roles.Remove(role);
@@ -44,6 +54,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult(AccessControlResult.Success);
 	}
 
+    /// <inheritdoc />
     public Task<IList<Role>> ListAsync(CancellationToken cancellationToken)
     {
         var result = _options.Roles.ToList();
@@ -51,6 +62,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult<IList<Role>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default)
     {
         var source = _options.Roles.AsQueryable();
@@ -82,6 +94,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult<IList<Role>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
         var result = _options.SubejctBindings
@@ -92,6 +105,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult<IList<Subject>>(result);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
 	{
         var binding = (subject, role);
@@ -100,6 +114,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
 	{
         var binding = (subject, role);
@@ -108,6 +123,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
     {
         var result = _options.PermissionBindings
@@ -118,6 +134,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult<IList<Permission>>(result);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var binding = (permission, role);
@@ -126,6 +143,7 @@ public class RoleStore : IRoleStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var binding = (permission, role);

@@ -1,14 +1,20 @@
 ﻿namespace Orca.Store.Configuration;
 
+/// <inheritdoc />
 public class SubjectStore : ISubjectStore
 {
     private readonly MemoryStoreOptions _options;
 
-	public SubjectStore(MemoryStoreOptions options)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SubjectStore"/> class.
+    /// </summary>
+    /// <param name="options">The options to configure the in-memory stores.</param>
+    public SubjectStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
+    /// <inheritdoc />
     public Task<Subject> FindByIdAsync(string subjectId, CancellationToken cancellationToken)
     {
         var subject = _options.Subjects.FirstOrDefault(x => x.Id == subjectId);
@@ -16,6 +22,7 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult(subject);
     }
 
+    /// <inheritdoc />
     public Task<Subject> FindBySubAsync(string sub, CancellationToken cancellationToken)
 	{
         var result = _options.Subjects.FirstOrDefault(x => x.Sub == sub);
@@ -23,7 +30,8 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult(result);
     }
 
-	public Task<AccessControlResult> CreateAsync(Subject user, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> CreateAsync(Subject user, CancellationToken cancellationToken)
 	{
         var subjects = _options.Subjects;
 
@@ -32,12 +40,14 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
-	public Task<AccessControlResult> UpdateAsync(Subject user, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> UpdateAsync(Subject user, CancellationToken cancellationToken)
 	{
         return Task.FromResult(AccessControlResult.Success);
     }
 
-	public Task<AccessControlResult> DeleteAsync(Subject user, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> DeleteAsync(Subject user, CancellationToken cancellationToken)
 	{
         var subjects = _options.Subjects;
 
@@ -46,6 +56,7 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<IList<Subject>> ListAsync(CancellationToken cancellationToken)
     {
         var result = _options.Subjects.ToList();
@@ -53,6 +64,7 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult<IList<Subject>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken = default)
     {
         var source = _options.Subjects.AsQueryable();
@@ -68,6 +80,7 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult<IList<Subject>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Role>> GetRolesAsync(Subject user, CancellationToken cancellationToken = default)
     {
         var result = _options.SubejctBindings
@@ -78,6 +91,7 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult<IList<Role>>(result);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> AddRoleAsync(Subject user, Role role, CancellationToken cancellationToken)
 	{
         var binding = (user, role);
@@ -86,6 +100,7 @@ public class SubjectStore : ISubjectStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> RemoveRoleAsync(Subject user, Role role, CancellationToken cancellationToken)
 	{
         var binding = (user, role);

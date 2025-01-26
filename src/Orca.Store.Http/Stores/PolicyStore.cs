@@ -6,6 +6,7 @@ using Orca.AspNetCore.Endpoints;
 
 namespace Orca.Store.Http;
 
+/// <inheritdoc />
 public class PolicyStore : IPolicyStore
 {
     private const string endpoint = "policies";
@@ -15,11 +16,16 @@ public class PolicyStore : IPolicyStore
 
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolicyStore"/> class.
+    /// </summary>
+    /// The <paramref name="httpClientFactory"/> is used to create an <see cref="HttpClient"/> configured with the name specified in <see cref="HttpStoreDefaults.HttpClientName"/>.
     public PolicyStore(IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient(HttpStoreDefaults.HttpClientName);
     }
 
+    /// <inheritdoc />
     public async Task<Policy> FindByIdAsync(string policyId, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{policyId}";
@@ -27,6 +33,7 @@ public class PolicyStore : IPolicyStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<Policy> FindByNameAsync(string policyName, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/name/{policyName}";
@@ -34,6 +41,7 @@ public class PolicyStore : IPolicyStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(policy);
@@ -51,6 +59,7 @@ public class PolicyStore : IPolicyStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(policy);
@@ -68,6 +77,7 @@ public class PolicyStore : IPolicyStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{policy.Id}";
@@ -83,6 +93,7 @@ public class PolicyStore : IPolicyStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
@@ -100,6 +111,7 @@ public class PolicyStore : IPolicyStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
     {
         var query = QueryString.Empty;

@@ -2,29 +2,37 @@
 
 namespace Orca.Store.EntityFrameworkCore;
 
+/// <inheritdoc />
 public class PolicyStore : IPolicyStore
 {
     private readonly PolicyMapper _mapper = new();
 
     private readonly OrcaDbContext _context;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolicyStore"/> class.
+    /// </summary>
+    /// <param name="context">The database context used to interact with the data store.</param>
     public PolicyStore(OrcaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
+    /// <inheritdoc />
     public async Task<Policy> FindByIdAsync(string policyId, CancellationToken cancellationToken)
     {
         var entity = await _context.Policies.FindAsync(policyId, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
+    /// <inheritdoc />
     public async Task<Policy> FindByNameAsync(string policyName, CancellationToken cancellationToken)
     {
         var entity = await _context.Policies.FindByNameAsync(policyName, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(policy);
@@ -38,6 +46,7 @@ public class PolicyStore : IPolicyStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var entity = await _context.Policies.FindAsync(policy.Id, cancellationToken);
@@ -57,6 +66,7 @@ public class PolicyStore : IPolicyStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
     {
         var entity = await _context.Policies.FindAsync(policy.Id, cancellationToken);
@@ -72,6 +82,7 @@ public class PolicyStore : IPolicyStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
         var entities = _context.Policies;
@@ -81,6 +92,7 @@ public class PolicyStore : IPolicyStore
         return Task.FromResult<IList<Policy>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
     {
         var source = _context.Policies.AsQueryable();

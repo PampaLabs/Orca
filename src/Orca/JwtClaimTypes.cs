@@ -1,5 +1,6 @@
 ﻿namespace Orca;
 
+#pragma warning disable CS1591
 public static class JwtClaimTypes
 {
     public const string Subject = "sub";
@@ -78,3 +79,4 @@ public static class JwtClaimTypes
 
     public const string Role = "role";
 }
+#pragma warning restore CS1591

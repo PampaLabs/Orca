@@ -7,6 +7,7 @@ using Orca.AspNetCore.Endpoints;
 
 namespace Orca.Store.Http;
 
+/// <inheritdoc />
 public class DelegationStore : IDelegationStore
 {
     private const string endpoint = "delegations";
@@ -16,11 +17,16 @@ public class DelegationStore : IDelegationStore
 
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DelegationStore"/> class.
+    /// </summary>
+    /// The <paramref name="httpClientFactory"/> is used to create an <see cref="HttpClient"/> configured with the name specified in <see cref="HttpStoreDefaults.HttpClientName"/>.
     public DelegationStore(IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient(HttpStoreDefaults.HttpClientName);
     }
 
+    /// <inheritdoc />
     public async Task<Delegation> FindByIdAsync(string delegationId, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{delegationId}";
@@ -28,6 +34,7 @@ public class DelegationStore : IDelegationStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<Delegation> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/subject/{subject}";
@@ -35,6 +42,7 @@ public class DelegationStore : IDelegationStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(delegation);
@@ -52,6 +60,7 @@ public class DelegationStore : IDelegationStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(delegation);
@@ -69,6 +78,7 @@ public class DelegationStore : IDelegationStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{delegation.Id}";
@@ -84,6 +94,7 @@ public class DelegationStore : IDelegationStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Delegation>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
@@ -101,6 +112,7 @@ public class DelegationStore : IDelegationStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Delegation>> SearchAsync(DelegationFilter filter, CancellationToken cancellationToken = default)
     {
         var query = QueryString.Empty;

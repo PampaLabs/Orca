@@ -5,7 +5,7 @@
     /// </summary>
     public class AbacAuthorizationContext
     {
-        private readonly Dictionary<string, IPropertyBag> _propertyBagsHolder = new();
+        private readonly Dictionary<string, IPropertyBag> _propertyBagsHolder = [];
 
         /// <summary>
         /// Get the property bag by name.
@@ -24,8 +24,10 @@
             }
         }
 
-        public AbacAuthorizationContext() { }
-
+        /// <summary>
+        /// Adds a property bag to the collection by its name.
+        /// </summary>
+        /// <param name="propertyBag">The property bag to be added.</param>
         public void AddBag(IPropertyBag propertyBag)
         {
             _propertyBagsHolder.TryAdd(propertyBag.Name, propertyBag);

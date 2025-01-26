@@ -24,16 +24,16 @@ namespace Orca
         public IEnumerable<AccessControlError> Errors => _errors;
 
         /// <summary>
-        /// Returns an <see cref="IdentityResult"/> indicating a successful identity operation.
+        /// Returns an <see cref="AccessControlResult"/> indicating a successful identity operation.
         /// </summary>
-        /// <returns>An <see cref="IdentityResult"/> indicating a successful operation.</returns>
+        /// <returns>An <see cref="AccessControlResult"/> indicating a successful operation.</returns>
         public static AccessControlResult Success => _success;
 
         /// <summary>
-        /// Creates an <see cref="IdentityResult"/> indicating a failed identity operation, with a list of <paramref name="errors"/> if applicable.
+        /// Creates an <see cref="AccessControlResult"/> indicating a failed identity operation, with a list of <paramref name="errors"/> if applicable.
         /// </summary>
-        /// <param name="errors">An optional array of <see cref="IdentityError"/>s which caused the operation to fail.</param>
-        /// <returns>An <see cref="IdentityResult"/> indicating a failed identity operation, with a list of <paramref name="errors"/> if applicable.</returns>
+        /// <param name="errors">An optional array of <see cref="AccessControlError"/>s which caused the operation to fail.</param>
+        /// <returns>An <see cref="AccessControlResult"/> indicating a failed identity operation, with a list of <paramref name="errors"/> if applicable.</returns>
         public static AccessControlResult Failed(params AccessControlError[] errors)
         {
             var result = new AccessControlResult { Succeeded = false };
@@ -44,7 +44,7 @@ namespace Orca
             return result;
         }
 
-        internal static AccessControlResult Failed(List<AccessControlError>? errors)
+        internal static AccessControlResult Failed(List<AccessControlError> errors)
         {
             var result = new AccessControlResult { Succeeded = false };
             if (errors != null)

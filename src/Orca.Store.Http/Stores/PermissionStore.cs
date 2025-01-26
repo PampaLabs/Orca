@@ -7,6 +7,7 @@ using Orca.AspNetCore.Endpoints;
 
 namespace Orca.Store.Http;
 
+/// <inheritdoc />
 public class PermissionStore : IPermissionStore
 {
     private const string endpoint = "permissions";
@@ -16,11 +17,16 @@ public class PermissionStore : IPermissionStore
 
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PermissionStore"/> class.
+    /// </summary>
+    /// The <paramref name="httpClientFactory"/> is used to create an <see cref="HttpClient"/> configured with the name specified in <see cref="HttpStoreDefaults.HttpClientName"/>.
     public PermissionStore(IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient(HttpStoreDefaults.HttpClientName);
     }
 
+    /// <inheritdoc />
     public async Task<Permission> FindByIdAsync(string permissionId, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permissionId}";
@@ -28,6 +34,7 @@ public class PermissionStore : IPermissionStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<Permission> FindByNameAsync(string permissionName, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/name/{permissionName}";
@@ -35,6 +42,7 @@ public class PermissionStore : IPermissionStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(permission);
@@ -52,6 +60,7 @@ public class PermissionStore : IPermissionStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(permission);
@@ -69,6 +78,7 @@ public class PermissionStore : IPermissionStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}";
@@ -84,6 +94,7 @@ public class PermissionStore : IPermissionStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
         var roleMapper = new RoleResponseMapper();
@@ -103,6 +114,7 @@ public class PermissionStore : IPermissionStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/roles/{role.Id}";
@@ -118,6 +130,7 @@ public class PermissionStore : IPermissionStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/roles/{role.Id}";
@@ -133,6 +146,7 @@ public class PermissionStore : IPermissionStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Permission>> ListAsync(CancellationToken cancellationToken = default)
     {
         var uri = $"{endpoint}";
@@ -150,6 +164,7 @@ public class PermissionStore : IPermissionStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Permission>> SearchAsync(PermissionFilter filter, CancellationToken cancellationToken = default)
     {
         var query = QueryString.Empty;

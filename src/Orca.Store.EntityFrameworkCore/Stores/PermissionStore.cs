@@ -4,29 +4,37 @@ using Orca.Store.EntityFrameworkCore.Entities;
 
 namespace Orca.Store.EntityFrameworkCore;
 
+/// <inheritdoc />
 public class PermissionStore : IPermissionStore
 {
     private readonly PermissionMapper _mapper = new();
 
     private readonly OrcaDbContext _context;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PermissionStore"/> class.
+    /// </summary>
+    /// <param name="context">The database context used to interact with the data store.</param>
     public PermissionStore(OrcaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
+    /// <inheritdoc />
     public async Task<Permission> FindByIdAsync(string permissionId, CancellationToken cancellationToken)
     {
         var entity = await _context.Permissions.FindAsync(permissionId, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
+    /// <inheritdoc />
     public async Task<Permission> FindByNameAsync(string permissionName, CancellationToken cancellationToken)
     {
         var entity = await _context.Permissions.FindByNameAsync(permissionName, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(permission);
@@ -40,6 +48,7 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
@@ -59,6 +68,7 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
     {
         var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
@@ -74,6 +84,7 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
         var roleMapper = new RoleMapper();
@@ -84,6 +95,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult<IList<Role>>(roles);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = new RolePermissionEntity
@@ -98,6 +110,7 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = await _context.RolePermissions
@@ -117,6 +130,7 @@ public class PermissionStore : IPermissionStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public Task<IList<Permission>> ListAsync(CancellationToken cancellationToken = default)
     {
         var entities = _context.Permissions;
@@ -126,6 +140,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult<IList<Permission>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Permission>> SearchAsync(PermissionFilter filter, CancellationToken cancellationToken = default)
     {
         var source = _context.Permissions.AsQueryable();

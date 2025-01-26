@@ -6,8 +6,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods for importing configuration into the application services.
+/// </summary>
 public static class ApplicationBuilderExtensions
 {
+    /// <summary>
+    /// Imports configuration from the application's configuration and stores it in the provided services.
+    /// </summary>
+    /// <param name="host">The <see cref="IApplicationBuilder"/> instance used to create a scope for accessing the services.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
     public static async Task ImportConfigurationAsync(this IApplicationBuilder host)
     {
         using var scope = host.ApplicationServices.CreateScope();
@@ -15,6 +23,11 @@ public static class ApplicationBuilderExtensions
         await ImportConfigurationAsync(scope.ServiceProvider);
     }
 
+    /// <summary>
+    /// Imports configuration from the application's configuration and stores it in the provided services.
+    /// </summary>
+    /// <param name="host">The <see cref="IWebHost"/> instance used to create a scope for accessing the services.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
     public static async Task ImportConfigurationAsync(this IWebHost host)
     {
         using var scope = host.Services.CreateScope();
@@ -22,7 +35,12 @@ public static class ApplicationBuilderExtensions
         await ImportConfigurationAsync(scope.ServiceProvider);
     }
 
-    public static async Task ImportConfigurationAsync(IServiceProvider serviceProvider)
+    /// <summary>
+    /// Imports configuration from the application's configuration and stores it in the provided services.
+    /// </summary>
+    /// <param name="serviceProvider">The <see cref="IServiceProvider"/> instance that provides access to the services.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+    private static async Task ImportConfigurationAsync(IServiceProvider serviceProvider)
     {
         var context = serviceProvider.GetRequiredService<IAccessControlContext>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();

@@ -1,9 +1,23 @@
 ﻿namespace Orca
 {
+    /// <summary>
+    /// Represents a permission.
+    /// </summary>
     public class Permission
     {
+        /// <summary>
+        /// Gets or sets the unique identifier for the permission.
+        /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the permission.
+        /// </summary>
         public string Name { get; set; }
-    	public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description of the permission, explaining what it allows or represents.
+        /// </summary>
+        public string Description { get; set; }
     }
 }

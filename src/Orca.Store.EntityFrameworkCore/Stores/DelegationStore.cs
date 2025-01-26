@@ -4,17 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Orca.Store.EntityFrameworkCore;
 
+/// <inheritdoc />
 public class DelegationStore : IDelegationStore
 {
     private readonly DelegationMapper _mapper = new();
 
     private readonly OrcaDbContext _context;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DelegationStore"/> class.
+    /// </summary>
+    /// <param name="context">The database context used to interact with the data store.</param>
     public DelegationStore(OrcaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
+    /// <inheritdoc />
     public async Task<Delegation> FindByIdAsync(string delegationId, CancellationToken cancellationToken)
     {
         var entity = await _context.Delegations
@@ -26,6 +32,7 @@ public class DelegationStore : IDelegationStore
         return _mapper.FromEntity(entity);
     }
 
+    /// <inheritdoc />
     public async Task<Delegation> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
@@ -41,6 +48,7 @@ public class DelegationStore : IDelegationStore
         return _mapper.FromEntity(entity);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(delegation);
@@ -54,6 +62,7 @@ public class DelegationStore : IDelegationStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var entity = await _context.Delegations.FindAsync(delegation.Id, cancellationToken);
@@ -73,6 +82,7 @@ public class DelegationStore : IDelegationStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var entity = await _context.Delegations.FindAsync(delegation.Id, cancellationToken);
@@ -88,6 +98,7 @@ public class DelegationStore : IDelegationStore
         return AccessControlResult.Success;
     }
 
+    /// <inheritdoc />
     public Task<IList<Delegation>> ListAsync(CancellationToken cancellationToken)
     {
         var entities = _context.Delegations
@@ -99,6 +110,7 @@ public class DelegationStore : IDelegationStore
         return Task.FromResult<IList<Delegation>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Delegation>> SearchAsync(DelegationFilter filter, CancellationToken cancellationToken)
     {
         var source = _context.Delegations

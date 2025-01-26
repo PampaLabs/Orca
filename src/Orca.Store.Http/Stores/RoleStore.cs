@@ -7,6 +7,7 @@ using Orca.AspNetCore.Endpoints;
 
 namespace Orca.Store.Http;
 
+/// <inheritdoc />
 public class RoleStore : IRoleStore
 {
     private const string endpoint = "roles";
@@ -16,11 +17,16 @@ public class RoleStore : IRoleStore
 
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoleStore"/> class.
+    /// </summary>
+    /// The <paramref name="httpClientFactory"/> is used to create an <see cref="HttpClient"/> configured with the name specified in <see cref="HttpStoreDefaults.HttpClientName"/>.
     public RoleStore(IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient(HttpStoreDefaults.HttpClientName);
     }
 
+    /// <inheritdoc />
     public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{roleId}";
@@ -28,6 +34,7 @@ public class RoleStore : IRoleStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/name/{roleName}";
@@ -35,6 +42,7 @@ public class RoleStore : IRoleStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(role);
@@ -52,6 +60,7 @@ public class RoleStore : IRoleStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(role);
@@ -69,6 +78,7 @@ public class RoleStore : IRoleStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{role.Id}";
@@ -84,6 +94,7 @@ public class RoleStore : IRoleStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Role>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
@@ -101,6 +112,7 @@ public class RoleStore : IRoleStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default)
     {
         var query = QueryString.Empty;
@@ -143,6 +155,7 @@ public class RoleStore : IRoleStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
         var subjectMapper = new SubjectResponseMapper();
@@ -162,6 +175,7 @@ public class RoleStore : IRoleStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{role.Id}/subjects/{subject.Id}";
@@ -177,6 +191,7 @@ public class RoleStore : IRoleStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{role.Id}/subjects/{subject.Id}";
@@ -192,6 +207,7 @@ public class RoleStore : IRoleStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
     {
         var permissionMapper = new PermissionResponseMapper();
@@ -211,6 +227,7 @@ public class RoleStore : IRoleStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/permissions/{role.Id}";
@@ -226,6 +243,7 @@ public class RoleStore : IRoleStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/permissions/{role.Id}";

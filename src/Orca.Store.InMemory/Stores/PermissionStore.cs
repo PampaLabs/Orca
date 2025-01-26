@@ -1,14 +1,20 @@
 ﻿namespace Orca.Store.Configuration;
 
+/// <inheritdoc />
 public class PermissionStore : IPermissionStore
 {
     private readonly MemoryStoreOptions _options;
 
-	public PermissionStore(MemoryStoreOptions options)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PermissionStore"/> class.
+    /// </summary>
+    /// <param name="options">The options to configure the in-memory stores.</param>
+    public PermissionStore(MemoryStoreOptions options)
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
 	}
 
+    /// <inheritdoc />
     public Task<Permission> FindByIdAsync(string permissionId, CancellationToken cancellationToken)
     {
         var permission = _options.Permissions.FirstOrDefault(x => x.Id == permissionId);
@@ -16,6 +22,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult(permission);
     }
 
+    /// <inheritdoc />
     public Task<Permission> FindByNameAsync(string permissionName, CancellationToken cancellationToken)
 	{
         var permission = _options.Permissions.FirstOrDefault(x => x.Name == permissionName);
@@ -23,6 +30,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult(permission);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
 	{
         permission.Id = Guid.NewGuid().ToString();
@@ -31,12 +39,14 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult(AccessControlResult.Success);
 	}
 
-	public Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
 	{
         return Task.FromResult(AccessControlResult.Success);
 	}
 
-	public Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
 	{
         _options.Permissions.Remove(permission);
         _options.PermissionBindings.RemoveWhere(binding => binding.Permission == permission);
@@ -44,6 +54,7 @@ public class PermissionStore : IPermissionStore
 		return Task.FromResult(AccessControlResult.Success);
 	}
 
+    /// <inheritdoc />
     public Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
         var result = _options.PermissionBindings
@@ -54,6 +65,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult<IList<Role>>(result);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = (permission, role);
@@ -62,6 +74,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = (permission, role);
@@ -70,6 +83,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult(AccessControlResult.Success);
     }
 
+    /// <inheritdoc />
     public Task<IList<Permission>> ListAsync(CancellationToken cancellationToken = default)
     {
         var result = _options.Permissions.ToList();
@@ -77,6 +91,7 @@ public class PermissionStore : IPermissionStore
         return Task.FromResult<IList<Permission>>(result);
     }
 
+    /// <inheritdoc />
     public Task<IList<Permission>> SearchAsync(PermissionFilter filter, CancellationToken cancellationToken = default)
     {
         var source = _options.Permissions.AsQueryable();

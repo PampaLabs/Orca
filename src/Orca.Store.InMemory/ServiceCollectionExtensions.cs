@@ -3,8 +3,16 @@ using Orca.Store.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Provides extension methods for adding In-memory stores to an <see cref="IOrcaBuilder"/> instance.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Adds In-memory stores to the <see cref="IOrcaBuilder"/> with default configuration.
+    /// </summary>
+    /// <param name="builder">The <see cref="IOrcaBuilder"/> to which the services will be added.</param>
+    /// <returns>The <see cref="IOrcaBuilder"/> instance.</returns>
     public static IOrcaBuilder AddInMemoryStores(this IOrcaBuilder builder)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -12,6 +20,12 @@ public static class ServiceCollectionExtensions
         return AddInMemoryStores(builder, (sp, options) => { });
     }
 
+    /// <summary>
+    /// Adds In-memory stores to the <see cref="IOrcaBuilder"/> with custom configuration.
+    /// </summary>
+    /// <param name="builder">The <see cref="IOrcaBuilder"/> to which the services will be added.</param>
+    /// <param name="optionsAction">An action to configure <see cref="MemoryStoreOptions"/>.</param>
+    /// <returns>The <see cref="IOrcaBuilder"/> instance.</returns>
     public static IOrcaBuilder AddInMemoryStores(this IOrcaBuilder builder, Action<MemoryStoreOptions> optionsAction)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -23,6 +37,12 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds In-memory stores to the <see cref="IOrcaBuilder"/> with custom configuration.
+    /// </summary>
+    /// <param name="builder">The <see cref="IOrcaBuilder"/> to which the services will be added.</param>
+    /// <param name="optionsAction">An action to configure <see cref="MemoryStoreOptions"/>.</param>
+    /// <returns>The <see cref="IOrcaBuilder"/> instance.</returns>
     public static IOrcaBuilder AddInMemoryStores(this IOrcaBuilder builder, Action<IServiceProvider, MemoryStoreOptions> optionsAction)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));

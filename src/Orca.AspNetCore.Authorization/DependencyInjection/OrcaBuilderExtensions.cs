@@ -8,8 +8,16 @@ using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Provides extension methods to add authorization services to an <see cref="IOrcaBuilder"/> instance.
+/// </summary>
 public static class OrcaBuilderExtensions
 {
+    /// <summary>
+    /// Adds authorization services to the <see cref="IOrcaBuilder"/> with default configuration.
+    /// </summary>
+    /// <param name="builder">The <see cref="IOrcaBuilder"/> to add authorization services to.</param>
+    /// <returns>The <see cref="IOrcaBuilder"/> instance, with authorization services added.</returns>
     public static IOrcaBuilder AddAuthorization(this IOrcaBuilder builder)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
@@ -19,6 +27,12 @@ public static class OrcaBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds authorization services to the <see cref="IOrcaBuilder"/> with custom configuration.
+    /// </summary>
+    /// <param name="builder">The <see cref="IOrcaBuilder"/> to add authorization services to.</param>
+    /// <param name="options">An action to configure <see cref="OrcaWebHost"/>.</param>
+    /// <returns>The <see cref="IOrcaBuilder"/> instance, with authorization services and custom configuration added.</returns>
     public static IOrcaBuilder AddAuthorization(this IOrcaBuilder builder, Action<OrcaWebHost> options)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));

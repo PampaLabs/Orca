@@ -1,5 +1,8 @@
 ﻿namespace Orca.Authorization.Abac.Context
 {
+    /// <summary>
+    /// Defines a property bag interface.
+    /// </summary>
     public interface IPropertyBag
     {
         /// <summary>

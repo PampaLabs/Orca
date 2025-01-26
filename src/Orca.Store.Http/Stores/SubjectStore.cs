@@ -7,6 +7,7 @@ using Orca.AspNetCore.Endpoints;
 
 namespace Orca.Store.Http;
 
+/// <inheritdoc />
 public class SubjectStore : ISubjectStore
 {
     private const string endpoint = "subjects";
@@ -16,11 +17,16 @@ public class SubjectStore : ISubjectStore
 
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SubjectStore"/> class.
+    /// </summary>
+    /// The <paramref name="httpClientFactory"/> is used to create an <see cref="HttpClient"/> configured with the name specified in <see cref="HttpStoreDefaults.HttpClientName"/>.
     public SubjectStore(IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient(HttpStoreDefaults.HttpClientName);
     }
 
+    /// <inheritdoc />
     public async Task<Subject> FindByIdAsync(string subjectId, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subjectId}";
@@ -28,6 +34,7 @@ public class SubjectStore : ISubjectStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<Subject> FindBySubAsync(string sub, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/sub/{sub}";
@@ -35,6 +42,7 @@ public class SubjectStore : ISubjectStore
         return _responseMapper.ToEntity(response);
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Subject subject, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(subject);
@@ -52,6 +60,7 @@ public class SubjectStore : ISubjectStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
     {
         var data = _requestMapper.FromEntity(subject);
@@ -69,6 +78,7 @@ public class SubjectStore : ISubjectStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Subject subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subject.Id}";
@@ -84,6 +94,7 @@ public class SubjectStore : ISubjectStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<IList<Subject>> ListAsync(CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}";
@@ -101,6 +112,7 @@ public class SubjectStore : ISubjectStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken = default)
     {
         var query = QueryString.Empty;
@@ -125,6 +137,7 @@ public class SubjectStore : ISubjectStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<IList<Role>> GetRolesAsync(Subject subject, CancellationToken cancellationToken = default)
     {
         var roleMapper = new RoleResponseMapper();
@@ -144,6 +157,7 @@ public class SubjectStore : ISubjectStore
 #endif
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subject.Id}/roles/{role.Id}";
@@ -159,6 +173,7 @@ public class SubjectStore : ISubjectStore
         }
     }
 
+    /// <inheritdoc />
     public async Task<AccessControlResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subject.Id}/roles/{role.Id}";
