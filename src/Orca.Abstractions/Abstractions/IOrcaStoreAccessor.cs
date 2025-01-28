@@ -1,9 +1,9 @@
 ﻿namespace Orca
 {
     /// <summary>
-    /// Represents the access control context
+    /// Provides access to the store intances.
     /// </summary>
-    public interface IAccessControlContext
+    public interface IOrcaStoreAccessor
     {
         /// <summary>
         /// Gets the delegation store

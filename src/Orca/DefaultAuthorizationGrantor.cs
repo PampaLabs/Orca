@@ -8,17 +8,17 @@ namespace Orca
     {
         private readonly OrcaOptions _options;
 
-        private readonly IAccessControlContext _context;
+        private readonly IOrcaStoreAccessor _storeAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultAuthorizationGrantor"/> class.
         /// </summary>
-        /// <param name="options">The options used for configuring the authorization process.</param>
-        /// <param name="context">The access control context that provides the stores.</param>
-        public DefaultAuthorizationGrantor(IOptions<OrcaOptions> options, IAccessControlContext context)
+        /// <param name="options">The authorizations options.</param>
+        /// <param name="storeAccessor">The store accessor.</param>
+        public DefaultAuthorizationGrantor(IOptions<OrcaOptions> options, IOrcaStoreAccessor storeAccessor)
         {
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _storeAccessor = storeAccessor ?? throw new ArgumentNullException(nameof(storeAccessor));
         }
 
         /// <inheritdoc />
@@ -28,19 +28,19 @@ namespace Orca
 
             var subject = principal.GetSubjectId(_options);
 
-            var user = await _context.SubjectStore.FindBySubAsync(subject, cancellationToken);
+            var user = await _storeAccessor.SubjectStore.FindBySubAsync(subject, cancellationToken);
 
             if (user is null)
             {
                 return new AuthorizationContext();
             }
 
-            var delegation = await _context.DelegationStore.FindBySubjectAsync(subject, cancellationToken);
+            var delegation = await _storeAccessor.DelegationStore.FindBySubjectAsync(subject, cancellationToken);
 
             var represent = delegation?.Who ?? user;
 
-            var userRoles = await _context.SubjectStore.GetRolesAsync(represent, cancellationToken);
-            var claimRoles = await _context.RoleStore.SearchAsync(new() { Mappings = sourceRoleClaims }, cancellationToken);
+            var userRoles = await _storeAccessor.SubjectStore.GetRolesAsync(represent, cancellationToken);
+            var claimRoles = await _storeAccessor.RoleStore.SearchAsync(new() { Mappings = sourceRoleClaims }, cancellationToken);
 
             var roles = Enumerable.Empty<Role>()
                 .Union(userRoles)
@@ -50,7 +50,7 @@ namespace Orca
 
             var roleNames = roles.Select(x => x.Name).ToList();
 
-            var permissions = await _context.PermissionStore.SearchAsync(new() { Roles = [.. roleNames] }, cancellationToken);
+            var permissions = await _storeAccessor.PermissionStore.SearchAsync(new() { Roles = [.. roleNames] }, cancellationToken);
 
             return new AuthorizationContext
             {
@@ -64,7 +64,7 @@ namespace Orca
         /// <inheritdoc />
         public async Task<Policy> GetPolicyAsync(string name, CancellationToken cancellationToken = default)
         {
-            return await _context.PolicyStore.FindByNameAsync(name, cancellationToken);
+            return await _storeAccessor.PolicyStore.FindByNameAsync(name, cancellationToken);
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace Orca
 {
     /// <inheritdoc />
-    public class AccessControlContext : IAccessControlContext
+    public class OrcaStoreAccessor : IOrcaStoreAccessor
     {
         /// <inheritdoc />
         public IDelegationStore DelegationStore { get; }
@@ -21,10 +21,10 @@ namespace Orca
         public ISubjectStore SubjectStore { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AccessControlContext"/> class.
+        /// Initializes a new instance of the <see cref="OrcaStoreAccessor"/> class.
         /// </summary>
         /// <param name="serviceProvider">The <see cref="IServiceProvider"/> used to resolve dependencies for each store.</param>
-        public AccessControlContext(IServiceProvider serviceProvider)
+        public OrcaStoreAccessor(IServiceProvider serviceProvider)
         {
             DelegationStore = serviceProvider.GetRequiredService<IDelegationStore>();
             PermissionStore = serviceProvider.GetRequiredService<IPermissionStore>();

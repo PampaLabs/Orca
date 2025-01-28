@@ -12,8 +12,8 @@ namespace Orca.Authorization
     /// </summary>
     public class AuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
     {
-        private readonly AuthorizationOptions _options;
-    	private readonly OrcaWebHost _webHost;
+        private readonly AuthorizationOptions _aspOptions;
+        private readonly OrcaAuthorizationOptions _orcaOptions;
         private readonly ILogger<AuthorizationPolicyProvider> _logger;
 
         private object sync_root = new object();
@@ -21,17 +21,17 @@ namespace Orca.Authorization
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationPolicyProvider"/> class.
         /// </summary>
-        /// <param name="options">The basic configuration options.</param>
-        /// <param name="webHost">The web configuration options.</param>
+        /// <param name="aspOptions">The AspNet authorization options.</param>
+        /// <param name="orcaOptions">The Orca authorization options.</param>
         /// <param name="logger">The logger used to log events and errors in policy evaluation.</param>
         public AuthorizationPolicyProvider(
-            IOptions<AuthorizationOptions> options,
-            IOptions<OrcaWebHost> webHost,
+            IOptions<AuthorizationOptions> aspOptions,
+            IOptions<OrcaAuthorizationOptions> orcaOptions,
             ILogger<AuthorizationPolicyProvider> logger)
-            : base(options)
+            : base(aspOptions)
         {
-            _options = options.Value;
-            _webHost = webHost.Value;
+            _aspOptions = aspOptions.Value;
+            _orcaOptions = orcaOptions.Value;
             _logger = logger;
         }
 
@@ -50,14 +50,14 @@ namespace Orca.Authorization
                     ? (IAuthorizationRequirement) new AbacRequirement(abacPrefix.Policy)
                     :  new PermissionRequirement(policyName);
 
-                if (_webHost.Schemes.Any())
+                if (_orcaOptions.Schemes.Any())
                 {
                     policy = new AuthorizationPolicyBuilder()
                         .AddRequirements(requirement)
-                        .AddAuthenticationSchemes(_webHost.Schemes.ToArray())
+                        .AddAuthenticationSchemes(_orcaOptions.Schemes.ToArray())
                         .Build();
 
-                    _logger.CreatingAuthorizationPolicy(policyName, _webHost.Schemes);
+                    _logger.CreatingAuthorizationPolicy(policyName, _orcaOptions.Schemes);
                 }
                 else
                 {
@@ -74,7 +74,7 @@ namespace Orca.Authorization
                     // so we can cache all the policies created at runtime there to create the policies only once
                     // the internal dictionary is a plain dictionary ( not concurrent ), we need to ensure
                     // a thread safe access 
-                    _options.AddPolicy(policyName, policy);
+                    _aspOptions.AddPolicy(policyName, policy);
                 }
             }
             else

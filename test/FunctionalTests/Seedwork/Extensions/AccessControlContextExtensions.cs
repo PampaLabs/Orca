@@ -5,26 +5,26 @@ namespace FunctionalTests.Seedwork
     public static class AccessControlContextExtensions
     {
         public static async Task GivenAnApplication(
-            this IAccessControlContext context)
+            this IOrcaStoreAccessor stores)
         {
             var viewGradesPermission = new Permission { Name = Policies.ViewGrades };
             var editGradesPermission = new Permission { Name = Policies.EditGrades };
 
-            await context.PermissionStore.CreateAsync(viewGradesPermission);
-            await context.PermissionStore.CreateAsync(editGradesPermission);
+            await stores.PermissionStore.CreateAsync(viewGradesPermission);
+            await stores.PermissionStore.CreateAsync(editGradesPermission);
         }
 
         public static async Task GivenAnSubject(
-            this IAccessControlContext context,
+            this IOrcaStoreAccessor stores,
             string sub)
         {
             var subject = new Subject { Sub = sub, Name = sub };
 
-            await context.SubjectStore.CreateAsync(subject);
+            await stores.SubjectStore.CreateAsync(subject);
         }
 
         public static async Task GivenARole(
-            this IAccessControlContext context,
+            this IOrcaStoreAccessor stores,
             string name,
             string sub,
             bool withPermissions = true)
@@ -35,24 +35,24 @@ namespace FunctionalTests.Seedwork
                 Description = $"{name} role"
             };
 
-            var subject = await context.SubjectStore.FindBySubAsync(sub);
+            var subject = await stores.SubjectStore.FindBySubAsync(sub);
 
-            await context.RoleStore.CreateAsync(role);
-            await context.RoleStore.AddSubjectAsync(role, subject);
+            await stores.RoleStore.CreateAsync(role);
+            await stores.RoleStore.AddSubjectAsync(role, subject);
 
             if (withPermissions)
             {
-                var permissions = await context.PermissionStore.ListAsync();
+                var permissions = await stores.PermissionStore.ListAsync();
                 
                 foreach (var permission in permissions)
                 {
-                    await context.PermissionStore.AddRoleAsync(permission, role);
+                    await stores.PermissionStore.AddRoleAsync(permission, role);
                 }
             }
         }
 
         public static async Task GivenAPolicy(
-            this IAccessControlContext context,
+            this IOrcaStoreAccessor stores,
             string policyName,
             string policyContent)
         {
@@ -62,17 +62,17 @@ namespace FunctionalTests.Seedwork
                 Content = policyContent,
             };
 
-            await context.PolicyStore.CreateAsync(policy);
+            await stores.PolicyStore.CreateAsync(policy);
         }
 
         public static async Task GivenAnUserWithADelegation(
-            this IAccessControlContext context,
+            this IOrcaStoreAccessor stores,
             string who,
             string whom,
             bool enabled = true)
         {
-            var subjectWho = await context.SubjectStore.FindBySubAsync(who);
-            var subjectWhom = await context.SubjectStore.FindBySubAsync(whom);
+            var subjectWho = await stores.SubjectStore.FindBySubAsync(who);
+            var subjectWhom = await stores.SubjectStore.FindBySubAsync(whom);
 
             var delegation = new Delegation
             {
@@ -83,7 +83,7 @@ namespace FunctionalTests.Seedwork
                 Enabled = enabled,
             };
 
-            await context.DelegationStore.CreateAsync(delegation);
+            await stores.DelegationStore.CreateAsync(delegation);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Orca
 {
     /// <summary>
-    /// Represents the options for configuring authorization.
+    /// Represents the options to configuring the core capability.
     /// </summary>
     public class OrcaOptions
     {

@@ -12,7 +12,7 @@ public class PolicyStore : IPolicyStore
     /// <summary>
     /// Initializes a new instance of the <see cref="PolicyStore"/> class.
     /// </summary>
-    /// <param name="context">The database context used to interact with the data store.</param>
+    /// <param name="context">The database context.</param>
     public PolicyStore(OrcaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));

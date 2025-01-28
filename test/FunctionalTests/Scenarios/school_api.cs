@@ -51,11 +51,11 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var stores = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
-            await context.GivenAnApplication();
-            await context.GivenAnSubject(Subs.Teacher);
-            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+            await stores.GivenAnApplication();
+            await stores.GivenAnSubject(Subs.Teacher);
+            await stores.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
                 .CreateRequest(Api.School.GetGrades)
@@ -72,10 +72,10 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var stores = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
-            await context.GivenAnApplication();
-            await context.GivenAnSubject(Subs.SubstituteTwo);
+            await stores.GivenAnApplication();
+            await stores.GivenAnSubject(Subs.SubstituteTwo);
 
             var response = await server
                 .CreateRequest(Api.School.GetGrades)
@@ -92,11 +92,11 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var stores = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
-            await context.GivenAnApplication();
-            await context.GivenAnSubject(Subs.Teacher);
-            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+            await stores.GivenAnApplication();
+            await stores.GivenAnSubject(Subs.Teacher);
+            await stores.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
                 .CreateRequest(Api.School.EditGrades)
@@ -113,7 +113,7 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var context = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
             await context.GivenAnApplication();
             await context.GivenAnSubject(Subs.Teacher);
@@ -134,11 +134,11 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var stores = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
-            await context.GivenAnApplication();
-            await context.GivenAnSubject(Subs.Teacher);
-            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+            await stores.GivenAnApplication();
+            await stores.GivenAnSubject(Subs.Teacher);
+            await stores.GivenARole(Roles.Teacher, Subs.Teacher);
 
             var response = await server
                 .CreateRequest(Api.School.EditGrades)
@@ -156,14 +156,14 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var stores = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
-            await context.GivenAnApplication();
-            await context.GivenAnSubject(Subs.Teacher);
-            await context.GivenAnSubject(Subs.SubstituteOne);
-            await context.GivenARole(Roles.Teacher, Subs.Teacher);
+            await stores.GivenAnApplication();
+            await stores.GivenAnSubject(Subs.Teacher);
+            await stores.GivenAnSubject(Subs.SubstituteOne);
+            await stores.GivenARole(Roles.Teacher, Subs.Teacher);
 
-            await context.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteOne);
+            await stores.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteOne);
 
             var response = await server
                 .CreateRequest(Api.School.EditGrades)
@@ -180,13 +180,13 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var stores = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
-            await context.GivenAnApplication();
-            await context.GivenAnSubject(Subs.Teacher);
-            await context.GivenAnSubject(Subs.SubstituteTwo);
-            await context.GivenARole(Roles.Teacher, Subs.Teacher);
-            await context.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteTwo, false);
+            await stores.GivenAnApplication();
+            await stores.GivenAnSubject(Subs.Teacher);
+            await stores.GivenAnSubject(Subs.SubstituteTwo);
+            await stores.GivenARole(Roles.Teacher, Subs.Teacher);
+            await stores.GivenAnUserWithADelegation(Subs.Teacher, Subs.SubstituteTwo, false);
 
             var response = await server
                 .CreateRequest(Api.School.EditGrades)

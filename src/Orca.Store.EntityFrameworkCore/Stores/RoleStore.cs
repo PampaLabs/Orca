@@ -14,7 +14,7 @@ public class RoleStore : IRoleStore
     /// <summary>
     /// Initializes a new instance of the <see cref="RoleStore"/> class.
     /// </summary>
-    /// <param name="context">The database context used to interact with the data store.</param>
+    /// <param name="context">The database context.</param>
     public RoleStore(OrcaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));

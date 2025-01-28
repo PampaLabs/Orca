@@ -42,7 +42,7 @@ public static class ApplicationBuilderExtensions
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
     private static async Task ImportConfigurationAsync(IServiceProvider serviceProvider)
     {
-        var context = serviceProvider.GetRequiredService<IAccessControlContext>();
+        var stores = serviceProvider.GetRequiredService<IOrcaStoreAccessor>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
         var config = new OrcaConfiguration();
@@ -51,36 +51,36 @@ public static class ApplicationBuilderExtensions
         foreach (var item in config.Subjects)
         {
             var subject = new SubjectMapper().FromEntity(item);
-            await context.SubjectStore.CreateAsync(subject);
+            await stores.SubjectStore.CreateAsync(subject);
         }
 
         foreach (var item in config.Policies)
         {
             var policy = new PolicyMapper().FromEntity(item);
-            await context.PolicyStore.CreateAsync(policy);
+            await stores.PolicyStore.CreateAsync(policy);
         }
 
         foreach (var item in config.Permissions)
         {
             var permissions = new PermissionMapper().FromEntity(item);
-            await context.PermissionStore.CreateAsync(permissions);
+            await stores.PermissionStore.CreateAsync(permissions);
         }
 
         foreach (var item in config.Roles)
         {
             var role = new RoleMapper().FromEntity(item);
-            await context.RoleStore.CreateAsync(role);
+            await stores.RoleStore.CreateAsync(role);
 
             foreach (var sub in item.Subjects)
             {
-                var subject = await context.SubjectStore.FindBySubAsync(sub);
-                await context.RoleStore.AddSubjectAsync(role, subject);
+                var subject = await stores.SubjectStore.FindBySubAsync(sub);
+                await stores.RoleStore.AddSubjectAsync(role, subject);
             }
 
             foreach (var binding in item.Permissions)
             {
-                var permission = await context.PermissionStore.FindByNameAsync(binding);
-                await context.RoleStore.AddPermissionAsync(role, permission);
+                var permission = await stores.PermissionStore.FindByNameAsync(binding);
+                await stores.RoleStore.AddPermissionAsync(role, permission);
             }
         }
     }

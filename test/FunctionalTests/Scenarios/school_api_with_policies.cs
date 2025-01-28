@@ -38,7 +38,7 @@ namespace FunctionalTests.Scenarios
             var server = Fixture.GetTestServer(serverType);
 
             using var scope = server.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IAccessControlContext>();
+            var context = scope.ServiceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
             await context.GivenAnApplication();
             await context.GivenAnSubject(Subs.Teacher);

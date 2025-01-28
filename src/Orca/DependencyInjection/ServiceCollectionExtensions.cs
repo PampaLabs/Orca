@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IServiceCollection AddAccessControlContext(this IServiceCollection services)
         {
-            services.TryAddScoped<IAccessControlContext, AccessControlContext>();
+            services.TryAddScoped<IOrcaStoreAccessor, OrcaStoreAccessor>();
             return services;
         }
     }

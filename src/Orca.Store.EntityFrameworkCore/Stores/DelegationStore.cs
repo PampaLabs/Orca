@@ -14,7 +14,7 @@ public class DelegationStore : IDelegationStore
     /// <summary>
     /// Initializes a new instance of the <see cref="DelegationStore"/> class.
     /// </summary>
-    /// <param name="context">The database context used to interact with the data store.</param>
+    /// <param name="context">The database context.</param>
     public DelegationStore(OrcaDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));

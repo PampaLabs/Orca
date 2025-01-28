@@ -31,9 +31,9 @@ public static class OrcaBuilderExtensions
     /// Adds authorization services to the <see cref="IOrcaBuilder"/> with custom configuration.
     /// </summary>
     /// <param name="builder">The <see cref="IOrcaBuilder"/> to add authorization services to.</param>
-    /// <param name="options">An action to configure <see cref="OrcaWebHost"/>.</param>
+    /// <param name="options">An action to configure <see cref="OrcaAuthorizationOptions"/>.</param>
     /// <returns>The <see cref="IOrcaBuilder"/> instance, with authorization services and custom configuration added.</returns>
-    public static IOrcaBuilder AddAuthorization(this IOrcaBuilder builder, Action<OrcaWebHost> options)
+    public static IOrcaBuilder AddAuthorization(this IOrcaBuilder builder, Action<OrcaAuthorizationOptions> options)
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
         _ = options ?? throw new ArgumentNullException(nameof(options));

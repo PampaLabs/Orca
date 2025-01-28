@@ -15,7 +15,7 @@ namespace Orca.Authorization
         private readonly IAuthorizationService _authorization;
         private readonly IAuthorizationGrantor _authorizationGrantor;
         private readonly OrcaOptions _options;
-        private readonly OrcaWebHost _webHost;
+        private readonly OrcaAuthorizationOptions _authOptions;
         private readonly ILogger<OrcaPolicyEvaluator> _logger;
 
         /// <summary>
@@ -24,26 +24,26 @@ namespace Orca.Authorization
         /// <param name="authorization">The authorization service to be used.</param>
         /// <param name="authorizationGrantor">The authorization grantor to be used.</param>
         /// <param name="options">The basic configuration options.</param>
-        /// <param name="webHost">The web configuration options.</param>
+        /// <param name="authOptions">The web configuration options.</param>
         /// <param name="logger">The logger used to log events and errors in policy evaluation.</param>
         public OrcaPolicyEvaluator(
             IAuthorizationService authorization,
             IAuthorizationGrantor authorizationGrantor,
             IOptions<OrcaOptions> options,
-            IOptions<OrcaWebHost> webHost,
+            IOptions<OrcaAuthorizationOptions> authOptions,
             ILogger<OrcaPolicyEvaluator> logger)
         {
             _authorization = authorization;
             _authorizationGrantor = authorizationGrantor;
             _options = options.Value;
-            _webHost = webHost.Value;
+            _authOptions = authOptions.Value;
             _logger = logger;
         }
 
         /// <inheritdoc />
         public async Task<AuthenticateResult> AuthenticateAsync(AuthorizationPolicy policy, HttpContext context)
         {
-            var hasSchemes = _webHost.Schemes.Any();
+            var hasSchemes = _authOptions.Schemes.Any();
 
             if (policy.AuthenticationSchemes != null && policy.AuthenticationSchemes.Count > 0)
             {
@@ -51,7 +51,7 @@ namespace Orca.Authorization
                 var matchPolicySchemes = false;
                 foreach (var scheme in policy.AuthenticationSchemes)
                 {
-                    if (_webHost.Schemes.Any(s => s.Equals(scheme, StringComparison.OrdinalIgnoreCase)))
+                    if (_authOptions.Schemes.Any(s => s.Equals(scheme, StringComparison.OrdinalIgnoreCase)))
                     {
                         matchPolicySchemes = true;
                     }
@@ -146,11 +146,11 @@ namespace Orca.Authorization
                     _logger.NoOrcaRolesForUser(user.GetSubjectId(_options));
                 }
 
-                if (!context.Response.HasStarted && _webHost.Events.UnauthorizedFallback != null)
+                if (!context.Response.HasStarted && _authOptions.Events.UnauthorizedFallback != null)
                 {
                     _logger.ExecutingOrcaUnauthorizedFallback();
 
-                    await _webHost.Events.UnauthorizedFallback(context);
+                    await _authOptions.Events.UnauthorizedFallback(context);
                 }
                 else
                 {
