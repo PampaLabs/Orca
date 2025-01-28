@@ -1,10 +1,86 @@
-![Balea CI](https://github.com/Xabaril/Balea/workflows/Balea%20CI/badge.svg) [![Documentation Status](https://readthedocs.org/projects/balea/badge/?version=latest)](https://balea.readthedocs.io/en/latest/?badge=latest)
+# Orca
 
-[![Nuget](https://img.shields.io/nuget/v/balea?label=balea)](https://www.nuget.org/packages/Balea/) [![Nuget](https://img.shields.io/nuget/v/Balea.Grantor.Configuration?label=baleaconfigurationstore)](https://www.nuget.org/packages/Balea.Grantor.Configuration/) [![Nuget](https://img.shields.io/nuget/v/Balea.Grantor.EntityFrameworkCore?label=baleaefcorestore)](https://www.nuget.org/packages/Balea.Grantor.EntityFrameworkCore/)
+[![CI](https://img.shields.io/github/actions/workflow/status/Xabaril/Balea/Balea%20Continous%20Integration)](https://github.com/Xabaril/Balea/actions/workflows/ci.yml)
+[![Downloads](https://img.shields.io/nuget/dt/Balea)](https://www.nuget.org/stats/packages/Balea?groupby=Version)
+[![NuGet](https://img.shields.io/nuget/v/Balea)](https://www.nuget.org/packages/Balea/)
+[![Documentation](https://img.shields.io/readthedocs/balea)](https://balea.readthedocs.io/en/stable/)
 
-[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/balea?color=yellow&label=balea%20preview)](https://www.nuget.org/packages/Balea/1.0.0-preview53023997) [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Balea.Grantor.Configuration?color=yellow&label=baleaconfigurationstore%20preview)](https://www.nuget.org/packages/Balea.Grantor.Configuration/1.0.0-preview53023997) [![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/Balea.Grantor.EntityFrameworkCore?color=yellow&label=baleaefcorestore%20preview)](https://www.nuget.org/packages/Balea.Grantor.EntityFrameworkCore/1.0.0-preview53023997)
+Orca is an authorization framework for .NET developers that aims to help us decoupling authentication and authorization in our web applications.
 
-# Authentication != Authorization
+This project is a fork of [Balea](https://github.com/Xabaril/Balea). The foundational basis and the magnificent idea are due to the team behind [Xabaril](https://github.com/Xabaril). 🙌
+
+The project documentation has not yet been migrated. 🚧
+
+## Getting started
+
+First add the Orca packages into your project.
+
+```
+dotnet add package Orca
+dotnet add package Orca.Store.EntityFrameworkCore
+dotnet add package Orca.AspNetCore
+```
+
+In the _Program.cs_, register the Orca services:
+
+```csharp
+builder.Services
+  .AddOrca()                    // core services (Orca)
+  .AddEntityFrameworkStores()   // store implementations (Orca.Store.EntityFrameworkCore)
+  .AddAuthorization();          // authorization handler (Orca.AspNetCore)
+```
+
+## How is it different from Balea?
+
+The main purpose of Orca is to introduce some abstractions, and fundamentally redefine what a store is.
+
+### Motivation
+
+The following key points describe the underlying vision behind this fork.
+
+- Standardization of models (e.g. Delegation, Permission, Policy, Role, Subject)
+- Well-defined store interfaces, in order to provide common CRUD operations.
+- Decoupled authorization logic. Authorization behavior is defined in the core library, so stores only deal with IO operations.
+- Enable the use of authorization concerns from the application logic through abstractions.
+
+### New features
+
+Some subsequent benefits turned out to be low hanging fruits.
+
+- The configuration store has been replaced by the in-memory store. However, it can be populated from the configuration.
+- The EntityFramework store has been improved to allow extensibility and customization of the _DbContext_.
+- The HTTP store has been rewritten to be fully compliant with the new store interfaces.
+- Endpoint provisioning has been included to allow exposing an HTTP store server using minimal API.
+- Blazor samples have been generated to provide common GUI templates.
+
+### Other changes
+
+The code base received additional enhancements.
+
+- Decompling of Abstractions/Core/AspNetCore packages.
+- Common data seeding strategy across different stores.
+- Improved tests to use theorems for the different schemas and stores.
+- Adoption of _TestContainers_.
+
+## What about multi-tentant support?
+
+If you have been using Balea, you may be wondering what happened to the support for multiple applications (a.k.a. tenants).
+
+At the time of generating abstractions, the inclusion of the application concept may result in complex interfaces to interact with.
+
+Also, it is worth asking "Should subjects be shared between applications?". Each solution will probably find different answers according to their needs. The same question may be applied to some other models.
+
+Orca chose to adopt a more flexible approach, delegating multi-tenancy concerns to the store configuration.
+
+### EntityFrameworkCore
+
+The _EntityFrameworkCore_ store options allows configuring the _DbContext_. [Finbuckle](https://github.com/Finbuckle/Finbuckle.MultiTenant) could be adopted for data isolation.
+
+### HTTP
+
+The _HTTP_ store options allows configuring the _HttpClientFactory_. A custom _header_ could be included to send the tenant identifier.
+
+## Authentication != Authorization
 
 Authentication and authorization might sound similar, but both are distinct security processes in the world of identity and access management and understanding the difference between these two concepts is the key to successfully implementing a good IAM solution.
 
@@ -16,31 +92,13 @@ It is very common to see how people misuse OIDC servers by adding permissions in
 - Permissions could change during the user session, so if you are using JWT tokens, you must wait until the lifetime of the token expires to retrieve a new token with the permissions up to date.
 - You should keep your tokens small because we have some well-known restrictions such as URL Path Length Restrictions, bandwidth...
 
-# What is Balea?
+## Technologies
 
-Balea is an authorization framework for ASP.NET Core developers that aims to help us decoupling authentication and authorization in our web applications.
-
-For project documentation, please visit [readthedocs](https://balea.readthedocs.io).
-
-## How to build
-
-Balea is built against the latest NET Core 6 and .Net Core 8.
-
-- [Install](https://www.microsoft.com/net/download/core#/current) the [required](https://github.com/Xabaril/Balea/blob/master/global.json) .NET Core SDK
-- Run [build.ps1](https://github.com/Xabaril/Balea/blob/master/build.ps1) in the root of the repo.
-
-## Kudos
-This project was inspired by Dominick Baier's & Brock Allen PolicyServer (local version) https://github.com/PolicyServer/PolicyServer.Local Thank you to all who have contributed in the project!
-
-## Acknowledgements
-
-Balea is built using the following great open source projects and free services:
-
-- [ASP.NET Core](https://github.com/aspnet)
-- [XUnit](https://xunit.github.io/)
-- [Fluent Assertions](http://www.fluentassertions.com/)
-
-..and last but not least a big thanks to all our [contributors](https://github.com/Xabaril/Balea/graphs/contributors)!
+- [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core)
+- [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)
+- [xUnit](https://xunit.net/)
+- [Fluent Assertions](https://fluentassertions.com/)
+- [TestContainers](https://testcontainers.com/)
 
 ## Code of conduct
 
