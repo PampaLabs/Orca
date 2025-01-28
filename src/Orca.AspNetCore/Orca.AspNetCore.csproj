@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,7 +14,11 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <ProjectReference Include="..\..\src\Orca.AspNetCore.Authorization\Orca.AspNetCore.Authorization.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net6.0' ">
     <ProjectReference Include="..\..\src\Orca.AspNetCore.Authorization\Orca.AspNetCore.Authorization.csproj" />
     <ProjectReference Include="..\..\src\Orca.AspNetCore.Endpoints\Orca.AspNetCore.Endpoints.csproj" />
   </ItemGroup>
