@@ -72,22 +72,22 @@
 		<PackageVersion Include="System.Net.Http.Json" Version="9.0.0" />
 	</ItemGroup>
 
-	<ItemGroup Label="Testing Dependencies">
-		<PackageVersion Include="AutoFixture.Xunit2" Version="4.15.0" />
+	<ItemGroup Label="Test Dependencies">
+		<PackageVersion Include="AutoFixture.Xunit2" Version="4.18.1" />
 		<PackageVersion Include="Acheve.TestHost" Version="4.0.0" />
-		<PackageVersion Include="coverlet.collector" Version="3.0.0" />
-		<PackageVersion Include="FluentAssertions" Version="5.10.3" />
-		<PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.35" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+		<PackageVersion Include="coverlet.collector" Version="6.0.4" />
+		<PackageVersion Include="FluentAssertions" Version="7.1.0" />
+		<PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.4" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
 		<PackageVersion Include="Respawn" Version="6.2.1" />
-		<PackageVersion Include="TestContainers" Version="3.8.0" />
-		<PackageVersion Include="Testcontainers.MsSql" Version="3.8.0" />
-		<PackageVersion Include="xunit" Version="2.4.1" />
-		<PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3" />
+		<PackageVersion Include="TestContainers" Version="4.1.0" />
+		<PackageVersion Include="Testcontainers.MsSql" Version="4.1.0" />
+		<PackageVersion Include="xunit" Version="2.9.3" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Label="Swagger">
-		<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+		<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.9.0" />
 	</ItemGroup>
 
 	<ItemGroup>
