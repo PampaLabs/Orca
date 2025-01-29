@@ -16,7 +16,7 @@ namespace Orca.Authorization
         private readonly OrcaAuthorizationOptions _orcaOptions;
         private readonly ILogger<AuthorizationPolicyProvider> _logger;
 
-        private object sync_root = new object();
+        private readonly object sync_root = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationPolicyProvider"/> class.

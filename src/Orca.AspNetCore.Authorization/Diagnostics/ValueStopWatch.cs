@@ -6,7 +6,7 @@ namespace Orca.Diagnostics
     {
         private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
 
-        private long _startTimestamp;
+        private readonly long _startTimestamp;
 
         public bool IsActive => _startTimestamp != 0;
 

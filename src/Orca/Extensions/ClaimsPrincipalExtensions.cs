@@ -2,8 +2,17 @@
 
 namespace System.Security.Claims
 {
+    /// <summary>
+    /// Extension methods for <see cref="ClaimsPrincipal"/>.
+    /// </summary>
     public static class ClaimsPrincipalExtensions
     {
+        /// <summary>
+        /// Gets the subject identifier.
+        /// </summary>
+        /// <param name="principal">The claims principal.</param>
+        /// <param name="options">The authorizations options.</param>
+        /// <returns></returns>
         public static string GetSubjectId(this ClaimsPrincipal principal, OrcaOptions options)
         {
             string sid = null;
@@ -23,6 +32,12 @@ namespace System.Security.Claims
             return sid;
         }
 
+        /// <summary>
+        /// Gets the claim values.
+        /// </summary>
+        /// <param name="principal">The claims principal.</param>
+        /// <param name="claimType">The claims type.</param>
+        /// <returns>The claim values</returns>
         public static IEnumerable<string> GetClaimValues(
             this ClaimsPrincipal principal,
             string claimType)
