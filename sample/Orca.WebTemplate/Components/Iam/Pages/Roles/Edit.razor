@@ -58,10 +58,10 @@ else
 
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private InputModel? Input { get; set; }
+    private InputModel Input { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,15 +71,17 @@ else
         {
             NavigationManager.NavigateTo("notfound");
         }
-
-        Input = new InputModel
+        else
         {
-            Name = role.Name,
-            Description = role.Description,
-            Enabled = role.Enabled,
-            Mappings = role.Mappings,
-            // ConcurrencyStamp = role.ConcurrencyStamp,
-        };
+            Input = new InputModel
+            {
+                Name = role.Name,
+                Description = role.Description,
+                Enabled = role.Enabled,
+                Mappings = role.Mappings,
+                // ConcurrencyStamp = role.ConcurrencyStamp,
+            };
+        }
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.

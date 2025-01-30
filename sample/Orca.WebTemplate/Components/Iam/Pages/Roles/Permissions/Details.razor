@@ -57,10 +57,10 @@
 @code {
     Role? role;
 
-    IList<Permission>? permissions;
+    IList<Permission> permissions = [];
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {

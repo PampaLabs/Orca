@@ -10,13 +10,13 @@
 
 @code {
     [Parameter]
-    public IList<TItem> Items { get; set; }
+    public IList<TItem> Items { get; set; } = [];
 
     [Parameter]
-    public Func<TItem, string> Name { get; set; }
+    public Func<TItem, string> Name { get; set; } = default!;
 
     [Parameter]
-    public Func<TItem, string> Value { get; set; }
+    public Func<TItem, string> Value { get; set; } = default!;
 
     [Parameter]
     public IList<TItem> SelectedItems { get; set; } = [];

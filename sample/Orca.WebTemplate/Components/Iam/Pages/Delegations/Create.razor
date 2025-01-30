@@ -70,7 +70,7 @@
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
-    private IList<Subject> subjects;
+    private IList<Subject> subjects = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,8 +87,8 @@
         {
             Who = subjectWho,
             Whom = subjectWhom,
-            From = Input.From.Value,
-            To = Input.To.Value,
+            From = Input.From!.Value,
+            To = Input.To!.Value,
             Enabled = Input.Enabled,
         };
 

@@ -77,12 +77,12 @@ else
 
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private InputModel? Input { get; set; }
+    private InputModel Input { get; set; } = default!;
 
-    private IList<Subject> subjects;
+    private IList<Subject> subjects = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -92,18 +92,20 @@ else
         {
             NavigationManager.NavigateTo("notfound");
         }
-
-        Input = new InputModel
+        else
         {
-            Who = delegation.Who.Id,
-            Whom = delegation.Whom.Id,
-            From = delegation.From,
-            To = delegation.To,
-            Enabled = delegation.Enabled,
-            // ConcurrencyStamp = delegation.ConcurrencyStamp,
-        };
+            Input = new InputModel
+            {
+                Who = delegation.Who.Id,
+                Whom = delegation.Whom.Id,
+                From = delegation.From,
+                To = delegation.To,
+                Enabled = delegation.Enabled,
+                // ConcurrencyStamp = delegation.ConcurrencyStamp,
+            };
 
-        subjects = await SubjectStore.ListAsync();
+            subjects = await SubjectStore.ListAsync();
+        }
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -117,8 +119,8 @@ else
 
         delegation.Who = subjectWho;
         delegation.Whom = subjectWhom;
-        delegation.From = Input.From.Value;
-        delegation.To = Input.To.Value;
+        delegation.From = Input.From!.Value;
+        delegation.To = Input.To!.Value;
         delegation.Enabled = Input.Enabled;
         // delegation.ConcurrencyStamp = Input.ConcurrencyStamp;
 

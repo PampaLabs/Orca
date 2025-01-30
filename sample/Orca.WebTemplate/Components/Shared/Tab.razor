@@ -10,7 +10,7 @@
     public string? Title { get; set; }
 
     [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    public RenderFragment ChildContent { get; set; } = default!;
 
     private string? TitleCssClass =>
         ContainerTabSet?.ActiveTab == this ? "active" : null;

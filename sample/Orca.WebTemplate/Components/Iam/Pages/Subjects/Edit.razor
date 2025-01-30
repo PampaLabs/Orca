@@ -49,10 +49,10 @@ else
 
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    private InputModel? Input { get; set; }
+    private InputModel Input { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,13 +62,15 @@ else
         {
             NavigationManager.NavigateTo("notfound");
         }
-
-        Input = new InputModel
+        else
         {
-            Name = subject.Name,
-            Email = subject.Email,
-            // ConcurrencyStamp = subject.ConcurrencyStamp,
-        };
+            Input = new InputModel
+            {
+                Name = subject.Name,
+                Email = subject.Email,
+                // ConcurrencyStamp = subject.ConcurrencyStamp,
+            };
+        }
     }
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.

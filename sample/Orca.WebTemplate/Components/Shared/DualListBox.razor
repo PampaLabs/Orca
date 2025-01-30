@@ -8,10 +8,10 @@
         }
         <div class="list-box">
             <ListBox TItem="TItem"
-                Items="LeftItems"
-                Name="Name"
-                Value="Value"
-                SelectedItems="leftSelection">
+            Items="LeftItems"
+            Name="Name"
+            Value="Value"
+            SelectedItems="leftSelection">
             </ListBox>
         </div>
     </div>
@@ -36,10 +36,10 @@
         }
         <div class ="list-box">
             <ListBox TItem="TItem" 
-                Items="RightItems"
-                Name="Name"
-                Value="Value"
-                SelectedItems="rightSelection">
+            Items="RightItems"
+            Name="Name"
+            Value="Value"
+            SelectedItems="rightSelection">
             </ListBox>
         </div>
     </div>
@@ -59,10 +59,10 @@
     public IList<TItem> RightItems { get; set; } = [];
 
     [Parameter]
-    public Func<TItem, string> Name { get; set; }
+    public Func<TItem, string> Name { get; set; } = default!;
 
     [Parameter]
-    public Func<TItem, string> Value { get; set; }
+    public Func<TItem, string> Value { get; set; } = default!;
 
     [Parameter]
     public EventCallback<MoveItemsEventArgs<TItem>> OnMoveToRight { get; set; }

@@ -59,10 +59,10 @@
 @code {
     Role? role;
 
-    IList<Subject>? subjects;
+    IList<Subject> subjects = [];
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
