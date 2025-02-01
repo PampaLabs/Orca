@@ -12,12 +12,12 @@
   <PropertyGroup>
     <Version>8.0.0</Version>
     <PackageVersion>$(Version)</PackageVersion>
-    <Authors>Xabaril Contributors</Authors>
-    <Copyright>Copyright (c) Xabaril 2025</Copyright>
-    <PackageProjectUrl>http://github.com/xabaril/Balea</PackageProjectUrl>
+    <Authors>Orca Contributors</Authors>
+    <Copyright>Copyright (c) Orca 2025</Copyright>
+    <PackageProjectUrl>http://github.com/OrcaAuth/Orca</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile></PackageReadmeFile>
-    <RepositoryUrl>https://github.com/xabaril/Balea</RepositoryUrl>
+    <RepositoryUrl>https://github.com/OrcaAuth/Orca</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>

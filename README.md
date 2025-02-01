@@ -1,9 +1,9 @@
 # Orca
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Xabaril/Balea/Balea%20Continous%20Integration)](https://github.com/Xabaril/Balea/actions/workflows/ci.yml)
-[![Downloads](https://img.shields.io/nuget/dt/Balea)](https://www.nuget.org/stats/packages/Balea?groupby=Version)
-[![NuGet](https://img.shields.io/nuget/v/Balea)](https://www.nuget.org/packages/Balea/)
-[![Documentation](https://img.shields.io/readthedocs/balea)](https://balea.readthedocs.io/en/stable/)
+[![CI](https://github.com/OrcaAuth/Orca/actions/workflows/ci.yml/badge.svg)](https://github.com/OrcaAuth/Orca/actions/workflows/ci.yml)
+[![Downloads](https://img.shields.io/nuget/dt/Orca)](https://www.nuget.org/stats/packages/Orca?groupby=Version)
+[![NuGet](https://img.shields.io/nuget/v/Orca)](https://www.nuget.org/packages/Orca/)
+[![Documentation](https://img.shields.io/readthedocs/_)](https://_.readthedocs.io/en/stable/)
 
 Orca is an authorization framework for .NET developers that aims to help us decoupling authentication and authorization in our web applications.
 
