@@ -3,13 +3,13 @@
 [![CI](https://github.com/OrcaAuth/Orca/actions/workflows/ci.yml/badge.svg)](https://github.com/OrcaAuth/Orca/actions/workflows/ci.yml)
 [![Downloads](https://img.shields.io/nuget/dt/Orca)](https://www.nuget.org/stats/packages/Orca?groupby=Version)
 [![NuGet](https://img.shields.io/nuget/v/Orca)](https://www.nuget.org/packages/Orca/)
-[![Documentation](https://img.shields.io/readthedocs/_)](https://_.readthedocs.io/en/stable/)
+[![Documentation](https://img.shields.io/readthedocs/_)](https://orca-auth.readthedocs.io/en/stable/)
 
 Orca is an authorization framework for .NET developers that aims to help us decoupling authentication and authorization in our web applications.
 
 This project is a fork of [Balea](https://github.com/Xabaril/Balea). The foundational basis and the magnificent idea are due to the team behind [Xabaril](https://github.com/Xabaril). 🙌
 
-The project documentation has not yet been migrated. 🚧
+For project documentation, please visit [readthedocs](https://orca-auth.readthedocs.io/en/stable/).
 
 ## Getting started
 
@@ -78,7 +78,7 @@ The _EntityFrameworkCore_ store options allows configuring the _DbContext_. [Fin
 
 ### HTTP
 
-The _HTTP_ store options allows configuring the _HttpClientFactory_. A custom _header_ could be included to send the tenant identifier.
+The _HTTP_ store options allows configuring the _HttpClient_. A custom _header_ could be included to send the tenant identifier.
 
 ## Authentication != Authorization
 
