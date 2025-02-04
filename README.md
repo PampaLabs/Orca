@@ -3,7 +3,7 @@
 [![CI](https://github.com/OrcaAuth/Orca/actions/workflows/ci.yml/badge.svg)](https://github.com/OrcaAuth/Orca/actions/workflows/ci.yml)
 [![Downloads](https://img.shields.io/nuget/dt/Orca)](https://www.nuget.org/stats/packages/Orca?groupby=Version)
 [![NuGet](https://img.shields.io/nuget/v/Orca)](https://www.nuget.org/packages/Orca/)
-[![Documentation](https://img.shields.io/readthedocs/_)](https://orca-auth.readthedocs.io/en/stable/)
+[![Documentation](https://img.shields.io/readthedocs/orca-auth)](https://orca-auth.readthedocs.io/en/stable/)
 
 Orca is an authorization framework for .NET developers that aims to help us decoupling authentication and authorization in our web applications.
 
