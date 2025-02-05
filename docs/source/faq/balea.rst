@@ -1,7 +1,7 @@
 Balea
 =====
 
-This project is a fork of `Balea <https://github.com/Xabaril/Balea>`_. The foundational basis and the magnificent idea are due to the team behind `Xabaril <https://github.com/Xabaril>`. 🙌
+This project is a fork of `Balea <https://github.com/Xabaril/Balea>`_. The foundational basis and the magnificent idea are due to the team behind `Xabaril <https://github.com/Xabaril>`_. 🙌
 
 Motivation
 ----------

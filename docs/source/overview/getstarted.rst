@@ -8,22 +8,26 @@ Setup
 
 First add the ``Orca`` package into your project.
 
-.. code-block::
+.. code-block:: console
   :caption: .NET CLI
+
   dotnet add package Orca
 
-.. code-block::
+.. code-block:: console
   :caption: Package Manager
+
   Install-Package Orca
 
 In the *Program.cs*, register the Orca services:
 
 .. code-block:: csharp
   :caption: Basic configuration
+
   builder.Services.AddOrca();
 
 .. code-block:: csharp
   :caption: Advanced configuration
+
   builder.Services.AddOrca(options =>
   {
     options.DefaultClaimTypeMap = new DefaultClaimTypeMap
@@ -61,6 +65,7 @@ Example
 -------
 
 .. code-block:: csharp
+
   var stores = serviceProvider.GetRequiredService<IOrcaStoreAccessor>();
 
   var alice = new Subject { Sub = "818727", Name = "Alice" };

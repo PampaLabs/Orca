@@ -8,24 +8,28 @@ Setup
 
 First add the ``Orca.AspNetCore`` package into your project.
 
-.. code-block::
+.. code-block:: console
   :caption: .NET CLI
+
   dotnet add package Orca.AspNetCore
 
-.. code-block::
+.. code-block:: console
   :caption: Package Manager
+
   Install-Package Orca.AspNetCore
 
 In the *Program.cs*, register the Orca authorization services:
 
 .. code-block:: csharp
   :caption: Basic configuration
+
   builder.Services
     .AddOrca()
     .AddAuthorization();
 
 .. code-block:: csharp
   :caption: Advanced configuration
+
   builder.Services
     .AddOrca()
     .AddAuthorization(options =>
@@ -48,6 +52,7 @@ Orca automatically maps roles and permissions to ASP.NET Core user claims.
 
 .. code-block:: csharp
   :caption: Authorize role
+
   [Authorize(Roles = "custodian")]
   public IActionResult OpenDoor()
   {
@@ -56,6 +61,7 @@ Orca automatically maps roles and permissions to ASP.NET Core user claims.
 
 .. code-block:: csharp
   :caption: Authorize policy
+
   [Authorize(Policy = "grades.view")]
   public IActionResult ViewGrades()
   {
@@ -70,4 +76,5 @@ Endpoints
 Orca provides a set of endpoints to interact with the stores using a minimal API.
 
 .. code-block:: csharp
+
   app.MapAccessControlApi();

@@ -8,17 +8,20 @@ Setup
 
 First add the ``Orca.Store.EntityFrameworkCore`` package into your project.
 
-.. code-block::
+.. code-block:: console
   :caption: .NET CLI
+
   dotnet add package Orca.Store.EntityFrameworkCore
 
-.. code-block::
+.. code-block:: console
   :caption: Package Manager
+
   Install-Package Orca.Store.EntityFrameworkCore
 
 In the *Program.cs*, register the EntityFrameworkCore store:
 
 .. code-block:: csharp
+
   builder.Services
     .AddOrca()
     .AddEntityFrameworkStores<ContosoDbContext>();
@@ -41,22 +44,26 @@ Migrations
 
 To create a migration named ``InitialCreate``:
 
-.. code-block::
+.. code-block:: console
   :caption: .NET CLI
+
   dotnet ef migrations add InitialCreate
 
-.. code-block::
+.. code-block:: console
   :caption: PowerShell
+
   Add-Migration InitialCreate
 
 To apply the migration and create the database schema:
 
-.. code-block::
+.. code-block:: console
   :caption: .NET CLI
+
   dotnet ef database update
 
-.. code-block::
+.. code-block:: console
   :caption: PowerShell
+
   Update-Database
 
 At this point the database should be created.

@@ -8,17 +8,20 @@ Setup
 
 First add the ``Orca.Store.InMemory`` package into your project.
 
-.. code-block::
+.. code-block:: console
   :caption: .NET CLI
+
   dotnet add package Orca.Store.InMemory
 
-.. code-block::
+.. code-block:: console
   :caption: Package Manager
+
   Install-Package Orca.Store.InMemory
 
 In the *Program.cs*, register the InMemory store:
 
 .. code-block:: csharp
+
   builder.Services
     .AddOrca()
     .AddInMemoryStores(Configuration);
@@ -31,12 +34,14 @@ Import configuration
 The InMemory store allows importing the configuration from ``appsettings.json``.
 
 .. code-block:: csharp
+
   if (app.Environment.IsDevelopment())
   {
     await app.ImportConfigurationAsync();
   }
 
-.. code-clock:: csharp
+.. code-block:: json
+
   {
     "Orca": {
       "subjects": [
