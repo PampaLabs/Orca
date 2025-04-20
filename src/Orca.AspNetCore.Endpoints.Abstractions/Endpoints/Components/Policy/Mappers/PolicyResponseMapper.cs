@@ -1,6 +1,6 @@
 namespace Orca.AspNetCore.Endpoints;
 
-internal class PolicyResponseMapper : IEntityMapper<Policy, PolicyResponse>
+internal class PolicyResponseMapper : IDataMapper<Policy, PolicyResponse>
 {
     public void FromEntity(Policy source, PolicyResponse destination)
     {

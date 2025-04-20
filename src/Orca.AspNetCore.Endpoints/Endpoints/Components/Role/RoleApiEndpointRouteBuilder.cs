@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,44 +12,53 @@ namespace Microsoft.AspNetCore.Routing;
 using static EndpointRouteBuilderHelper;
 
 /// <summary>
-/// Provides extension methods for <see cref="IEndpointRouteBuilder"/> to add identity endpoints.
+/// Defines the route mappings for API endpoints related to role management.
 /// </summary>
-public static class RoleApiEndpointRouteBuilderExtensions
+public class RoleApiEndpointRouteBuilder
 {
+    private readonly IEndpointRouteBuilder _endpointRoute;
+
+    private readonly RoleDataMapper _mapper = new();
+
     /// <summary>
-    /// Add endpoints for registering, logging in, and logging out using ASP.NET Core Identity.
+    /// Initializes a new instance of <see cref="RoleApiEndpointRouteBuilder"/>.
     /// </summary>
-    /// <param name="endpoints">
-    /// The <see cref="IEndpointRouteBuilder"/> to add the identity endpoints to.
-    /// Call <see cref="EndpointRouteBuilderExtensions.MapGroup(IEndpointRouteBuilder, string)"/> to add a prefix to all the endpoints.
-    /// </param>
-    /// <returns>An <see cref="IEndpointConventionBuilder"/> to further customize the added endpoints.</returns>
-    public static IEndpointConventionBuilder MapRoleEndpoints(this IEndpointRouteBuilder endpoints)
+    /// <param name="endpointRoute">The endpoint route builder used to map the routes.</param>
+    public RoleApiEndpointRouteBuilder(IEndpointRouteBuilder endpointRoute)
     {
-        ArgumentNullException.ThrowIfNull(endpoints);
+        _endpointRoute = endpointRoute;
+    }
 
-        var requestMapper = new RoleRequestMapper();
-        var responseMapper = new RoleResponseMapper();
-
-        var routeGroup = endpoints.MapGroup("/roles");
-
-        routeGroup.MapGet("", async Task<Results<Ok<IEnumerable<RoleResponse>>, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to list roles.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapListEndpoint()
+    {
+        return _endpointRoute.MapGet("", async Task<Results<Ok<IEnumerable<RoleResponse>>, NotFound>>
             ([FromServices] IServiceProvider sp, [AsParameters] RoleFilter filter) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
 
             var roles = await roleStore.SearchAsync(filter);
-            var response = roles.Select(role => responseMapper.FromEntity(role));
+            var response = roles.Select(role => _mapper.ToResponse(role));
 
             return TypedResults.Ok(response);
         });
+    }
 
-        routeGroup.MapPost("", async Task<Results<Ok<RoleResponse>, ValidationProblem>>
+    /// <summary>
+    /// Maps the endpoint to create a new role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapCreateEndpoint()
+    {
+        return _endpointRoute.MapPost("", async Task<Results<Ok<RoleResponse>, ValidationProblem>>
             ([FromServices] IServiceProvider sp, [FromBody] RoleRequest data) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
 
-            var role = requestMapper.ToEntity(data);
+            var role = _mapper.FromRequest(data);
 
             var result = await roleStore.CreateAsync(role);
 
@@ -58,12 +67,19 @@ public static class RoleApiEndpointRouteBuilderExtensions
                 return CreateValidationProblem(result);
             }
 
-            var response = responseMapper.FromEntity(role);
+            var response = _mapper.ToResponse(role);
 
             return TypedResults.Ok(response);
         });
+    }
 
-        routeGroup.MapGet("/{id}", async Task<Results<Ok<RoleResponse>, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to get details of a specific role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapReadEndpoint()
+    {
+        return _endpointRoute.MapGet("/{id}", async Task<Results<Ok<RoleResponse>, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -75,12 +91,19 @@ public static class RoleApiEndpointRouteBuilderExtensions
                 return TypedResults.NotFound();
             }
 
-            var response = responseMapper.FromEntity(role);
+            var response = _mapper.ToResponse(role);
 
             return TypedResults.Ok(response);
         });
+    }
 
-        routeGroup.MapPut("/{id}", async Task<Results<Ok, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to update an existing role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapUpdateEndpoint()
+    {
+        return _endpointRoute.MapPut("/{id}", async Task<Results<Ok, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromBody] RoleRequest data) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -92,7 +115,7 @@ public static class RoleApiEndpointRouteBuilderExtensions
                 return TypedResults.NotFound();
             }
 
-            requestMapper.ToEntity(data, role);
+            _mapper.FromRequest(data, role);
 
             var result = await roleStore.UpdateAsync(role);
 
@@ -103,8 +126,15 @@ public static class RoleApiEndpointRouteBuilderExtensions
 
             return TypedResults.Ok();
         });
+    }
 
-        routeGroup.MapDelete("/{id}", async Task<Results<Ok, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to delete a role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapDeleteEndpoint()
+    {
+        return _endpointRoute.MapDelete("/{id}", async Task<Results<Ok, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -125,8 +155,15 @@ public static class RoleApiEndpointRouteBuilderExtensions
 
             return TypedResults.Ok();
         });
+    }
 
-        routeGroup.MapGet("/name/{name}", async Task<Results<Ok<RoleResponse>, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to find a role by its name.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapFindByNameEndpoint()
+    {
+        return _endpointRoute.MapGet("/name/{name}", async Task<Results<Ok<RoleResponse>, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string name) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -138,17 +175,24 @@ public static class RoleApiEndpointRouteBuilderExtensions
                 return TypedResults.NotFound();
             }
 
-            var response = responseMapper.FromEntity(role);
+            var response = _mapper.ToResponse(role);
 
             return TypedResults.Ok(response);
         });
+    }
 
-        routeGroup.MapGet("/{id}/subjects", async Task<Results<Ok<SubjectResponse[]>, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to get the subjects assigned to a specific role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapGetSubjectsEndpoint()
+    {
+        return _endpointRoute.MapGet("/{id}/subjects", async Task<Results<Ok<SubjectResponse[]>, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
 
-            var subjectMapper = new SubjectResponseMapper();
+            var subjectMapper = new SubjectDataMapper();
 
             var role = await roleStore.FindByIdAsync(id);
 
@@ -158,12 +202,19 @@ public static class RoleApiEndpointRouteBuilderExtensions
             }
 
             var subjects = await roleStore.GetSubjectsAsync(role);
-            var result = subjects.Select(subjectMapper.FromEntity);
+            var result = subjects.Select(subjectMapper.ToResponse);
 
             return TypedResults.Ok(result.ToArray());
         });
+    }
 
-        routeGroup.MapPost("/{id}/subjects/{subjectId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to assign a subject to a role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapAddSubjectEndpoint()
+    {
+        return _endpointRoute.MapPost("/{id}/subjects/{subjectId}", async Task<Results<Ok, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string subjectId) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -191,8 +242,15 @@ public static class RoleApiEndpointRouteBuilderExtensions
 
             return TypedResults.Ok();
         });
+    }
 
-        routeGroup.MapDelete("/{id}/subjects/{subjectId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to remove a subject from a role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapRemoveSubjectEndpoint()
+    {
+        return _endpointRoute.MapDelete("/{id}/subjects/{subjectId}", async Task<Results<Ok, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string subjectId) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -220,13 +278,20 @@ public static class RoleApiEndpointRouteBuilderExtensions
 
             return TypedResults.Ok();
         });
+    }
 
-        routeGroup.MapGet("/{id}/permission", async Task<Results<Ok<PermissionResponse[]>, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to get the permissions associated with a role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapGetPermissionsEndpoint()
+    {
+        return _endpointRoute.MapGet("/{id}/permissions", async Task<Results<Ok<PermissionResponse[]>, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
 
-            var permissionMapper = new PermissionResponseMapper();
+            var permissionMapper = new PermissionDataMapper();
 
             var role = await roleStore.FindByIdAsync(id);
 
@@ -236,12 +301,19 @@ public static class RoleApiEndpointRouteBuilderExtensions
             }
 
             var roles = await roleStore.GetPermissionsAsync(role);
-            var result = roles.Select(permissionMapper.FromEntity);
+            var result = roles.Select(permissionMapper.ToResponse);
 
             return TypedResults.Ok(result.ToArray());
         });
+    }
 
-        routeGroup.MapPost("/{id}/permission/{permissionId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to assign a permission to a role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapAddPermissionEndpoint()
+    {
+        return _endpointRoute.MapPost("/{id}/permissions/{permissionId}", async Task<Results<Ok, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string permissionId) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -269,8 +341,15 @@ public static class RoleApiEndpointRouteBuilderExtensions
 
             return TypedResults.Ok();
         });
+    }
 
-        routeGroup.MapDelete("/{id}/permission/{permissionId}", async Task<Results<Ok, ValidationProblem, NotFound>>
+    /// <summary>
+    /// Maps the endpoint to remove a permission from a role.
+    /// </summary>
+    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    public RouteHandlerBuilder MapRemovePermissionEndpoint()
+    {
+        return _endpointRoute.MapDelete("/{id}/permissions/{permissionId}", async Task<Results<Ok, ValidationProblem, NotFound>>
             ([FromServices] IServiceProvider sp, [FromRoute] string id, [FromRoute] string permissionId) =>
         {
             var roleStore = sp.GetRequiredService<IRoleStore>();
@@ -298,16 +377,5 @@ public static class RoleApiEndpointRouteBuilderExtensions
 
             return TypedResults.Ok();
         });
-
-        return new RoleEndpointsConventionBuilder(routeGroup);
-    }
-
-    // Wrap RouteGroupBuilder with a non-public type to avoid a potential future behavioral breaking change.
-    private sealed class RoleEndpointsConventionBuilder(RouteGroupBuilder inner) : IEndpointConventionBuilder
-    {
-        private IEndpointConventionBuilder InnerAsConventionBuilder => inner;
-
-        public void Add(Action<EndpointBuilder> convention) => InnerAsConventionBuilder.Add(convention);
-        public void Finally(Action<EndpointBuilder> finallyConvention) => InnerAsConventionBuilder.Finally(finallyConvention);
     }
 }

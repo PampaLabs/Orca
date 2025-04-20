@@ -1,6 +1,6 @@
 ﻿namespace Orca.AspNetCore.Endpoints;
 
-internal class SubjectRequestMapper : IEntityMapper<Subject, SubjectRequest>
+internal class SubjectRequestMapper : IDataMapper<Subject, SubjectRequest>
 {
     public void FromEntity(Subject source, SubjectRequest destination)
     {

@@ -1,6 +1,6 @@
 ﻿namespace Orca.AspNetCore.Endpoints;
 
-internal class DelegationRequestMapper : IEntityMapper<Delegation, DelegationRequest>
+internal class DelegationRequestMapper : IDataMapper<Delegation, DelegationRequest>
 {
     public void FromEntity(Delegation source, DelegationRequest destination)
     {

@@ -1,6 +1,6 @@
 namespace Orca.AspNetCore.Endpoints;
 
-internal class PermissionResponseMapper : IEntityMapper<Permission, PermissionResponse>
+internal class PermissionResponseMapper : IDataMapper<Permission, PermissionResponse>
 {
     public void FromEntity(Permission source, PermissionResponse destination)
     {

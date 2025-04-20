@@ -12,8 +12,7 @@ public class PermissionStore : IPermissionStore
 {
     private const string endpoint = "permissions";
 
-    private readonly PermissionRequestMapper _requestMapper = new();
-    private readonly PermissionResponseMapper _responseMapper = new();
+    private readonly PermissionDataMapper _mapper = new();
 
     private readonly HttpClient _httpClient;
 
@@ -31,7 +30,7 @@ public class PermissionStore : IPermissionStore
     {
         var uri = $"{endpoint}/{permissionId}";
         var response = await _httpClient.GetFromJsonAsync<PermissionResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
@@ -39,13 +38,13 @@ public class PermissionStore : IPermissionStore
     {
         var uri = $"{endpoint}/name/{permissionName}";
         var response = await _httpClient.GetFromJsonAsync<PermissionResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(permission);
+        var data = _mapper.ToRequest(permission);
 
         var uri = $"{endpoint}";
         var response = await _httpClient.PostAsJsonAsync(uri, data, cancellationToken);
@@ -63,7 +62,7 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(permission);
+        var data = _mapper.ToRequest(permission);
 
         var uri = $"{endpoint}/{permission.Id}";
         var response = await _httpClient.PutAsJsonAsync(uri, data, cancellationToken);
@@ -97,18 +96,18 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public async Task<IList<Role>> GetRolesAsync(Permission permission, CancellationToken cancellationToken = default)
     {
-        var roleMapper = new RoleResponseMapper();
+        var roleMapper = new RoleDataMapper();
 
         var uri = $"{endpoint}/{permission.Id}/roles";
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
-        var result = response.Select(roleMapper.ToEntity);
+        var result = response.Select(roleMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var result = response.Select(roleMapper.ToEntity);
+        var result = response.Select(roleMapper.FromResponse);
 
         return result.ToList();
 #endif
@@ -153,12 +152,12 @@ public class PermissionStore : IPermissionStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PermissionResponse>($"{endpoint}", cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<PermissionResponse>>($"{endpoint}", cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -191,12 +190,12 @@ public class PermissionStore : IPermissionStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PermissionResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<PermissionResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif

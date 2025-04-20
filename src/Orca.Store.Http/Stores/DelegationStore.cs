@@ -12,8 +12,7 @@ public class DelegationStore : IDelegationStore
 {
     private const string endpoint = "delegations";
 
-    private readonly DelegationRequestMapper _requestMapper = new ();
-    private readonly DelegationResponseMapper _responseMapper = new ();
+    private readonly DelegationDataMapper _mapper = new ();
 
     private readonly HttpClient _httpClient;
 
@@ -31,7 +30,7 @@ public class DelegationStore : IDelegationStore
     {
         var uri = $"{endpoint}/{delegationId}";
         var response = await _httpClient.GetFromJsonAsync<DelegationResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
@@ -39,13 +38,13 @@ public class DelegationStore : IDelegationStore
     {
         var uri = $"{endpoint}/subject/{subject}";
         var response = await _httpClient.GetFromJsonAsync<DelegationResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(delegation);
+        var data = _mapper.ToRequest(delegation);
 
         var uri = $"{endpoint}";
         var response = await _httpClient.PostAsJsonAsync(uri, data, cancellationToken);
@@ -63,7 +62,7 @@ public class DelegationStore : IDelegationStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(delegation);
+        var data = _mapper.ToRequest(delegation);
 
         var uri = $"{endpoint}/{delegation.Id}";
         var response = await _httpClient.PutAsJsonAsync(uri, data, cancellationToken);
@@ -101,12 +100,12 @@ public class DelegationStore : IDelegationStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<DelegationResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<DelegationResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -146,12 +145,12 @@ public class DelegationStore : IDelegationStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<DelegationResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<DelegationResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif

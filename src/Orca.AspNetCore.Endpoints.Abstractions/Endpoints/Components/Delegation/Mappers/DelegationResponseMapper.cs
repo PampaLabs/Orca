@@ -1,14 +1,14 @@
 namespace Orca.AspNetCore.Endpoints;
 
-internal class DelegationResponseMapper : IEntityMapper<Delegation, DelegationResponse>
+internal class DelegationResponseMapper : IDataMapper<Delegation, DelegationResponse>
 {
+    private readonly SubjectResponseMapper _subjectMapper = new();
+
     public void FromEntity(Delegation source, DelegationResponse destination)
     {
-        var subjectMapper = new SubjectResponseMapper();
-
         destination.Id = source.Id;
-        destination.Who = subjectMapper.FromEntity(source.Who);
-        destination.Whom = subjectMapper.FromEntity(source.Whom);
+        destination.Who = _subjectMapper.FromEntity(source.Who);
+        destination.Whom = _subjectMapper.FromEntity(source.Whom);
         destination.From = source.From;
         destination.To = source.To;
         destination.Enabled = source.Enabled;
@@ -16,11 +16,9 @@ internal class DelegationResponseMapper : IEntityMapper<Delegation, DelegationRe
 
     public void ToEntity(DelegationResponse source, Delegation destination)
     {
-        var subjectMapper = new SubjectResponseMapper();
-
         destination.Id = source.Id;
-        destination.Who = subjectMapper.ToEntity(source.Who);
-        destination.Whom = subjectMapper.ToEntity(source.Whom);
+        destination.Who = _subjectMapper.ToEntity(source.Who);
+        destination.Whom = _subjectMapper.ToEntity(source.Whom);
         destination.From = source.From;
         destination.To = source.To;
         destination.Enabled = source.Enabled;

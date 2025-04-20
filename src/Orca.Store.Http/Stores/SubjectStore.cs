@@ -12,8 +12,7 @@ public class SubjectStore : ISubjectStore
 {
     private const string endpoint = "subjects";
 
-    private readonly SubjectRequestMapper _requestMapper = new();
-    private readonly SubjectResponseMapper _responseMapper = new();
+    private readonly SubjectDataMapper _mapper = new();
 
     private readonly HttpClient _httpClient;
 
@@ -31,7 +30,7 @@ public class SubjectStore : ISubjectStore
     {
         var uri = $"{endpoint}/{subjectId}";
         var response = await _httpClient.GetFromJsonAsync<SubjectResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
@@ -39,13 +38,13 @@ public class SubjectStore : ISubjectStore
     {
         var uri = $"{endpoint}/sub/{sub}";
         var response = await _httpClient.GetFromJsonAsync<SubjectResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Subject subject, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(subject);
+        var data = _mapper.ToRequest(subject);
 
         var uri = $"{endpoint}";
         var response = await _httpClient.PostAsJsonAsync(uri, data, cancellationToken);
@@ -63,7 +62,7 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(subject);
+        var data = _mapper.ToRequest(subject);
 
         var uri = $"{endpoint}/{subject.Id}";
         var response = await _httpClient.PutAsJsonAsync(uri, data, cancellationToken);
@@ -101,12 +100,12 @@ public class SubjectStore : ISubjectStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -126,12 +125,12 @@ public class SubjectStore : ISubjectStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -140,18 +139,18 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public async Task<IList<Role>> GetRolesAsync(Subject subject, CancellationToken cancellationToken = default)
     {
-        var roleMapper = new RoleResponseMapper();
+        var roleMapper = new RoleDataMapper();
 
         var uri = $"{endpoint}/{subject.Id}/roles";
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
-        var result = response.Select(roleMapper.ToEntity);
+        var result = response.Select(roleMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var result = response.Select(roleMapper.ToEntity);
+        var result = response.Select(roleMapper.FromResponse);
 
         return result.ToList();
 #endif

@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    private static void ConfigureServices(this IServiceCollection services)
+    private static void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDelegationStore, DelegationStore>();
         services.AddScoped<IPermissionStore, PermissionStore>();

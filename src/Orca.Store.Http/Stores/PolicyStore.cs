@@ -11,8 +11,7 @@ public class PolicyStore : IPolicyStore
 {
     private const string endpoint = "policies";
 
-    private readonly PolicyRequestMapper _requestMapper = new();
-    private readonly PolicyResponseMapper _responseMapper = new();
+    private readonly PolicyDataMapper _mapper = new();
 
     private readonly HttpClient _httpClient;
 
@@ -30,7 +29,7 @@ public class PolicyStore : IPolicyStore
     {
         var uri = $"{endpoint}/{policyId}";
         var response = await _httpClient.GetFromJsonAsync<PolicyResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
@@ -38,13 +37,13 @@ public class PolicyStore : IPolicyStore
     {
         var uri = $"{endpoint}/name/{policyName}";
         var response = await _httpClient.GetFromJsonAsync<PolicyResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(policy);
+        var data = _mapper.ToRequest(policy);
 
         var uri = $"{endpoint}";
         var response = await _httpClient.PostAsJsonAsync(uri, data, cancellationToken);
@@ -62,7 +61,7 @@ public class PolicyStore : IPolicyStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(policy);
+        var data = _mapper.ToRequest(policy);
 
         var uri = $"{endpoint}/{policy.Id}";
         var response = await _httpClient.PutAsJsonAsync(uri, data, cancellationToken);
@@ -100,12 +99,12 @@ public class PolicyStore : IPolicyStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PolicyResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<PolicyResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -130,12 +129,12 @@ public class PolicyStore : IPolicyStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PolicyResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<PolicyResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif

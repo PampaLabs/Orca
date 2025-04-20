@@ -1,15 +1,8 @@
 ﻿namespace Orca.AspNetCore.Endpoints;
 
-internal interface IEntityMapper<TEntity, TModel>
+internal static class DataMapperExtensions
 {
-    void FromEntity(TEntity source, TModel destination);
-
-    void ToEntity(TModel source, TEntity destination);
-}
-
-internal static class EntityMapperExtensions
-{
-    public static TModel FromEntity<TEntity, TModel>(this IEntityMapper<TEntity, TModel> mapper, TEntity source)
+    public static TModel FromEntity<TEntity, TModel>(this IDataMapper<TEntity, TModel> mapper, TEntity source)
         where TModel : class, new()
     {
         if (source is null) return null;
@@ -19,7 +12,7 @@ internal static class EntityMapperExtensions
         return destination;
     }
 
-    public static TEntity ToEntity<TEntity, TModel>(this IEntityMapper<TEntity, TModel> mapper, TModel source)
+    public static TEntity ToEntity<TEntity, TModel>(this IDataMapper<TEntity, TModel> mapper, TModel source)
         where TEntity : class, new()
     {
         if (source is null) return null;

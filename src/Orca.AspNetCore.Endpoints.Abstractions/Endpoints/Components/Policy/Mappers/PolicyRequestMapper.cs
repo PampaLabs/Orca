@@ -1,6 +1,6 @@
 ﻿namespace Orca.AspNetCore.Endpoints;
 
-internal class PolicyRequestMapper : IEntityMapper<Policy, PolicyRequest>
+internal class PolicyRequestMapper : IDataMapper<Policy, PolicyRequest>
 {
     public void FromEntity(Policy source, PolicyRequest destination)
     {

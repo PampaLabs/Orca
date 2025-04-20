@@ -1,6 +1,6 @@
 ﻿namespace Orca.AspNetCore.Endpoints;
 
-internal class RoleRequestMapper : IEntityMapper<Role, RoleRequest>
+internal class RoleRequestMapper : IDataMapper<Role, RoleRequest>
 {
     public void FromEntity(Role source, RoleRequest destination)
     {

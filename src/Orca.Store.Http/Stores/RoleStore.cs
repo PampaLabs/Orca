@@ -12,8 +12,7 @@ public class RoleStore : IRoleStore
 {
     private const string endpoint = "roles";
 
-    private readonly RoleRequestMapper _requestMapper = new();
-    private readonly RoleResponseMapper _responseMapper = new();
+    private readonly RoleDataMapper _mapper = new();
 
     private readonly HttpClient _httpClient;
 
@@ -31,7 +30,7 @@ public class RoleStore : IRoleStore
     {
         var uri = $"{endpoint}/{roleId}";
         var response = await _httpClient.GetFromJsonAsync<RoleResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
@@ -39,13 +38,13 @@ public class RoleStore : IRoleStore
     {
         var uri = $"{endpoint}/name/{roleName}";
         var response = await _httpClient.GetFromJsonAsync<RoleResponse>(uri, cancellationToken);
-        return _responseMapper.ToEntity(response);
+        return _mapper.FromResponse(response);
     }
 
     /// <inheritdoc />
     public async Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(role);
+        var data = _mapper.ToRequest(role);
 
         var uri = $"{endpoint}";
         var response = await _httpClient.PostAsJsonAsync(uri, data, cancellationToken);
@@ -63,7 +62,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
-        var data = _requestMapper.FromEntity(role);
+        var data = _mapper.ToRequest(role);
 
         var uri = $"{endpoint}/{role.Id}";
         var response = await _httpClient.PutAsJsonAsync(uri, data, cancellationToken);
@@ -101,12 +100,12 @@ public class RoleStore : IRoleStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -144,12 +143,12 @@ public class RoleStore : IRoleStore
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _responseMapper.ToEntity(item));
+        var entities = response.Select(item => _mapper.FromResponse(item));
 
         return entities.ToList();
 #endif
@@ -158,18 +157,18 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<IList<Subject>> GetSubjectsAsync(Role role, CancellationToken cancellationToken = default)
     {
-        var subjectMapper = new SubjectResponseMapper();
+        var subjectMapper = new SubjectDataMapper();
 
         var uri = $"{endpoint}/{role.Id}/subjects";
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
-        var result = response.Select(subjectMapper.ToEntity);
+        var result = response.Select(subjectMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
-        var result = response.Select(subjectMapper.ToEntity);
+        var result = response.Select(subjectMapper.FromResponse);
 
         return result.ToList();
 #endif
@@ -210,18 +209,18 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<IList<Permission>> GetPermissionsAsync(Role role, CancellationToken cancellationToken = default)
     {
-        var permissionMapper = new PermissionResponseMapper();
+        var permissionMapper = new PermissionDataMapper();
 
         var uri = $"{endpoint}/{role.Id}/permissions";
 
 #if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PermissionResponse>(uri, cancellationToken);
-        var result = response.Select(permissionMapper.ToEntity);
+        var result = response.Select(permissionMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
 #else
         var response = await _httpClient.GetFromJsonAsync<IEnumerable<PermissionResponse>>(uri, cancellationToken);
-        var result = response.Select(permissionMapper.ToEntity);
+        var result = response.Select(permissionMapper.FromResponse);
 
         return result.ToList();
 #endif
