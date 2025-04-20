@@ -44,7 +44,7 @@ namespace FunctionalTests.Seedwork
 
             services.AddSingleton<IAsyncTestServerLifetime>(new AsyncTestServerLifetime
             {
-                OnSetUpAsync = server => server.Host.ImportConfigurationAsync()
+                OnSetUpAsync = server => server.Host.ImportConfigurationAsync("Orca")
             });
 
             return services.BuildServiceProvider();

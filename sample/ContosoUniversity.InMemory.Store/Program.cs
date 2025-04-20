@@ -40,7 +40,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    await app.ImportConfigurationAsync();
+    await app.ImportConfigurationAsync("Orca");
 }
 else
 {

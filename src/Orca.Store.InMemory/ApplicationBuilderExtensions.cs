@@ -15,38 +15,41 @@ public static class ApplicationBuilderExtensions
     /// Imports configuration from the application's configuration and stores it in the provided services.
     /// </summary>
     /// <param name="host">The <see cref="IApplicationBuilder"/> instance used to create a scope for accessing the services.</param>
+    /// <param name="section">The name of the configuration section.</param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    public static async Task ImportConfigurationAsync(this IApplicationBuilder host)
+    public static async Task ImportConfigurationAsync(this IApplicationBuilder host, string section)
     {
         using var scope = host.ApplicationServices.CreateScope();
 
-        await ImportConfigurationAsync(scope.ServiceProvider);
+        await ImportConfigurationAsync(scope.ServiceProvider, section);
     }
 
     /// <summary>
     /// Imports configuration from the application's configuration and stores it in the provided services.
     /// </summary>
     /// <param name="host">The <see cref="IWebHost"/> instance used to create a scope for accessing the services.</param>
+    /// <param name="section">The name of the configuration section.</param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    public static async Task ImportConfigurationAsync(this IWebHost host)
+    public static async Task ImportConfigurationAsync(this IWebHost host, string section)
     {
         using var scope = host.Services.CreateScope();
 
-        await ImportConfigurationAsync(scope.ServiceProvider);
+        await ImportConfigurationAsync(scope.ServiceProvider, section);
     }
 
     /// <summary>
     /// Imports configuration from the application's configuration and stores it in the provided services.
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> instance that provides access to the services.</param>
+    /// <param name="section">The name of the configuration section.</param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    private static async Task ImportConfigurationAsync(IServiceProvider serviceProvider)
+    private static async Task ImportConfigurationAsync(IServiceProvider serviceProvider, string section)
     {
         var stores = serviceProvider.GetRequiredService<IOrcaStoreAccessor>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
         var config = new OrcaConfiguration();
-        configuration.GetSection("Orca").Bind(config);
+        configuration.GetSection(section).Bind(config);
 
         foreach (var item in config.Subjects)
         {
