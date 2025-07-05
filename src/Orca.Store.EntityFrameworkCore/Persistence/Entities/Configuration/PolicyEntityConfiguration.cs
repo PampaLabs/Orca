@@ -7,6 +7,8 @@ internal class PolicyEntityConfiguration : IEntityTypeConfiguration<PolicyEntity
 {
     public void Configure(EntityTypeBuilder<PolicyEntity> builder)
     {
+        builder.ToTable("Policies");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

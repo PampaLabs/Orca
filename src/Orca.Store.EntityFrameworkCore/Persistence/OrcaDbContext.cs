@@ -59,6 +59,6 @@ public class OrcaDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrcaDbContext).Assembly);
+        modelBuilder.UseOrcaStores();
     }
 }

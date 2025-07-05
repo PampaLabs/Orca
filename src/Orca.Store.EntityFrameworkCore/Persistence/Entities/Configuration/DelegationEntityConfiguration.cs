@@ -7,6 +7,8 @@ internal class DelegationEntityConfiguration : IEntityTypeConfiguration<Delegati
 {
     public void Configure(EntityTypeBuilder<DelegationEntity> builder)
     {
+        builder.ToTable("Delegations");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

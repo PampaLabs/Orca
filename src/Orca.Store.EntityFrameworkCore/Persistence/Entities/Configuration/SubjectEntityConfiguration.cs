@@ -7,6 +7,8 @@ internal class SubjectEntityConfiguration : IEntityTypeConfiguration<SubjectEnti
 {
     public void Configure(EntityTypeBuilder<SubjectEntity> builder)
     {
+        builder.ToTable("Subjects");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

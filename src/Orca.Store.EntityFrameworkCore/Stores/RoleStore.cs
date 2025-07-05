@@ -9,21 +9,39 @@ public class RoleStore : IRoleStore
 {
     private readonly RoleMapper _mapper = new();
 
-    private readonly OrcaDbContext _context;
+    private readonly DbContext _context;
+
+    private DbSet<RoleEntity> Roles => _context.Set<RoleEntity>();
+
+    private DbSet<RoleMappingEntity> RoleMappings => _context.Set<RoleMappingEntity>();
+
+    private DbSet<RoleSubjectEntity> RoleSubjects => _context.Set<RoleSubjectEntity>();
+
+    private DbSet<RolePermissionEntity> RolePermissions => _context.Set<RolePermissionEntity>();
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoleStore"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
-    public RoleStore(OrcaDbContext context)
+    public RoleStore(DbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoleStore"/> class.
+    /// </summary>
+    /// <param name="contextAccessor">The database context accessor.</param>
+    public RoleStore(IOrcaDbContextAccessor contextAccessor)
+        : this(contextAccessor.DbContext)
+    {
     }
 
     /// <inheritdoc />
     public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles
+        var entity = await Roles
             .Include(role => role.Mappings)
             .FirstOrDefaultAsync(role => role.Id == roleId, cancellationToken);
 
@@ -33,7 +51,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<Role> FindByNameAsync(string roleName, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles
+        var entity = await Roles
             .Include(role => role.Mappings)
             .FirstOrDefaultAsync(role => role.Name == roleName, cancellationToken);
 
@@ -46,7 +64,7 @@ public class RoleStore : IRoleStore
         var entity = _mapper.ToEntity(role);
         entity.Id = Guid.NewGuid().ToString();
 
-        await _context.Roles.AddAsync(entity, cancellationToken);
+        await _context.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, role);
@@ -57,7 +75,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles
+        var entity = await Roles
             .Include(role => role.Mappings)
             .FirstOrDefaultAsync(role => role.Id == role.Id, cancellationToken);
 
@@ -68,7 +86,7 @@ public class RoleStore : IRoleStore
 
         _mapper.ToEntity(role, entity);
 
-        _context.Roles.Update(entity);
+        _context.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, role);
@@ -79,14 +97,14 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+        var entity = await Roles.FindAsync(role.Id, cancellationToken);
 
         if (entity is null)
         {
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.Roles.Remove(entity);
+        _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -95,7 +113,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public Task<IList<Role>> ListAsync(CancellationToken cancellationToken)
     {
-        var entities = _context.Roles;
+        var entities = Roles;
 
         var result = entities
             .Include(role => role.Mappings)
@@ -107,7 +125,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public Task<IList<Role>> SearchAsync(RoleFilter filter, CancellationToken cancellationToken = default)
     {
-        var source = _context.Roles.AsQueryable();
+        var source = Roles.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -128,7 +146,7 @@ public class RoleStore : IRoleStore
 
         if (filter.Mappings is not null)
         {
-            var bindings = _context.RoleMappings.Where(x => filter.Mappings.Contains(x.Mapping));
+            var bindings = RoleMappings.Where(x => filter.Mappings.Contains(x.Mapping));
 
             source = source.Join(
                 bindings,
@@ -150,7 +168,7 @@ public class RoleStore : IRoleStore
     {
         var subjectMapper = new SubjectMapper();
 
-        var targets = _context.RoleSubjects.Where(x => x.RoleId == role.Id);
+        var targets = RoleSubjects.Where(x => x.RoleId == role.Id);
         var subjects = targets.Select(x => subjectMapper.FromEntity(x.Subject)).ToList();
 
         return Task.FromResult<IList<Subject>>(subjects);
@@ -159,7 +177,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
-        var entity = await _context.Roles.FindAsync(role.Id, cancellationToken);
+        var entity = await Roles.FindAsync(role.Id, cancellationToken);
 
         var binding = new RoleSubjectEntity
         {
@@ -167,7 +185,7 @@ public class RoleStore : IRoleStore
             SubjectId = subject.Id
         };
 
-        await _context.RoleSubjects.AddAsync(binding, cancellationToken);
+        await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -176,7 +194,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
-        var binding = await _context.RoleSubjects
+        var binding = await RoleSubjects
             .Where(x => x.RoleId == role.Id)
             .Where(x => x.SubjectId == subject.Id)
             .FirstOrDefaultAsync(cancellationToken);
@@ -186,7 +204,7 @@ public class RoleStore : IRoleStore
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.RoleSubjects.Remove(binding);
+        _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -198,7 +216,7 @@ public class RoleStore : IRoleStore
     {
         var permissionMapper = new PermissionMapper();
 
-        var targets = _context.RolePermissions.Where(x => x.RoleId == role.Id);
+        var targets = RolePermissions.Where(x => x.RoleId == role.Id);
         var permissions = targets.Select(x => permissionMapper.FromEntity(x.Permission)).ToList();
 
         return Task.FromResult<IList<Permission>>(permissions);
@@ -213,7 +231,7 @@ public class RoleStore : IRoleStore
             PermissionId = permission.Id,
         };
 
-        await _context.RolePermissions.AddAsync(binding, cancellationToken);
+        await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -222,7 +240,7 @@ public class RoleStore : IRoleStore
     /// <inheritdoc />
     public async Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
-        var binding = await _context.RolePermissions
+        var binding = await RolePermissions
             .Where(x => x.Permission.Id == permission.Id)
             .Where(x => x.Role.Id == role.Id)
             .FirstOrDefaultAsync(cancellationToken);
@@ -232,7 +250,7 @@ public class RoleStore : IRoleStore
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.RolePermissions.Remove(binding);
+        _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -7,6 +7,8 @@ internal class RoleEntityConfiguration : IEntityTypeConfiguration<RoleEntity>
 {
     public void Configure(EntityTypeBuilder<RoleEntity> builder)
     {
+        builder.ToTable("Roles");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)

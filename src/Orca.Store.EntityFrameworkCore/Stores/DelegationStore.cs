@@ -9,21 +9,32 @@ public class DelegationStore : IDelegationStore
 {
     private readonly DelegationMapper _mapper = new();
 
-    private readonly OrcaDbContext _context;
+    private readonly DbContext _context;
+
+    private DbSet<DelegationEntity> Delegations => _context.Set<DelegationEntity>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DelegationStore"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
-    public DelegationStore(OrcaDbContext context)
+    public DelegationStore(DbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DelegationStore"/> class.
+    /// </summary>
+    /// <param name="contextAccessor">The database context accessor.</param>
+    public DelegationStore(IOrcaDbContextAccessor contextAccessor)
+        : this(contextAccessor.DbContext)
+    {
     }
 
     /// <inheritdoc />
     public async Task<Delegation> FindByIdAsync(string delegationId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Delegations
+        var entity = await Delegations
             .Include(x => x.Who)
             .Include(x => x.Whom)
             .Where(x => x.Id == delegationId)
@@ -37,7 +48,7 @@ public class DelegationStore : IDelegationStore
     {
         var now = DateTime.UtcNow;
 
-        var entity = await _context.Delegations
+        var entity = await Delegations
             .Include(x => x.Who)
             .Include(x => x.Whom)
             .Where(x => x.Enabled)
@@ -54,7 +65,7 @@ public class DelegationStore : IDelegationStore
         var entity = _mapper.ToEntity(delegation);
         entity.Id = Guid.NewGuid().ToString();
 
-        await _context.Delegations.AddAsync(entity, cancellationToken);
+        await _context.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, delegation);
@@ -65,7 +76,7 @@ public class DelegationStore : IDelegationStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
-        var entity = await _context.Delegations.FindAsync(delegation.Id, cancellationToken);
+        var entity = await Delegations.FindAsync(delegation.Id, cancellationToken);
 
         if (entity is null)
         {
@@ -74,7 +85,7 @@ public class DelegationStore : IDelegationStore
 
         _mapper.ToEntity(delegation, entity);
 
-        _context.Delegations.Update(entity);
+        _context.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, delegation);
@@ -85,14 +96,14 @@ public class DelegationStore : IDelegationStore
     /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
-        var entity = await _context.Delegations.FindAsync(delegation.Id, cancellationToken);
+        var entity = await Delegations.FindAsync(delegation.Id, cancellationToken);
 
         if (entity is null)
         {
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.Delegations.Remove(entity);
+        _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -101,7 +112,7 @@ public class DelegationStore : IDelegationStore
     /// <inheritdoc />
     public Task<IList<Delegation>> ListAsync(CancellationToken cancellationToken)
     {
-        var entities = _context.Delegations
+        var entities = Delegations
             .Include(x => x.Who)
             .Include(x => x.Whom);
 
@@ -113,7 +124,7 @@ public class DelegationStore : IDelegationStore
     /// <inheritdoc />
     public Task<IList<Delegation>> SearchAsync(DelegationFilter filter, CancellationToken cancellationToken)
     {
-        var source = _context.Delegations
+        var source = Delegations
             .Include(x => x.Who)
             .Include(x => x.Whom)
             .AsQueryable();

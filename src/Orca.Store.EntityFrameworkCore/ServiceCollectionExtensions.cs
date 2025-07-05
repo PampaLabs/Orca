@@ -1,4 +1,6 @@
-﻿using Orca;
+﻿using Microsoft.EntityFrameworkCore;
+
+using Orca;
 using Orca.Store.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -22,13 +24,16 @@ public static class ServiceCollectionExtensions
     /// <param name="builder">The <see cref="IOrcaBuilder"/> to which the services will be added.</param>
     /// <returns>The <see cref="IOrcaBuilder"/> instance.</returns>
     public static IOrcaBuilder AddEntityFrameworkStores<TDbContext>(this IOrcaBuilder builder)
-        where TDbContext : OrcaDbContext
+        where TDbContext : DbContext
     {
         _ = builder ?? throw new ArgumentNullException(nameof(builder));
 
-        ConfigureServices(builder.Services);
+        builder.Services.AddScoped<IOrcaDbContextAccessor>(sp => new OrcaDbContextAccessor
+        {
+            DbContext = sp.GetRequiredService<TDbContext>()
+        });
 
-        builder.Services.AddScoped<OrcaDbContext, TDbContext>();
+        ConfigureServices(builder.Services);
 
         return builder;
     }

@@ -1,4 +1,6 @@
-﻿using Orca.Store.EntityFrameworkCore.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+
+using Orca.Store.EntityFrameworkCore.Entities;
 
 namespace Orca.Store.EntityFrameworkCore;
 
@@ -7,28 +9,39 @@ public class PolicyStore : IPolicyStore
 {
     private readonly PolicyMapper _mapper = new();
 
-    private readonly OrcaDbContext _context;
+    private readonly DbContext _context;
+
+    private DbSet<PolicyEntity> Policies => _context.Set<PolicyEntity>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PolicyStore"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
-    public PolicyStore(OrcaDbContext context)
+    public PolicyStore(DbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolicyStore"/> class.
+    /// </summary>
+    /// <param name="contextAccessor">The database context accessor.</param>
+    public PolicyStore(IOrcaDbContextAccessor contextAccessor)
+        : this(contextAccessor.DbContext)
+    {
     }
 
     /// <inheritdoc />
     public async Task<Policy> FindByIdAsync(string policyId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Policies.FindAsync(policyId, cancellationToken);
+        var entity = await Policies.FindAsync(policyId, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
     /// <inheritdoc />
     public async Task<Policy> FindByNameAsync(string policyName, CancellationToken cancellationToken)
     {
-        var entity = await _context.Policies.FindByNameAsync(policyName, cancellationToken);
+        var entity = await Policies.FindByNameAsync(policyName, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
@@ -38,7 +51,7 @@ public class PolicyStore : IPolicyStore
         var entity = _mapper.ToEntity(policy);
         entity.Id = Guid.NewGuid().ToString();
 
-        await _context.Policies.AddAsync(entity, cancellationToken);
+        await _context.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, policy);
@@ -49,7 +62,7 @@ public class PolicyStore : IPolicyStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
-        var entity = await _context.Policies.FindAsync(policy.Id, cancellationToken);
+        var entity = await Policies.FindAsync(policy.Id, cancellationToken);
 
         if (entity is null)
         {
@@ -58,7 +71,7 @@ public class PolicyStore : IPolicyStore
 
         _mapper.ToEntity(policy, entity);
 
-        _context.Policies.Update(entity);
+        _context.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, policy);
@@ -69,14 +82,14 @@ public class PolicyStore : IPolicyStore
     /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
     {
-        var entity = await _context.Policies.FindAsync(policy.Id, cancellationToken);
+        var entity = await Policies.FindAsync(policy.Id, cancellationToken);
 
         if (entity is null)
         {
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.Policies.Remove(entity);
+        _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -85,7 +98,7 @@ public class PolicyStore : IPolicyStore
     /// <inheritdoc />
     public Task<IList<Policy>> ListAsync(CancellationToken cancellationToken)
     {
-        var entities = _context.Policies;
+        var entities = Policies;
 
         var result = entities.Select(policy => _mapper.FromEntity(policy)).ToList();
 
@@ -95,7 +108,7 @@ public class PolicyStore : IPolicyStore
     /// <inheritdoc />
     public Task<IList<Policy>> SearchAsync(PolicyFilter filter, CancellationToken cancellationToken = default)
     {
-        var source = _context.Policies.AsQueryable();
+        var source = Policies.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Name))
         {

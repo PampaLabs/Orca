@@ -76,7 +76,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    await app.MigrateDbContextAsync<OrcaDbContext>();
+    await app.MigrateDbContextAsync<ContosoDbContext>();
     await app.SeedDataContextAsync();
 }
 else

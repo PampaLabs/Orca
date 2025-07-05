@@ -9,21 +9,34 @@ public class SubjectStore : ISubjectStore
 {
     private readonly SubjectMapper _mapper = new();
 
-    private readonly OrcaDbContext _context;
+    private readonly DbContext _context;
+
+    private DbSet<SubjectEntity> Subjects => _context.Set<SubjectEntity>();
+
+    private DbSet<RoleSubjectEntity> RoleSubjects => _context.Set<RoleSubjectEntity>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubjectStore"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
-    public SubjectStore(OrcaDbContext context)
+    public SubjectStore(DbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RoleStore"/> class.
+    /// </summary>
+    /// <param name="contextAccessor">The database context accessor.</param>
+    public SubjectStore(IOrcaDbContextAccessor contextAccessor)
+        : this(contextAccessor.DbContext)
+    {
     }
 
     /// <inheritdoc />
     public async Task<Subject> FindByIdAsync(string subjectId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Subjects
+        var entity = await Subjects
             .FirstOrDefaultAsync(subjct => subjct.Id == subjectId, cancellationToken);
 
         return _mapper.FromEntity(entity);
@@ -32,7 +45,7 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public async Task<Subject> FindBySubAsync(string sub, CancellationToken cancellationToken)
     {
-        var entity = await _context.Subjects
+        var entity = await Subjects
             .FirstOrDefaultAsync(user => user.Sub == sub, cancellationToken);
 
         return _mapper.FromEntity(entity);
@@ -44,7 +57,7 @@ public class SubjectStore : ISubjectStore
         var entity = _mapper.ToEntity(subject);
         entity.Id = Guid.NewGuid().ToString();
 
-        await _context.Subjects.AddAsync(entity, cancellationToken);
+        await _context.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, subject);
@@ -55,7 +68,7 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
     {
-        var entity = await _context.Subjects
+        var entity = await Subjects
             .FirstOrDefaultAsync(user => user.Id == user.Id, cancellationToken);
 
         if (entity is null)
@@ -65,7 +78,7 @@ public class SubjectStore : ISubjectStore
 
         _mapper.ToEntity(subject, entity);
 
-        _context.Subjects.Update(entity);
+        _context.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, subject);
@@ -76,14 +89,14 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Subject subject, CancellationToken cancellationToken)
     {
-        var entity = await _context.Subjects.FindAsync(subject.Id, cancellationToken);
+        var entity = await Subjects.FindAsync(subject.Id, cancellationToken);
 
         if (entity is null)
         {
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.Subjects.Remove(entity);
+        _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -92,7 +105,7 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public Task<IList<Subject>> ListAsync(CancellationToken cancellationToken)
     {
-        var entities = _context.Subjects;
+        var entities = Subjects;
 
         var result = entities
             .Select(user => _mapper.FromEntity(user)).ToList();
@@ -103,7 +116,7 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public Task<IList<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken = default)
     {
-        var source = _context.Subjects.AsQueryable();
+        var source = Subjects.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -122,7 +135,7 @@ public class SubjectStore : ISubjectStore
     {
         var roleMapper = new RoleMapper();
 
-        var targets = _context.RoleSubjects.Where(x => x.SubjectId == subject.Id);
+        var targets = RoleSubjects.Where(x => x.SubjectId == subject.Id);
         var roles = targets.Select(x => roleMapper.FromEntity(x.Role)).ToList();
 
         return Task.FromResult<IList<Role>>(roles);
@@ -137,7 +150,7 @@ public class SubjectStore : ISubjectStore
             RoleId = role.Id,
         };
 
-        await _context.RoleSubjects.AddAsync(binding, cancellationToken);
+        await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -146,7 +159,7 @@ public class SubjectStore : ISubjectStore
     /// <inheritdoc />
     public async Task<AccessControlResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
-        var binding = await _context.RoleSubjects
+        var binding = await RoleSubjects
             .Where(x => x.SubjectId == subject.Id)
             .Where(x => x.RoleId == role.Id)
             .FirstOrDefaultAsync(cancellationToken);
@@ -156,7 +169,7 @@ public class SubjectStore : ISubjectStore
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.RoleSubjects.Remove(binding);
+        _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 

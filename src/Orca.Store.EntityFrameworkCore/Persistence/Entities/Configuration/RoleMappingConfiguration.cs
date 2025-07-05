@@ -7,6 +7,8 @@ internal class RoleMappingEntityConfiguration : IEntityTypeConfiguration<RoleMap
 {
     public void Configure(EntityTypeBuilder<RoleMappingEntity> builder)
     {
+        builder.ToTable("RoleMappings");
+
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Mapping)

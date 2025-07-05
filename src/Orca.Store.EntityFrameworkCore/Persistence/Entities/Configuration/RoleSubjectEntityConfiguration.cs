@@ -7,6 +7,8 @@ internal class RoleSubjectEntityConfiguration : IEntityTypeConfiguration<RoleSub
 {
     public void Configure(EntityTypeBuilder<RoleSubjectEntity> builder)
     {
+        builder.ToTable("RoleSubjects");
+
         builder.HasKey(x => new { x.SubjectId, x.RoleId });
 
         builder

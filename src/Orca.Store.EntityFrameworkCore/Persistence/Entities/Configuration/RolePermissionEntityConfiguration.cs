@@ -7,6 +7,8 @@ internal class RolePermissionEntityConfiguration : IEntityTypeConfiguration<Role
 {
     public void Configure(EntityTypeBuilder<RolePermissionEntity> builder)
     {
+        builder.ToTable("RolePermissions");
+
         builder.HasKey(x => new { x.PermissionId, x.RoleId });
 
         builder

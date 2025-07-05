@@ -9,28 +9,42 @@ public class PermissionStore : IPermissionStore
 {
     private readonly PermissionMapper _mapper = new();
 
-    private readonly OrcaDbContext _context;
+    private readonly DbContext _context;
+
+    private DbSet<PermissionEntity> Permissions => _context.Set<PermissionEntity>();
+
+    private DbSet<RolePermissionEntity> RolePermissions => _context.Set<RolePermissionEntity>();
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PermissionStore"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
-    public PermissionStore(OrcaDbContext context)
+    public PermissionStore(DbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PermissionStore"/> class.
+    /// </summary>
+    /// <param name="contextAccessor">The database context accessor.</param>
+    public PermissionStore(IOrcaDbContextAccessor contextAccessor)
+        : this(contextAccessor.DbContext)
+    {
     }
 
     /// <inheritdoc />
     public async Task<Permission> FindByIdAsync(string permissionId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Permissions.FindAsync(permissionId, cancellationToken);
+        var entity = await Permissions.FindAsync(permissionId, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
     /// <inheritdoc />
     public async Task<Permission> FindByNameAsync(string permissionName, CancellationToken cancellationToken)
     {
-        var entity = await _context.Permissions.FindByNameAsync(permissionName, cancellationToken);
+        var entity = await Permissions.FindByNameAsync(permissionName, cancellationToken);
         return _mapper.FromEntity(entity);
     }
 
@@ -40,7 +54,7 @@ public class PermissionStore : IPermissionStore
         var entity = _mapper.ToEntity(permission);
         entity.Id = Guid.NewGuid().ToString();
 
-        await _context.Permissions.AddAsync(entity, cancellationToken);
+        await _context.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, permission);
@@ -51,7 +65,7 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public async Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
     {
-        var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
+        var entity = await Permissions.FindAsync(permission.Id, cancellationToken);
 
         if (entity is null)
         {
@@ -60,7 +74,7 @@ public class PermissionStore : IPermissionStore
 
         _mapper.ToEntity(permission, entity);
 
-        _context.Permissions.Update(entity);
+        _context.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         _mapper.FromEntity(entity, permission);
@@ -71,14 +85,14 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public async Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
     {
-        var entity = await _context.Permissions.FindAsync(permission.Id, cancellationToken);
+        var entity = await Permissions.FindAsync(permission.Id, cancellationToken);
 
         if (entity is null)
         {
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.Permissions.Remove(entity);
+        _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -89,7 +103,7 @@ public class PermissionStore : IPermissionStore
     {
         var roleMapper = new RoleMapper();
 
-        var targets = _context.RolePermissions.Where(x => x.PermissionId == permission.Id);
+        var targets = RolePermissions.Where(x => x.PermissionId == permission.Id);
         var roles = targets.Select(x => roleMapper.FromEntity(x.Role)).ToList();
 
         return Task.FromResult<IList<Role>>(roles);
@@ -104,7 +118,7 @@ public class PermissionStore : IPermissionStore
             PermissionId = permission.Id,
         };
 
-        await _context.RolePermissions.AddAsync(binding, cancellationToken);
+        await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return AccessControlResult.Success;
@@ -113,7 +127,7 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
-        var binding = await _context.RolePermissions
+        var binding = await RolePermissions
             .Where(x => x.Permission.Id == permission.Id)
             .Where(x => x.Role.Id == role.Id)
             .FirstOrDefaultAsync(cancellationToken);
@@ -123,7 +137,7 @@ public class PermissionStore : IPermissionStore
             return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
         }
 
-        _context.RolePermissions.Remove(binding);
+        _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -133,7 +147,7 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public Task<IList<Permission>> ListAsync(CancellationToken cancellationToken = default)
     {
-        var entities = _context.Permissions;
+        var entities = Permissions;
 
         var result = entities.Select(_mapper.FromEntity).ToList();
 
@@ -143,7 +157,7 @@ public class PermissionStore : IPermissionStore
     /// <inheritdoc />
     public Task<IList<Permission>> SearchAsync(PermissionFilter filter, CancellationToken cancellationToken = default)
     {
-        var source = _context.Permissions.AsQueryable();
+        var source = Permissions.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
@@ -159,7 +173,7 @@ public class PermissionStore : IPermissionStore
 
         if (filter.Roles is not null)
         {
-            var bindings = _context.RolePermissions.Where(x => filter.Roles.Contains(x.Role.Name));
+            var bindings = RolePermissions.Where(x => filter.Roles.Contains(x.Role.Name));
 
             source = source.Join(
                 bindings,
