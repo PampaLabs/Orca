@@ -52,7 +52,7 @@ public class SubjectStore : ISubjectStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Subject subject, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(subject);
         entity.Id = Guid.NewGuid().ToString();
@@ -62,18 +62,18 @@ public class SubjectStore : ISubjectStore
 
         _mapper.FromEntity(entity, subject);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
     {
         var entity = await Subjects
             .FirstOrDefaultAsync(user => user.Id == user.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _mapper.ToEntity(subject, entity);
@@ -83,23 +83,23 @@ public class SubjectStore : ISubjectStore
 
         _mapper.FromEntity(entity, subject);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Subject subject, CancellationToken cancellationToken)
     {
         var entity = await Subjects.FindAsync(subject.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
@@ -142,7 +142,7 @@ public class SubjectStore : ISubjectStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
         var binding = new RoleSubjectEntity
         {
@@ -153,11 +153,11 @@ public class SubjectStore : ISubjectStore
         await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
         var binding = await RoleSubjects
             .Where(x => x.SubjectId == subject.Id)
@@ -166,13 +166,13 @@ public class SubjectStore : ISubjectStore
 
         if (binding is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 }

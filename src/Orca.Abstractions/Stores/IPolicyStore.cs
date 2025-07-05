@@ -26,24 +26,24 @@
         /// </summary>
         /// <param name="policy">The policy to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the creation operation.</returns>
-        Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the creation operation.</returns>
+        Task<AccessManagementResult> CreateAsync(Policy policy, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates the specified <paramref name="policy"/> in the store.
         /// </summary>
         /// <param name="policy">The policy to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the update operation.</returns>
-        Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the update operation.</returns>
+        Task<AccessManagementResult> UpdateAsync(Policy policy, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes the specified <paramref name="policy"/> from the store.
         /// </summary>
         /// <param name="policy">The policy to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the delete operation.</returns>
-        Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the delete operation.</returns>
+        Task<AccessManagementResult> DeleteAsync(Policy policy, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Lists the policies in the store.

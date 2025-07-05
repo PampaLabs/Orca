@@ -59,7 +59,7 @@ public class RoleStore : IRoleStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Role role, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(role);
         entity.Id = Guid.NewGuid().ToString();
@@ -69,11 +69,11 @@ public class RoleStore : IRoleStore
 
         _mapper.FromEntity(entity, role);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
         var entity = await Roles
             .Include(role => role.Mappings)
@@ -81,7 +81,7 @@ public class RoleStore : IRoleStore
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _mapper.ToEntity(role, entity);
@@ -91,23 +91,23 @@ public class RoleStore : IRoleStore
 
         _mapper.FromEntity(entity, role);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Role role, CancellationToken cancellationToken)
     {
         var entity = await Roles.FindAsync(role.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
@@ -175,7 +175,7 @@ public class RoleStore : IRoleStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var entity = await Roles.FindAsync(role.Id, cancellationToken);
 
@@ -188,11 +188,11 @@ public class RoleStore : IRoleStore
         await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var binding = await RoleSubjects
             .Where(x => x.RoleId == role.Id)
@@ -201,14 +201,14 @@ public class RoleStore : IRoleStore
 
         if (binding is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
@@ -223,7 +223,7 @@ public class RoleStore : IRoleStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var binding = new RolePermissionEntity
         {
@@ -234,11 +234,11 @@ public class RoleStore : IRoleStore
         await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var binding = await RolePermissions
             .Where(x => x.Permission.Id == permission.Id)
@@ -247,13 +247,13 @@ public class RoleStore : IRoleStore
 
         if (binding is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 }

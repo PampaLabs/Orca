@@ -53,6 +53,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 var endpoints = app.MapGroup("api");
-endpoints.MapGroup("access-control").MapAccessControlApi();
+endpoints.MapGroup("access-control").MapAccessManagementApi();
 
 app.Run();

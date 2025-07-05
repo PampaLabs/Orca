@@ -31,26 +31,26 @@ public class DelegationStore : IDelegationStore
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
 	{
         delegation.Id = Guid.NewGuid().ToString();
         _options.Delegations.Add(delegation);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
 	}
 
     /// <inheritdoc />
-    public Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
 	{
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         _options.Delegations.Remove(delegation);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />

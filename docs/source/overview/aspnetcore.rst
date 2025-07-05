@@ -77,4 +77,4 @@ Orca provides a set of endpoints to interact with the stores using a minimal API
 
 .. code-block:: csharp
 
-  app.MapAccessControlApi();
+  app.MapAccessManagementApi();

@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Microsoft.AspNetCore.Routing;
 
-public partial class AccessControlApiEndpointRouteBuilder
+public partial class AccessManagementApiEndpointRouteBuilder
 {
     /// <summary>
-    /// Maps role endpoints with the default configuration.
+    /// Maps policy endpoints with the default configuration.
     /// </summary>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> for further endpoint customization.</returns>
-    public IEndpointConventionBuilder MapRoleEndpoints()
+    public IEndpointConventionBuilder MapPolicyEndpoints()
     {
-        return MapRoleEndpoints(options =>
+        return MapPolicyEndpoints(options =>
         {
             options.MapCreateEndpoint();
             options.MapReadEndpoint();
@@ -19,27 +19,19 @@ public partial class AccessControlApiEndpointRouteBuilder
             options.MapListEndpoint();
 
             options.MapFindByNameEndpoint();
-
-            options.MapGetSubjectsEndpoint();
-            options.MapAddSubjectEndpoint();
-            options.MapRemoveSubjectEndpoint();
-
-            options.MapGetPermissionsEndpoint();
-            options.MapAddPermissionEndpoint();
-            options.MapRemovePermissionEndpoint();
         });
     }
 
     /// <summary>
-    /// Maps role endpoints with a custom configuration.
+    /// Maps policy endpoints with a custom configuration.
     /// </summary>
     /// <param name="optionsBuilder">A delegate to configure which endpoints to include.</param>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> for further endpoint customization.</returns>
-    public IEndpointConventionBuilder MapRoleEndpoints(Action<RoleApiEndpointRouteBuilder> optionsBuilder)
+    public IEndpointConventionBuilder MapPolicyEndpoints(Action<PolicyApiEndpointRouteBuilder> optionsBuilder)
     {
-        var routeGroup = _endpoints.MapGroup("/roles");
+        var routeGroup = _endpoints.MapGroup("/policies");
 
-        var builder = new RoleApiEndpointRouteBuilder(routeGroup);
+        var builder = new PolicyApiEndpointRouteBuilder(routeGroup);
         optionsBuilder?.Invoke(builder);
 
         return routeGroup;

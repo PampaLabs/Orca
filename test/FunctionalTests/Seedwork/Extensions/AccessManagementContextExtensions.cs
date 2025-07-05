@@ -2,7 +2,7 @@
 
 namespace FunctionalTests.Seedwork
 {
-    public static class AccessControlContextExtensions
+    public static class AccessManagementContextExtensions
     {
         public static async Task GivenAnApplication(
             this IOrcaStoreAccessor stores)

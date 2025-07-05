@@ -41,7 +41,7 @@ public class PolicyStore : IPolicyStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(policy);
 
@@ -50,16 +50,16 @@ public class PolicyStore : IPolicyStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(policy);
 
@@ -68,27 +68,27 @@ public class PolicyStore : IPolicyStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{policy.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 

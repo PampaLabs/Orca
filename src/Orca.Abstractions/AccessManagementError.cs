@@ -3,7 +3,7 @@
     /// <summary>
     /// Encapsulates an error from the identity subsystem.
     /// </summary>
-    public class AccessControlError
+    public class AccessManagementError
     {
         /// <summary>
         /// Gets or sets the code for this error.

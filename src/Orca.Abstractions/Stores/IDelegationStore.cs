@@ -26,24 +26,24 @@
         /// </summary>
         /// <param name="delegation">The delegation to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the creation operation.</returns>
-        Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the creation operation.</returns>
+        Task<AccessManagementResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates the specified <paramref name="delegation"/> in the store.
         /// </summary>
         /// <param name="delegation">The delegation to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the update operation.</returns>
-        Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the update operation.</returns>
+        Task<AccessManagementResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes the specified <paramref name="delegation"/> from the store.
         /// </summary>
         /// <param name="delegation">The delegation to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the delete operation.</returns>
-        Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the delete operation.</returns>
+        Task<AccessManagementResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Lists the delegations in the store.

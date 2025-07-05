@@ -46,7 +46,7 @@ public class PolicyStore : IPolicyStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(policy);
         entity.Id = Guid.NewGuid().ToString();
@@ -56,17 +56,17 @@ public class PolicyStore : IPolicyStore
 
         _mapper.FromEntity(entity, policy);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
     {
         var entity = await Policies.FindAsync(policy.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _mapper.ToEntity(policy, entity);
@@ -76,23 +76,23 @@ public class PolicyStore : IPolicyStore
 
         _mapper.FromEntity(entity, policy);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
     {
         var entity = await Policies.FindAsync(policy.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />

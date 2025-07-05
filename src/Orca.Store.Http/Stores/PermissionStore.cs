@@ -42,7 +42,7 @@ public class PermissionStore : IPermissionStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(permission);
 
@@ -51,16 +51,16 @@ public class PermissionStore : IPermissionStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(permission);
 
@@ -69,27 +69,27 @@ public class PermissionStore : IPermissionStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
@@ -114,34 +114,34 @@ public class PermissionStore : IPermissionStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/roles/{role.Id}";
         var response = await _httpClient.PostAsync(uri, null, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/roles/{role.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 

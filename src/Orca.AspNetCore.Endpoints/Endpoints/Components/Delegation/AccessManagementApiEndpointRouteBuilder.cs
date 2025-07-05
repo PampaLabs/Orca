@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Microsoft.AspNetCore.Routing;
 
-public partial class AccessControlApiEndpointRouteBuilder
+public partial class AccessManagementApiEndpointRouteBuilder
 {
     /// <summary>
-    /// Maps policy endpoints with the default configuration.
+    /// Maps delegation endpoints with the default configuration.
     /// </summary>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> for further endpoint customization.</returns>
-    public IEndpointConventionBuilder MapPolicyEndpoints()
+    public IEndpointConventionBuilder MapDelegationEndpoints()
     {
-        return MapPolicyEndpoints(options =>
+        return MapDelegationEndpoints(options =>
         {
             options.MapCreateEndpoint();
             options.MapReadEndpoint();
@@ -18,20 +18,20 @@ public partial class AccessControlApiEndpointRouteBuilder
             options.MapDeleteEndpoint();
             options.MapListEndpoint();
 
-            options.MapFindByNameEndpoint();
+            options.MapFindBySubjectEndpoint();
         });
     }
 
     /// <summary>
-    /// Maps policy endpoints with a custom configuration.
+    /// Maps delegation endpoints with a custom configuration.
     /// </summary>
     /// <param name="optionsBuilder">A delegate to configure which endpoints to include.</param>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> for further endpoint customization.</returns>
-    public IEndpointConventionBuilder MapPolicyEndpoints(Action<PolicyApiEndpointRouteBuilder> optionsBuilder)
+    public IEndpointConventionBuilder MapDelegationEndpoints(Action<DelegationApiEndpointRouteBuilder> optionsBuilder)
     {
-        var routeGroup = _endpoints.MapGroup("/policies");
+        var routeGroup = _endpoints.MapGroup("/delegations");
 
-        var builder = new PolicyApiEndpointRouteBuilder(routeGroup);
+        var builder = new DelegationApiEndpointRouteBuilder(routeGroup);
         optionsBuilder?.Invoke(builder);
 
         return routeGroup;

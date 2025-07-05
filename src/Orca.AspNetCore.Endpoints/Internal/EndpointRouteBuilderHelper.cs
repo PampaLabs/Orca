@@ -14,7 +14,7 @@ internal static class EndpointRouteBuilderHelper
             { errorCode, [errorDescription] }
     });
 
-    public static ValidationProblem CreateValidationProblem(AccessControlResult result)
+    public static ValidationProblem CreateValidationProblem(AccessManagementResult result)
     {
         // We expect a single error code and description in the normal case.
         // This could be golfed with GroupBy and ToDictionary, but perf! :P

@@ -31,27 +31,27 @@ public class PolicyStore : IPolicyStore
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> CreateAsync(Policy policy, CancellationToken cancellationToken)
 	{
         policy.Id = Guid.NewGuid().ToString();
         _options.Policies.Add(policy);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
 	}
 
     /// <inheritdoc />
-    public Task<AccessControlResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> UpdateAsync(Policy policy, CancellationToken cancellationToken)
 	{
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> DeleteAsync(Policy policy, CancellationToken cancellationToken)
 	{
         policy.Id = Guid.NewGuid().ToString();
         _options.Policies.Remove(policy);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />

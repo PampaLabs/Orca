@@ -42,7 +42,7 @@ public class SubjectStore : ISubjectStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Subject subject, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(subject);
 
@@ -51,16 +51,16 @@ public class SubjectStore : ISubjectStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Subject subject, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(subject);
 
@@ -69,27 +69,27 @@ public class SubjectStore : ISubjectStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Subject subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subject.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
@@ -157,34 +157,34 @@ public class SubjectStore : ISubjectStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subject.Id}/roles/{role.Id}";
         var response = await _httpClient.PostAsync(uri, null, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{subject.Id}/roles/{role.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 }

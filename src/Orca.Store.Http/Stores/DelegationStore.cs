@@ -42,7 +42,7 @@ public class DelegationStore : IDelegationStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(delegation);
 
@@ -51,16 +51,16 @@ public class DelegationStore : IDelegationStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(delegation);
 
@@ -69,27 +69,27 @@ public class DelegationStore : IDelegationStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{delegation.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 

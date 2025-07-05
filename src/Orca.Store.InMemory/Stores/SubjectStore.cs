@@ -31,29 +31,29 @@ public class SubjectStore : ISubjectStore
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> CreateAsync(Subject user, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> CreateAsync(Subject user, CancellationToken cancellationToken)
 	{
         var subjects = _options.Subjects;
 
         subjects.Add(user);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> UpdateAsync(Subject user, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> UpdateAsync(Subject user, CancellationToken cancellationToken)
 	{
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> DeleteAsync(Subject user, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> DeleteAsync(Subject user, CancellationToken cancellationToken)
 	{
         var subjects = _options.Subjects;
 
         subjects.Remove(user);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
@@ -92,20 +92,20 @@ public class SubjectStore : ISubjectStore
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> AddRoleAsync(Subject user, Role role, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> AddRoleAsync(Subject user, Role role, CancellationToken cancellationToken)
 	{
         var binding = (user, role);
         _options.SubejctBindings.Add(binding);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> RemoveRoleAsync(Subject user, Role role, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> RemoveRoleAsync(Subject user, Role role, CancellationToken cancellationToken)
 	{
         var binding = (user, role);
         _options.SubejctBindings.Remove(binding);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 }

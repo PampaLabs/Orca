@@ -60,7 +60,7 @@ public class DelegationStore : IDelegationStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(delegation);
         entity.Id = Guid.NewGuid().ToString();
@@ -70,17 +70,17 @@ public class DelegationStore : IDelegationStore
 
         _mapper.FromEntity(entity, delegation);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var entity = await Delegations.FindAsync(delegation.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _mapper.ToEntity(delegation, entity);
@@ -90,23 +90,23 @@ public class DelegationStore : IDelegationStore
 
         _mapper.FromEntity(entity, delegation);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Delegation delegation, CancellationToken cancellationToken)
     {
         var entity = await Delegations.FindAsync(delegation.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />

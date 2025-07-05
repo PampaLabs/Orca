@@ -42,7 +42,7 @@ public class RoleStore : IRoleStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Role role, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(role);
 
@@ -51,16 +51,16 @@ public class RoleStore : IRoleStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Role role, CancellationToken cancellationToken)
     {
         var data = _mapper.ToRequest(role);
 
@@ -69,27 +69,27 @@ public class RoleStore : IRoleStore
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Role role, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{role.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
@@ -175,34 +175,34 @@ public class RoleStore : IRoleStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{role.Id}/subjects/{subject.Id}";
         var response = await _httpClient.PostAsync(uri, null, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemoveSubjectAsync(Role role, Subject subject, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{role.Id}/subjects/{subject.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
@@ -227,34 +227,34 @@ public class RoleStore : IRoleStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddPermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/permissions/{role.Id}";
         var response = await _httpClient.PostAsync(uri, null, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemovePermissionAsync(Role role, Permission permission, CancellationToken cancellationToken)
     {
         var uri = $"{endpoint}/{permission.Id}/permissions/{role.Id}";
         var response = await _httpClient.DeleteAsync(uri, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
-            return AccessControlResult.Success;
+            return AccessManagementResult.Success;
         }
         else
         {
-            return AccessControlResult.Failed(new AccessControlError { Code = response.StatusCode.ToString() });
+            return AccessManagementResult.Failed(new AccessManagementError { Code = response.StatusCode.ToString() });
         }
     }
 }

@@ -49,7 +49,7 @@ public class PermissionStore : IPermissionStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var entity = _mapper.ToEntity(permission);
         entity.Id = Guid.NewGuid().ToString();
@@ -59,17 +59,17 @@ public class PermissionStore : IPermissionStore
 
         _mapper.FromEntity(entity, permission);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
     {
         var entity = await Permissions.FindAsync(permission.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _mapper.ToEntity(permission, entity);
@@ -79,23 +79,23 @@ public class PermissionStore : IPermissionStore
 
         _mapper.FromEntity(entity, permission);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
     {
         var entity = await Permissions.FindAsync(permission.Id, cancellationToken);
 
         if (entity is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
@@ -110,7 +110,7 @@ public class PermissionStore : IPermissionStore
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = new RolePermissionEntity
         {
@@ -121,11 +121,11 @@ public class PermissionStore : IPermissionStore
         await _context.AddAsync(binding, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />
-    public async Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
+    public async Task<AccessManagementResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = await RolePermissions
             .Where(x => x.Permission.Id == permission.Id)
@@ -134,14 +134,14 @@ public class PermissionStore : IPermissionStore
 
         if (binding is null)
         {
-            return AccessControlResult.Failed(new AccessControlError { Description = "Not found." });
+            return AccessManagementResult.Failed(new AccessManagementError { Description = "Not found." });
         }
 
         _context.Remove(binding);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return AccessControlResult.Success;
+        return AccessManagementResult.Success;
     }
 
     /// <inheritdoc />

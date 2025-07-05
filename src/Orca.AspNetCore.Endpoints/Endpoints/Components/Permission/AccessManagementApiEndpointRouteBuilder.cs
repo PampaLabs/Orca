@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Microsoft.AspNetCore.Routing;
 
-public partial class AccessControlApiEndpointRouteBuilder
+public partial class AccessManagementApiEndpointRouteBuilder
 {
     /// <summary>
-    /// Maps delegation endpoints with the default configuration.
+    /// Maps permission endpoints with the default configuration.
     /// </summary>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> for further endpoint customization.</returns>
-    public IEndpointConventionBuilder MapDelegationEndpoints()
+    public IEndpointConventionBuilder MapPermissionEndpoints()
     {
-        return MapDelegationEndpoints(options =>
+        return MapPermissionEndpoints(options =>
         {
             options.MapCreateEndpoint();
             options.MapReadEndpoint();
@@ -18,20 +18,24 @@ public partial class AccessControlApiEndpointRouteBuilder
             options.MapDeleteEndpoint();
             options.MapListEndpoint();
 
-            options.MapFindBySubjectEndpoint();
+            options.MapFindByNameEndpoint();
+
+            options.MapGetRolesEndpoint();
+            options.MapAddRoleEndpoint();
+            options.MapRemoveRoleEndpoint();
         });
     }
 
     /// <summary>
-    /// Maps delegation endpoints with a custom configuration.
+    /// Maps permission endpoints with a custom configuration.
     /// </summary>
     /// <param name="optionsBuilder">A delegate to configure which endpoints to include.</param>
     /// <returns>An <see cref="IEndpointConventionBuilder"/> for further endpoint customization.</returns>
-    public IEndpointConventionBuilder MapDelegationEndpoints(Action<DelegationApiEndpointRouteBuilder> optionsBuilder)
+    public IEndpointConventionBuilder MapPermissionEndpoints(Action<PermissionApiEndpointRouteBuilder> optionsBuilder)
     {
-        var routeGroup = _endpoints.MapGroup("/delegations");
+        var routeGroup = _endpoints.MapGroup("/permissions");
 
-        var builder = new DelegationApiEndpointRouteBuilder(routeGroup);
+        var builder = new PermissionApiEndpointRouteBuilder(routeGroup);
         optionsBuilder?.Invoke(builder);
 
         return routeGroup;

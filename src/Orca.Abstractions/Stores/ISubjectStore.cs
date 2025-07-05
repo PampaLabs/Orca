@@ -26,24 +26,24 @@
         /// </summary>
         /// <param name="subject">The subject to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the creation operation.</returns>
-        Task<AccessControlResult> CreateAsync(Subject subject, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the creation operation.</returns>
+        Task<AccessManagementResult> CreateAsync(Subject subject, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates the specified <paramref name="subject"/> in the store.
         /// </summary>
         /// <param name="subject">The subject to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the update operation.</returns>
-        Task<AccessControlResult> UpdateAsync(Subject subject, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the update operation.</returns>
+        Task<AccessManagementResult> UpdateAsync(Subject subject, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes the specified <paramref name="subject"/> from the store.
         /// </summary>
         /// <param name="subject">The subject to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the delete operation.</returns>
-        Task<AccessControlResult> DeleteAsync(Subject subject, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the delete operation.</returns>
+        Task<AccessManagementResult> DeleteAsync(Subject subject, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Lists the subjects in the store.
@@ -74,8 +74,8 @@
         /// <param name="subject">The subject to which the role will be added.</param>
         /// <param name="role">The role to be added.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the add operation.</returns>
-        Task<AccessControlResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the add operation.</returns>
+        Task<AccessManagementResult> AddRoleAsync(Subject subject, Role role, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes the <paramref name="role"/> for the specified <paramref name="subject"/>.
@@ -83,8 +83,8 @@
         /// <param name="subject">The subject to which the role will be removed.</param>
         /// <param name="role">The role to be removeed.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessControlResult"/> of the remove operation.</returns>
-        Task<AccessControlResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="AccessManagementResult"/> of the remove operation.</returns>
+        Task<AccessManagementResult> RemoveRoleAsync(Subject subject, Role role, CancellationToken cancellationToken = default);
 
     }
 }

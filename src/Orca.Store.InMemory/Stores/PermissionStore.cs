@@ -31,27 +31,27 @@ public class PermissionStore : IPermissionStore
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> CreateAsync(Permission permission, CancellationToken cancellationToken)
 	{
         permission.Id = Guid.NewGuid().ToString();
         _options.Permissions.Add(permission);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
 	}
 
     /// <inheritdoc />
-    public Task<AccessControlResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> UpdateAsync(Permission permission, CancellationToken cancellationToken)
 	{
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
 	}
 
     /// <inheritdoc />
-    public Task<AccessControlResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> DeleteAsync(Permission permission, CancellationToken cancellationToken)
 	{
         _options.Permissions.Remove(permission);
         _options.PermissionBindings.RemoveWhere(binding => binding.Permission == permission);
 
-		return Task.FromResult(AccessControlResult.Success);
+		return Task.FromResult(AccessManagementResult.Success);
 	}
 
     /// <inheritdoc />
@@ -66,21 +66,21 @@ public class PermissionStore : IPermissionStore
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> AddRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = (permission, role);
         _options.PermissionBindings.Add(binding);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />
-    public Task<AccessControlResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
+    public Task<AccessManagementResult> RemoveRoleAsync(Permission permission, Role role, CancellationToken cancellationToken)
     {
         var binding = (permission, role);
         _options.PermissionBindings.Remove(binding);
 
-        return Task.FromResult(AccessControlResult.Success);
+        return Task.FromResult(AccessManagementResult.Success);
     }
 
     /// <inheritdoc />

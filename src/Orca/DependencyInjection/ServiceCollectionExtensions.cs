@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             _ = services ?? throw new ArgumentNullException(nameof(services));
             _ = options ?? throw new ArgumentNullException(nameof(options));
 
-            services.AddAccessControlContext();
+            services.AddAccessManagementContext();
 
             services.AddScoped<IAuthorizationGrantor, DefaultAuthorizationGrantor>();
             services.AddScoped<IPermissionEvaluator, DefaultPermissionEvaluator>();
@@ -44,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return new OrcaBuilder(services);
         }
 
-        private static IServiceCollection AddAccessControlContext(this IServiceCollection services)
+        private static IServiceCollection AddAccessManagementContext(this IServiceCollection services)
         {
             services.TryAddScoped<IOrcaStoreAccessor, OrcaStoreAccessor>();
             return services;
