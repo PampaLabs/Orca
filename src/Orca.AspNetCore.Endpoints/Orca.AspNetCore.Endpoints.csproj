@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orca\Orca.csproj" />
     <ProjectReference Include="..\Orca.Abstractions\Orca.Abstractions.csproj" />
     <ProjectReference Include="..\Orca.AspNetCore.Endpoints.Abstractions\Orca.AspNetCore.Endpoints.Abstractions.csproj" />
   </ItemGroup>

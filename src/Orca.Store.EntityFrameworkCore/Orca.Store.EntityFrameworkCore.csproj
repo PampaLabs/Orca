@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orca\Orca.csproj" />
+    <ProjectReference Include="..\Orca.Abstractions\Orca.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,4 @@
-﻿using Orca.Authorization.Abac.Context;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Orca
 {
@@ -11,11 +10,5 @@ namespace Orca
         }
 
         public IServiceCollection Services { get; }
-
-        public IOrcaBuilder AddPropertyBag<TPropertyBag>() where TPropertyBag: class, IPropertyBag
-        {
-            Services.AddScoped<IPropertyBag, TPropertyBag>();
-            return this;
-        }
     }
 }
