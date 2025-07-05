@@ -19,6 +19,7 @@ First add the Orca packages into your project.
 dotnet add package Orca
 dotnet add package Orca.Store.EntityFrameworkCore
 dotnet add package Orca.AspNetCore
+dotnet add package Orca.Caching
 ```
 
 In the _Program.cs_, register the Orca services:
@@ -27,7 +28,8 @@ In the _Program.cs_, register the Orca services:
 builder.Services
   .AddOrca()                    // core services (Orca)
   .AddEntityFrameworkStores()   // store implementations (Orca.Store.EntityFrameworkCore)
-  .AddAuthorization();          // authorization handler (Orca.AspNetCore)
+  .AddAuthorization()           // authorization handler (Orca.AspNetCore)
+  .AddAuthorizationCache();     // authorization cache (Orca.Caching)
 ```
 
 ## How is it different from Balea?
