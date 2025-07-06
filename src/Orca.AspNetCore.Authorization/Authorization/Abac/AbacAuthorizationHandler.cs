@@ -9,19 +9,19 @@ namespace Orca.Authorization.Abac
     internal class AbacAuthorizationHandler : AuthorizationHandler<AbacRequirement>
     {
         private readonly AbacAuthorizationContextFactory _abacAuthorizationContextFactory;
-        private readonly IAuthorizationGrantor _runtimeAuthorizationServerStore;
+        private readonly IPolicyProvider _policyResolver;
         private readonly ILogger<AbacAuthorizationHandler> _logger;
 
         public AbacAuthorizationHandler(
             AbacAuthorizationContextFactory abacAuthorizationContextFactory,
-            IAuthorizationGrantor runtimeAuthorizationServerStore,
+            IPolicyProvider policyProvider,
             ILogger<AbacAuthorizationHandler> logger)
         {
             Ensure.Argument.NotNull(abacAuthorizationContextFactory, nameof(abacAuthorizationContextFactory));
-            Ensure.Argument.NotNull(runtimeAuthorizationServerStore, nameof(runtimeAuthorizationServerStore));
+            Ensure.Argument.NotNull(policyProvider, nameof(policyProvider));
             Ensure.Argument.NotNull(logger, nameof(logger));
             _abacAuthorizationContextFactory = abacAuthorizationContextFactory;
-            _runtimeAuthorizationServerStore = runtimeAuthorizationServerStore;
+            _policyResolver = policyProvider;
             _logger = logger;
         }
 
@@ -31,8 +31,7 @@ namespace Orca.Authorization.Abac
             {
                 try
                 {
-                    var policy = await _runtimeAuthorizationServerStore
-                        .GetPolicyAsync(requirement.Name);
+                    var policy = await _policyResolver.GetPolicyAsync(requirement.Name);
                 
                     if (policy is object)
                     {

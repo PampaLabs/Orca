@@ -1,29 +1,41 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace Orca.Authorization.Rbac
 {
     internal class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
-        private readonly IPermissionEvaluator _permissionEvaluator;
+        private readonly OrcaOptions _options;
 
-        public PermissionAuthorizationHandler(IPermissionEvaluator permissionEvaluator)
+        public PermissionAuthorizationHandler(IOptions<OrcaOptions> options)
         {
-            Ensure.Argument.NotNull(permissionEvaluator, nameof(permissionEvaluator));
-            _permissionEvaluator = permissionEvaluator;
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
+            var succeed = false;
+
             if (context.User.Identity.IsAuthenticated)
             {
-                if (await _permissionEvaluator.HasPermissionAsync(context.User, requirement.Name))
+                var permissionEvaluator = new PermissionEvaluator(_options.ClaimTypeMap);
+
+                if (permissionEvaluator.HasPermission(context.User, requirement.Name))
                 {
-                    context.Succeed(requirement);
-                    return;
+                    succeed = true;
                 }
             }
 
-            context.Fail();
+            if (succeed)
+            {
+                context.Succeed(requirement);
+            }
+            else
+            {
+                context.Fail();
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

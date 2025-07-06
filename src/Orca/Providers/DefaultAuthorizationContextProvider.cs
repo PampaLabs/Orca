@@ -4,29 +4,29 @@ using Microsoft.Extensions.Options;
 namespace Orca
 {
     /// <inheritdoc />
-    public class DefaultAuthorizationGrantor : IAuthorizationGrantor
+    public class DefaultAuthorizationContextProvider : IAuthorizationContextProvider
     {
         private readonly OrcaOptions _options;
 
         private readonly IOrcaStoreAccessor _storeAccessor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultAuthorizationGrantor"/> class.
+        /// Initializes a new instance of the <see cref="DefaultAuthorizationContextProvider"/> class.
         /// </summary>
         /// <param name="options">The authorizations options.</param>
         /// <param name="storeAccessor">The store accessor.</param>
-        public DefaultAuthorizationGrantor(IOptions<OrcaOptions> options, IOrcaStoreAccessor storeAccessor)
+        public DefaultAuthorizationContextProvider(IOptions<OrcaOptions> options, IOrcaStoreAccessor storeAccessor)
         {
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
             _storeAccessor = storeAccessor ?? throw new ArgumentNullException(nameof(storeAccessor));
         }
 
         /// <inheritdoc />
-        public async Task<AuthorizationContext> FindAuthorizationAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
+        public async Task<AuthorizationContext> CreateAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
         {
             var sourceRoleClaims = principal.GetClaimValues(_options.ClaimTypeMap.RoleClaimType).ToArray();
 
-            var subject = principal.GetSubjectId(_options);
+            var subject = principal.GetSubjectId(_options.ClaimTypeMap);
 
             var user = await _storeAccessor.SubjectStore.FindBySubAsync(subject, cancellationToken);
 
@@ -59,12 +59,6 @@ namespace Orca
                 Permissions = permissions,
                 Delegation = delegation,
             };
-        }
-
-        /// <inheritdoc />
-        public async Task<Policy> GetPolicyAsync(string name, CancellationToken cancellationToken = default)
-        {
-            return await _storeAccessor.PolicyStore.FindByNameAsync(name, cancellationToken);
         }
     }
 }

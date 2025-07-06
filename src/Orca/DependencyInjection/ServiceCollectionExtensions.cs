@@ -36,8 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddAccessManagementContext();
 
-            services.AddScoped<IAuthorizationGrantor, DefaultAuthorizationGrantor>();
-            services.AddScoped<IPermissionEvaluator, DefaultPermissionEvaluator>();
+            services.AddScoped<IAuthorizationContextProvider, DefaultAuthorizationContextProvider>();
+            services.AddScoped<IPolicyProvider, DefaultPolicyProvider>();
 
             services.Configure(options);
 

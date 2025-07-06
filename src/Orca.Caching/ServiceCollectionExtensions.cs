@@ -55,15 +55,29 @@ public static class ServiceCollectionExtensions
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        var grantorType = typeof(IAuthorizationGrantor);
-        var grantorDescriptor = services.Last(service => service.ServiceType == grantorType);
+        ConfigureCacheProvider<IAuthorizationContextProvider>(
+            services,
+            (factory, target) => factory.CreateAuthContextProvider(target));
 
-        services.AddScoped<IAuthorizationGrantor>(sp =>
+        ConfigureCacheProvider<IPolicyProvider>(
+            services,
+            (factory, target) => factory.CreatePolicyProvider(target));
+    }
+
+    private static void ConfigureCacheProvider<TService>(
+        IServiceCollection services,
+        Func<CacheProviderFactory, TService, TService> factoryMethod
+        )
+        where TService : class
+    {
+        var descriptor = services.Last(s => s.ServiceType == typeof(TService));
+
+        services.AddScoped(sp =>
         {
-            var factory = ActivatorUtilities.CreateInstance<CacheAuthorizationGrantorFactory>(sp);
-            var target = (IAuthorizationGrantor)grantorDescriptor.CreateInstance(sp);
+            var factory = ActivatorUtilities.CreateInstance<CacheProviderFactory>(sp);
+            var target = (TService)descriptor.CreateInstance(sp);
 
-            return factory.Create(target);
+            return factoryMethod(factory, target);
         });
     }
 }

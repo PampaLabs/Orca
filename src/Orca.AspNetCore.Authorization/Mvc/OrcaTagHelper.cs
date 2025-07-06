@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
 namespace Orca.Mvc
@@ -20,23 +21,20 @@ namespace Orca.Mvc
         private static readonly char[] Separator = new[] { ',' };
 
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IAuthorizationGrantor authorizationGrantor;
-        private readonly IPermissionEvaluator permissionEvaluator;
+        private readonly OrcaOptions options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrcaTagHelper"/> class.
         /// </summary>
+        /// <param name="options">The authorizations options.</param>
         /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-        /// <param name="authorizationGrantor">The authorization grantor to evaluate user roles and permissions.</param>
-        /// <param name="permissionEvaluator">The permission evaluator used to evaluate permissions.</param>
         public OrcaTagHelper(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationGrantor authorizationGrantor,
-            IPermissionEvaluator permissionEvaluator)
+            IOptions<OrcaOptions> options,
+            IHttpContextAccessor httpContextAccessor
+            )
         {
             this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            this.authorizationGrantor = authorizationGrantor ?? throw new ArgumentNullException(nameof(authorizationGrantor));
-            this.permissionEvaluator = permissionEvaluator ?? throw new ArgumentNullException(nameof(permissionEvaluator));
+            this.options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
@@ -52,7 +50,7 @@ namespace Orca.Mvc
         public string Permissions { get; set; }
 
         /// <inheritdoc />
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = null;
             var authorized = false;
@@ -60,7 +58,7 @@ namespace Orca.Mvc
             if (String.IsNullOrWhiteSpace(Roles) 
                 && String.IsNullOrWhiteSpace(Permissions))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             if (!String.IsNullOrWhiteSpace(Roles))
@@ -93,7 +91,9 @@ namespace Orca.Mvc
 
                     if (permission.HasValue && permission.Length > 0)
                     {
-                        authorized = await permissionEvaluator.HasPermissionAsync(
+                        var permissionEvaluator = new PermissionEvaluator(options.ClaimTypeMap);
+
+                        authorized = permissionEvaluator.HasPermission(
                             httpContextAccessor.HttpContext.User,
                             permission.Value);
 
@@ -109,6 +109,8 @@ namespace Orca.Mvc
             {
                 output.SuppressOutput();
             }
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -11,13 +11,13 @@ namespace System.Security.Claims
         /// Gets the subject identifier.
         /// </summary>
         /// <param name="principal">The claims principal.</param>
-        /// <param name="options">The authorizations options.</param>
+        /// <param name="claimTypeMap">The claim mapping options.</param>
         /// <returns></returns>
-        public static string GetSubjectId(this ClaimsPrincipal principal, OrcaOptions options)
+        public static string GetSubjectId(this ClaimsPrincipal principal, ClaimTypeMap claimTypeMap)
         {
             string sid = null;
 
-            foreach(var allowedSubjectClaimType in options.ClaimTypeMap.AllowedSubjectClaimTypes)
+            foreach(var allowedSubjectClaimType in claimTypeMap.AllowedSubjectClaimTypes)
             {
                 sid = principal.FindFirstValue(allowedSubjectClaimType);
 

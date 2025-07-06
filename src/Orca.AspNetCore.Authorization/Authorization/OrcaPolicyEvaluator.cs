@@ -13,7 +13,7 @@ namespace Orca.Authorization
     public class OrcaPolicyEvaluator : IPolicyEvaluator
     {
         private readonly IAuthorizationService _authorization;
-        private readonly IAuthorizationGrantor _authorizationGrantor;
+        private readonly IAuthorizationContextProvider _contextProvider;
         private readonly OrcaOptions _options;
         private readonly OrcaAuthorizationOptions _authOptions;
         private readonly ILogger<OrcaPolicyEvaluator> _logger;
@@ -22,19 +22,19 @@ namespace Orca.Authorization
         /// Initializes a new instance of the <see cref="OrcaPolicyEvaluator"/> class.
         /// </summary>
         /// <param name="authorization">The authorization service to be used.</param>
-        /// <param name="authorizationGrantor">The authorization grantor to be used.</param>
+        /// <param name="contextProvider">The authorization context provider.</param>
         /// <param name="options">The basic configuration options.</param>
         /// <param name="authOptions">The web configuration options.</param>
         /// <param name="logger">The logger used to log events and errors in policy evaluation.</param>
         public OrcaPolicyEvaluator(
             IAuthorizationService authorization,
-            IAuthorizationGrantor authorizationGrantor,
+            IAuthorizationContextProvider contextProvider,
             IOptions<OrcaOptions> options,
             IOptions<OrcaAuthorizationOptions> authOptions,
             ILogger<OrcaPolicyEvaluator> logger)
         {
             _authorization = authorization;
-            _authorizationGrantor = authorizationGrantor;
+            _contextProvider = contextProvider;
             _options = options.Value;
             _authOptions = authOptions.Value;
             _logger = logger;
@@ -126,14 +126,14 @@ namespace Orca.Authorization
 
         private async Task AddOrcaIdentity(ClaimsPrincipal user, HttpContext context)
         {
-            var authorization = await _authorizationGrantor
-                .FindAuthorizationAsync(user);
+            var authorization = await _contextProvider
+                .CreateAsync(user);
 
             if (authorization.Roles.Any())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.OrcaRolesFoundForUser(user.GetSubjectId(_options), authorization.Roles.Select(r => r.Name));
+                    _logger.OrcaRolesFoundForUser(user.GetSubjectId(_options.ClaimTypeMap), authorization.Roles.Select(r => r.Name));
                 }
             }
             else
@@ -143,7 +143,7 @@ namespace Orca.Authorization
                 // If there is not an unauthorized fallback defined, the authorizations result may be unexpected.
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.NoOrcaRolesForUser(user.GetSubjectId(_options));
+                    _logger.NoOrcaRolesForUser(user.GetSubjectId(_options.ClaimTypeMap));
                 }
 
                 if (!context.Response.HasStarted && _authOptions.Events.UnauthorizedFallback != null)
@@ -160,27 +160,8 @@ namespace Orca.Authorization
                 return;
             }
 
-            var roleClaims = authorization.Roles
-                .Where(role => role.Enabled)
-                .Select(role => new Claim(_options.ClaimTypeMap.RoleClaimType, role.Name));
-
-            var permissionClaims = authorization.Permissions
-                .Select(permission => new Claim(_options.ClaimTypeMap.PermissionClaimType, permission.Name));
-
-            var identity = new ClaimsIdentity(
-                authenticationType: "Orca",
-                nameType: _options.ClaimTypeMap.NameClaimType,
-                roleType: _options.ClaimTypeMap.RoleClaimType);
-
-            identity.AddClaims(roleClaims);
-            identity.AddClaims(permissionClaims);
-
-            if (authorization.Delegation != null)
-            {
-                identity.AddClaim(new Claim(OrcaClaims.DelegatedBy, authorization.Delegation.Who.Sub));
-                identity.AddClaim(new Claim(OrcaClaims.DelegatedFrom, authorization.Delegation.From.ToString()));
-                identity.AddClaim(new Claim(OrcaClaims.DelegatedTo, authorization.Delegation.To.ToString()));
-            }
+            var identityFactory = new ClaimsIdentityFactory(_options.ClaimTypeMap);
+            var identity = identityFactory.Create(authorization);
 
             user.AddIdentity(identity);
         }
