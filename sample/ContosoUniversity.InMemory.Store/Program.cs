@@ -1,6 +1,6 @@
 using Orca;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Orca.Store.Configuration;
+using Orca.Store.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿namespace Orca.Store.Configuration;
+﻿namespace Orca.Store.InMemory;
 
 /// <summary>
 /// Options for configuring in-memory stores.

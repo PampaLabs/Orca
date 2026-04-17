@@ -1,4 +1,4 @@
-﻿namespace Orca.Store.Configuration;
+﻿namespace Orca.Store.InMemory;
 
 /// <inheritdoc />
 public class PermissionStore : IPermissionStore

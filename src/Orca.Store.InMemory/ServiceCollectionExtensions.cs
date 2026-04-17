@@ -1,5 +1,5 @@
 ﻿using Orca;
-using Orca.Store.Configuration;
+using Orca.Store.InMemory;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

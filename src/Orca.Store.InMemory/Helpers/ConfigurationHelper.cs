@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orca.Store.Configuration;
+namespace Orca.Store.InMemory;
 
 /// <summary>
 /// Helper for importing configuration into the application services.

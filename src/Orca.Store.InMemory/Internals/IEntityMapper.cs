@@ -1,4 +1,4 @@
-﻿namespace Orca.Store.Configuration;
+﻿namespace Orca.Store.InMemory;
 
 internal interface IEntityMapper<TEntity, TModel>
 {

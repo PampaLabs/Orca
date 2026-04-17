@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 using Orca;
-using Orca.Store.Configuration;
+using Orca.Store.InMemory;
 
 namespace FunctionalTests.Seedwork
 {
