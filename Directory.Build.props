@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="SDK Versions">
-    <SupportedTargetFrameworks>net6.0;net8.0</SupportedTargetFrameworks>
+    <SupportedTargetFrameworks>net8.0;net9.0;net10.0</SupportedTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>

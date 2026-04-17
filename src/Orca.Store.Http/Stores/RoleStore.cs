@@ -98,17 +98,10 @@ public class RoleStore : IRoleStore
     {
         var uri = $"{endpoint}";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
         var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _mapper.FromResponse(item));
-
-        return entities.ToList();
-#endif
     }
 
     /// <inheritdoc />
@@ -141,17 +134,10 @@ public class RoleStore : IRoleStore
 
         var uri = $"{endpoint}{query.ToUriComponent()}";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
         var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _mapper.FromResponse(item));
-
-        return entities.ToList();
-#endif
     }
 
     /// <inheritdoc />
@@ -161,17 +147,10 @@ public class RoleStore : IRoleStore
 
         var uri = $"{endpoint}/{role.Id}/subjects";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
         var result = response.Select(subjectMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
-        var result = response.Select(subjectMapper.FromResponse);
-
-        return result.ToList();
-#endif
     }
 
     /// <inheritdoc />
@@ -213,17 +192,10 @@ public class RoleStore : IRoleStore
 
         var uri = $"{endpoint}/{role.Id}/permissions";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PermissionResponse>(uri, cancellationToken);
         var result = response.Select(permissionMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<PermissionResponse>>(uri, cancellationToken);
-        var result = response.Select(permissionMapper.FromResponse);
-
-        return result.ToList();
-#endif
     }
 
     /// <inheritdoc />

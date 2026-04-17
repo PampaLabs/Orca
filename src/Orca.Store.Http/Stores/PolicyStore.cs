@@ -97,17 +97,10 @@ public class PolicyStore : IPolicyStore
     {
         var uri = $"{endpoint}";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PolicyResponse>(uri, cancellationToken);
         var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<PolicyResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _mapper.FromResponse(item));
-
-        return entities.ToList();
-#endif
     }
 
     /// <inheritdoc />
@@ -127,16 +120,9 @@ public class PolicyStore : IPolicyStore
 
         var uri = $"{endpoint}{query.ToUriComponent()}";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<PolicyResponse>(uri, cancellationToken);
         var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<PolicyResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _mapper.FromResponse(item));
-
-        return entities.ToList();
-#endif
     }
 }

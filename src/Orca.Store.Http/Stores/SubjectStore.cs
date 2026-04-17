@@ -98,17 +98,10 @@ public class SubjectStore : ISubjectStore
     {
         var uri = $"{endpoint}";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
         var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _mapper.FromResponse(item));
-
-        return entities.ToList();
-#endif
     }
 
     /// <inheritdoc />
@@ -123,17 +116,10 @@ public class SubjectStore : ISubjectStore
 
         var uri = $"{endpoint}{query.ToUriComponent()}";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<SubjectResponse>(uri, cancellationToken);
         var entities = response.Select(item => _mapper.FromResponse(item));
 
         return await entities.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<SubjectResponse>>(uri, cancellationToken);
-        var entities = response.Select(item => _mapper.FromResponse(item));
-
-        return entities.ToList();
-#endif
     }
 
     /// <inheritdoc />
@@ -143,17 +129,10 @@ public class SubjectStore : ISubjectStore
 
         var uri = $"{endpoint}/{subject.Id}/roles";
 
-#if NET8_0_OR_GREATER
         var response = _httpClient.GetFromJsonAsAsyncEnumerable<RoleResponse>(uri, cancellationToken);
         var result = response.Select(roleMapper.FromResponse);
 
         return await result.ToListAsync(cancellationToken);
-#else
-        var response = await _httpClient.GetFromJsonAsync<IEnumerable<RoleResponse>>(uri, cancellationToken);
-        var result = response.Select(roleMapper.FromResponse);
-
-        return result.ToList();
-#endif
     }
 
     /// <inheritdoc />
