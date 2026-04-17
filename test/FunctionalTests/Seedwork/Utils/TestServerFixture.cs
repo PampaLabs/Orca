@@ -18,6 +18,7 @@ namespace FunctionalTests.Seedwork
 
             foreach (var server in _servers)
             {
+                await server.WepApp.StartAsync();
                 await server.TestServerInstance.SetUpAsync();
             }
         }
@@ -27,6 +28,7 @@ namespace FunctionalTests.Seedwork
             foreach (var server in _servers)
             {
                 await server.TestServerInstance.TearDownAsync();
+                await server.WepApp.StopAsync();
             }
         }
 
@@ -44,8 +46,9 @@ namespace FunctionalTests.Seedwork
 
             foreach (var startupType in startupTypes)
             {
-                var testServer = TestServerFactory.Create(startupType);
-                var testServerInfo = (startupType, testServer);
+                var webApp = TestServerFactory.Create(startupType);
+                var testServer = webApp.GetTestServer();
+                var testServerInfo = (startupType, testServer, webApp);
 
                 yield return testServerInfo;
             }

@@ -1,5 +1,6 @@
 using Orca;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Orca.Store.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    await app.ImportConfigurationAsync("Orca");
+    await ConfigurationHelper.ImportAsync(app.Services, "Orca");
 }
 else
 {

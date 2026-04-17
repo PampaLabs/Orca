@@ -1,10 +1,14 @@
-﻿using Acheve.AspNetCore.TestHost.Security;
+﻿using System.Security.Claims;
+
+using Acheve.AspNetCore.TestHost.Security;
 using Acheve.TestHost;
-using Orca;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System.Security.Claims;
+
+using Orca;
+using Orca.Store.Configuration;
 
 namespace FunctionalTests.Seedwork
 {
@@ -44,7 +48,7 @@ namespace FunctionalTests.Seedwork
 
             services.AddSingleton<IAsyncTestServerLifetime>(new AsyncTestServerLifetime
             {
-                OnSetUpAsync = server => server.Host.ImportConfigurationAsync("Orca")
+                OnSetUpAsync = async server => await ConfigurationHelper.ImportAsync(server.Services, "Orca")
             });
 
             return services.BuildServiceProvider();

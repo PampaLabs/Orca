@@ -37,7 +37,7 @@ The InMemory store allows importing the configuration from ``appsettings.json``.
 
   if (app.Environment.IsDevelopment())
   {
-    await app.ImportConfigurationAsync();
+    await ConfigurationHelper.ImportAsync(app.Services, "Orca");
   }
 
 .. code-block:: json

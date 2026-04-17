@@ -1,49 +1,20 @@
-﻿using Orca;
-using Orca.Store.Configuration;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Orca.Store.Configuration;
 
 /// <summary>
-/// Extension methods for importing configuration into the application services.
+/// Helper for importing configuration into the application services.
 /// </summary>
-public static class ApplicationBuilderExtensions
+public static class ConfigurationHelper
 {
-    /// <summary>
-    /// Imports configuration from the application's configuration and stores it in the provided services.
-    /// </summary>
-    /// <param name="host">The <see cref="IApplicationBuilder"/> instance used to create a scope for accessing the services.</param>
-    /// <param name="section">The name of the configuration section.</param>
-    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    public static async Task ImportConfigurationAsync(this IApplicationBuilder host, string section)
-    {
-        using var scope = host.ApplicationServices.CreateScope();
-
-        await ImportConfigurationAsync(scope.ServiceProvider, section);
-    }
-
-    /// <summary>
-    /// Imports configuration from the application's configuration and stores it in the provided services.
-    /// </summary>
-    /// <param name="host">The <see cref="IWebHost"/> instance used to create a scope for accessing the services.</param>
-    /// <param name="section">The name of the configuration section.</param>
-    /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    public static async Task ImportConfigurationAsync(this IWebHost host, string section)
-    {
-        using var scope = host.Services.CreateScope();
-
-        await ImportConfigurationAsync(scope.ServiceProvider, section);
-    }
-
     /// <summary>
     /// Imports configuration from the application's configuration and stores it in the provided services.
     /// </summary>
     /// <param name="serviceProvider">The <see cref="IServiceProvider"/> instance that provides access to the services.</param>
     /// <param name="section">The name of the configuration section.</param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    private static async Task ImportConfigurationAsync(IServiceProvider serviceProvider, string section)
+    public static async Task ImportAsync(IServiceProvider serviceProvider, string section)
     {
         var stores = serviceProvider.GetRequiredService<IOrcaStoreAccessor>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();

@@ -21,7 +21,7 @@ public class EntityFrameworkTestServerLifetime : IAsyncTestServerLifetime
     {
         await _container.StartAsync();
 
-        await server.Host.MigrateDbContextAsync<OrcaDbContext>();
+        await server.Services.MigrateDbContextAsync<OrcaDbContext>();
 
         _respawner = await CreateCheckpointAsync();
     }
