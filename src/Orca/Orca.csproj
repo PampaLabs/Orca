@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4.CodeGenerator" />
-    <PackageReference Include="Antlr4.Runtime" />
+    <PackageReference Include="Antlr4.Runtime.Standard" />
+    <PackageReference Include="Antlr4BuildTasks" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" />
   </ItemGroup>
 
@@ -28,6 +28,12 @@
   <ItemGroup>
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="Authorization\Abac\Grammars\BAL\Bal.g4">
+      <Package>Orca.Authorization.Abac.Grammars.BAL</Package>
+    </Antlr4>
   </ItemGroup>
 
 </Project>

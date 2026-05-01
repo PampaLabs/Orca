@@ -14,8 +14,8 @@
     </PropertyGroup>
 
     <ItemGroup Label="NET Common">
-        <PackageVersion Include="Antlr4.CodeGenerator" Version="4.6.6" />
-        <PackageVersion Include="Antlr4.Runtime" Version="4.6.6" />
+        <PackageVersion Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+        <PackageVersion Include="Antlr4BuildTasks" Version="12.14.0" />
         <PackageVersion Include="Duende.IdentityServer" Version="6.3.10" />
         <PackageVersion Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.9" />
         <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
