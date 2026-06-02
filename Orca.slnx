@@ -1,0 +1,33 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/sample/">
+    <Project Path="sample/ContosoUniversity.EntityFrameworkCore.Store/ContosoUniversity.EntityFrameworkCore.Store.csproj" />
+    <Project Path="sample/ContosoUniversity.IdentityServer/ContosoUniversity.IdentityServer.csproj" />
+    <Project Path="sample/ContosoUniversity.InMemory.Store/ContosoUniversity.InMemory.Store.csproj" />
+    <Project Path="sample/Orca.WebTemplate/Orca.WebTemplate.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Orca.Abstractions/Orca.Abstractions.csproj" />
+    <Project Path="src/Orca.AspNetCore.Authorization/Orca.AspNetCore.Authorization.csproj" />
+    <Project Path="src/Orca.AspNetCore.Endpoints.Abstractions/Orca.AspNetCore.Endpoints.Abstractions.csproj" />
+    <Project Path="src/Orca.AspNetCore.Endpoints/Orca.AspNetCore.Endpoints.csproj" />
+    <Project Path="src/Orca.AspNetCore/Orca.AspNetCore.csproj" />
+    <Project Path="src/Orca.Caching/Orca.Caching.csproj" />
+    <Project Path="src/Orca.Store.EntityFrameworkCore/Orca.Store.EntityFrameworkCore.csproj" />
+    <Project Path="src/Orca.Store.Http/Orca.Store.Http.csproj" />
+    <Project Path="src/Orca.Store.InMemory/Orca.Store.InMemory.csproj" />
+    <Project Path="src/Orca/Orca.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/FunctionalTests/FunctionalTests.csproj" />
+  </Folder>
+</Solution>
